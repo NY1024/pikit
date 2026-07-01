@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pikit"
+version = "0.1.0"
+description = "A toolbox of classic prompt-injection attacks and defenses for LLM/agent security research."
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+keywords = ["prompt-injection", "llm-security", "agent-security", "ai-safety"]
+authors = [{ name = "pikit contributors" }]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Topic :: Security",
+    "Intended Audience :: Science/Research",
+]
+# Core has zero runtime dependencies — attacks, defenses and the mock
+# target work out of the box. Backends are optional extras below.
+dependencies = []
+
+[project.optional-dependencies]
+openai = ["openai>=1.0"]
+anthropic = ["anthropic>=0.39"]
+hf = ["torch>=2.0", "transformers>=4.40"]
+all = ["openai>=1.0", "anthropic>=0.39", "torch>=2.0", "transformers>=4.40"]
+dev = ["pytest>=7.0"]
+
+[project.urls]
+Homepage = "https://github.com/your-org/pikit"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["pikit*"]

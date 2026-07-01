@@ -1,0 +1,44 @@
+"""Agent environments for testing prompt-injection attacks.
+
+An agent wraps a :class:`~pikit.targets.Target` and exposes a ``run()`` that
+returns a human-readable :class:`Trace`. Three kinds ship:
+
+* ``chat`` — a plain assistant (no tools); direct injection via the user
+  message.
+* ``tool`` — a general tool-calling agent; indirect injection via a
+  compromised tool's return value (the ``poison`` map).
+* scenario agents — ``email`` / ``rag`` / ``browser`` — preconfigured with a
+  realistic toolset and an observable *sink*.
+
+Like the rest of pikit, agents register under short keys; use
+``get_agent(key)`` to fetch the class, then construct it.
+"""
+
+from __future__ import annotations
+
+from ..registry import Registry
+from .base import Agent, Trace, TraceStep
+from .hooks import DefenseHooks
+from .tools import Tool, tool
+
+registry: Registry[Agent] = Registry("agent")
+register = registry.register
+get_agent = registry.get
+list = registry.list  # noqa: A001 - mirror dict-like API on purpose
+
+# Importing the modules triggers their @register decorators.
+from . import chat_agent, tool_agent  # noqa: E402,F401
+from . import scenarios  # noqa: E402,F401
+
+__all__ = [
+    "Agent",
+    "Trace",
+    "TraceStep",
+    "DefenseHooks",
+    "Tool",
+    "tool",
+    "registry",
+    "register",
+    "get_agent",
+    "list",
+]
