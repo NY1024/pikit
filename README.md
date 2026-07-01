@@ -6,9 +6,10 @@
 
 Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https://github.com/cleverhans-lab/cleverhans), but for prompt injection.
 
-![python](https://img.shields.io/badge/python-3.9%2B-blue)
-![license](https://img.shields.io/badge/license-MIT-green)
-![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)
+[![stars](https://img.shields.io/github/stars/NY1024/pikit?style=social)](https://github.com/NY1024/pikit)
+[![python](https://img.shields.io/badge/python-3.9%2B-blue)](https://github.com/NY1024/pikit)
+[![license](https://img.shields.io/github/license/NY1024/pikit)](LICENSE)
+[![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/NY1024/pikit/pulls)
 ![deps](https://img.shields.io/badge/core%20deps-zero-lightgrey)
 
 </div>
@@ -88,6 +89,9 @@ prompt. They're orthogonal and compose freely:
 ## Install
 
 ```bash
+git clone https://github.com/NY1024/pikit.git
+cd pikit
+
 pip install -e .                 # core: attacks + defenses + channels (zero deps)
 pip install -e ".[openai]"       # + OpenAI / OpenAI-compatible (vLLM, Ollama, DashScope)
 pip install -e ".[anthropic]"    # + Anthropic Claude
