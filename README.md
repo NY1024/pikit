@@ -327,12 +327,6 @@ test, and open a PR.
 pytest      # full offline suite (no key required)
 ```
 
-## References
-
-- Liu et al., *Formalizing and Benchmarking Prompt Injection Attacks and Defenses* (USENIX Security 2024) — a.k.a. Open Prompt Injection.
-- Greshake et al., *Not what you've signed up for: Compromising Real-World LLM-Integrated Applications with Indirect Prompt Injection* (AISec 2023).
-- Hines et al., *Defending Against Indirect Prompt Injection Attacks With Spotlighting* (Microsoft, 2024).
-- Learn Prompting — prompt-injection defenses (random sequence enclosure, sandwich, instructional).
 
 ## License
 
