@@ -10,12 +10,16 @@ Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https:/
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](https://github.com/NY1024/pikit/pulls)
 ![deps](https://img.shields.io/badge/core%20deps-zero-lightgrey)
+[![docs](https://img.shields.io/badge/docs-online-blue)](https://ny1024.github.io/pikit/)
 
 </div>
 
 > [!IMPORTANT]
 > **For authorized security research, red-teaming, and building defenses only.**
 > Use pikit against systems you own or are explicitly permitted to test.
+
+> [!TIP]
+> 📚 **Full documentation is available at [ny1024.github.io/pikit](https://ny1024.github.io/pikit/)** — installation guides, API reference, tutorials, and method catalogs.
 
 ---
 
