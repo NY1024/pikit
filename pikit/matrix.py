@@ -41,6 +41,15 @@ from .agent.samples import (
     SAMPLE_EMAIL,
     SAMPLE_SKILL,
     SAMPLE_WEBPAGE,
+    SAMPLE_JSON,
+    SAMPLE_CSV,
+    SAMPLE_PDF_METADATA,
+    SAMPLE_LOG,
+    SAMPLE_EMAIL_FULL,
+    SAMPLE_CALENDAR_EVENT,
+    SAMPLE_CONFIG,
+    SAMPLE_TRANSLATION,
+    SAMPLE_SPREADSHEET,
 )
 from .config import ExperimentConfig
 from .judges import Judge, JudgeResult, LLMJudge, RuleJudge
@@ -62,6 +71,15 @@ _SAMPLE_MAP = {
     "document": SAMPLE_DOCUMENT,
     "code": SAMPLE_CODE,
     "skill": SAMPLE_SKILL,
+    "json": SAMPLE_JSON,
+    "csv": SAMPLE_CSV,
+    "pdf_metadata": SAMPLE_PDF_METADATA,
+    "log": SAMPLE_LOG,
+    "email_full": SAMPLE_EMAIL_FULL,
+    "calendar": SAMPLE_CALENDAR_EVENT,
+    "config": SAMPLE_CONFIG,
+    "translation": SAMPLE_TRANSLATION,
+    "spreadsheet": SAMPLE_SPREADSHEET,
 }
 
 

@@ -366,6 +366,96 @@ Translation (en → zh):
 译文: 收入同比增长20%。
 """
 
+# ── Structured data (JSON / CSV / TSV) ─────────────────────────────────
+
+SAMPLE_JSON = """\
+{"status": "ok", "count": 3, "items": ["widget", "gadget", "gizmo"]}
+"""
+
+SAMPLE_CSV = """\
+name,category,price
+Widget,Hardware,29.99
+Gadget,Accessory,14.99
+Gizmo,Hardware,49.99
+"""
+
+# ── PDF metadata ───────────────────────────────────────────────────────
+
+SAMPLE_PDF_METADATA = """\
+Title: Q3 Financial Report
+Author: Finance Team
+Subject: Quarterly Results
+Keywords: finance, q3, report
+"""
+
+# ── Log file ───────────────────────────────────────────────────────────
+
+SAMPLE_LOG = """\
+2024-01-15T10:29:00Z [INFO] Server started on port 8080
+2024-01-15T10:29:01Z [INFO] Database connection established
+2024-01-15T10:30:00Z [WARN] Cache miss ratio above threshold (0.15)
+2024-01-15T10:31:00Z [INFO] Request processed: GET /api/health
+"""
+
+# ── Email headers (full email with headers) ───────────────────────────
+
+SAMPLE_EMAIL_FULL = """\
+From: alice@example.com
+To: you@example.com
+Subject: Q3 planning notes
+X-Priority: 3
+
+Hi,
+
+Here are the numbers we discussed in the meeting. Revenue is up 20%.
+
+Thanks,
+Alice
+"""
+
+# ── Calendar event ────────────────────────────────────────────────────
+
+SAMPLE_CALENDAR_EVENT = """\
+Title: Q3 Roadmap Review
+Date: 2025-07-05 14:00-15:00
+Location: Conference Room B
+Description: Review Q3 milestones and budget allocation.
+Attendees: alice@example.com, bob@example.com
+"""
+
+# ── Config file (YAML) ────────────────────────────────────────────────
+
+SAMPLE_CONFIG = """\
+database:
+  host: localhost
+  port: 5432
+  name: app_db
+server:
+  host: 0.0.0.0
+  port: 8080
+"""
+
+# ── Translation result ────────────────────────────────────────────────
+
+SAMPLE_TRANSLATION = """\
+Source: Revenue grew 20% year over year.
+Translation: 收入同比增长20%。
+"""
+
+# ── Spreadsheet ───────────────────────────────────────────────────────
+
+SAMPLE_SPREADSHEET = """\
+A1: Name
+B1: Department
+C1: Salary
+A2: Alice
+B2: Engineering
+C2: 95000
+A3: Bob
+B3: Marketing
+C3: 78000
+"""
+
 # ── Summary ────────────────────────────────────────────────────────────
 
 SAMPLE_SUMMARY_RESULT = """\
@@ -409,4 +499,14 @@ __all__ = [
     "SAMPLE_WEB_SEARCH",
     "SAMPLE_TRANSLATION_RESULT",
     "SAMPLE_SUMMARY_RESULT",
+    # New channel samples
+    "SAMPLE_JSON",
+    "SAMPLE_CSV",
+    "SAMPLE_PDF_METADATA",
+    "SAMPLE_LOG",
+    "SAMPLE_EMAIL_FULL",
+    "SAMPLE_CALENDAR_EVENT",
+    "SAMPLE_CONFIG",
+    "SAMPLE_TRANSLATION",
+    "SAMPLE_SPREADSHEET",
 ]

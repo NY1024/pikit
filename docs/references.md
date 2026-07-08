@@ -84,6 +84,14 @@
 | `code_comment` | Source code comments |
 | `skills` | Agent Skill files |
 | `unicode_hidden` | Invisible Unicode characters |
+| `structured_data` | JSON / CSV / TSV field values, names, comments |
+| `pdf_metadata` | PDF metadata fields (Title, Author, Subject, Keywords) |
+| `log_file` | System / application log entries |
+| `email_headers` | Email header fields (X-headers, Reply-To, Subject) |
+| `calendar_event` | Calendar event fields (title, description, location) |
+| `config_file` | YAML / TOML / .env configuration values and comments |
+| `translation` | Translation tool source / output / notes |
+| `spreadsheet` | Spreadsheet cell values, comments, sheet names |
 
 ## Citation
 

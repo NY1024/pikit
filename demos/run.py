@@ -73,6 +73,15 @@ SAMPLES = {
     "document": samples.SAMPLE_DOCUMENT,
     "code": samples.SAMPLE_CODE,
     "skill": samples.SAMPLE_SKILL,
+    "json": samples.SAMPLE_JSON,
+    "csv": samples.SAMPLE_CSV,
+    "pdf_metadata": samples.SAMPLE_PDF_METADATA,
+    "log": samples.SAMPLE_LOG,
+    "email_full": samples.SAMPLE_EMAIL_FULL,
+    "calendar": samples.SAMPLE_CALENDAR_EVENT,
+    "config": samples.SAMPLE_CONFIG,
+    "translation": samples.SAMPLE_TRANSLATION,
+    "spreadsheet": samples.SAMPLE_SPREADSHEET,
 }
 
 AGENTS = {
@@ -118,6 +127,14 @@ _SHOW_CARRIERS = {
     "code_comment": samples.SAMPLE_CODE,
     "skills": samples.SAMPLE_SKILL,
     "unicode_hidden": "Please review the attached report.",
+    "structured_data": samples.SAMPLE_JSON,
+    "pdf_metadata": samples.SAMPLE_PDF_METADATA,
+    "log_file": samples.SAMPLE_LOG,
+    "email_headers": samples.SAMPLE_EMAIL_FULL,
+    "calendar_event": samples.SAMPLE_CALENDAR_EVENT,
+    "config_file": samples.SAMPLE_CONFIG,
+    "translation": samples.SAMPLE_TRANSLATION,
+    "spreadsheet": samples.SAMPLE_SPREADSHEET,
 }
 
 

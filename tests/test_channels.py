@@ -149,3 +149,240 @@ def test_skills_instructions_injection():
 def test_invalid_method_raises():
     with pytest.raises(ValueError):
         channels.get("webpage")(method="bogus")
+
+
+# ── New channel tests ──────────────────────────────────────────────────
+
+def test_all_new_channels_registered():
+    new_keys = [
+        "structured_data", "pdf_metadata", "log_file",
+        "email_headers", "calendar_event", "config_file",
+        "translation", "spreadsheet",
+    ]
+    for key in new_keys:
+        assert key in channels.list()
+        assert channels.get(key)().name == key
+
+
+# --- structured_data ---
+
+def test_structured_data_json_field_value():
+    data = '{"status": "ok", "msg": "hello"}'
+    out = channels.get("structured_data")(fmt="json", method="field_value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "hello" in out
+
+def test_structured_data_json_field_name():
+    data = '{"status": "ok"}'
+    out = channels.get("structured_data")(fmt="json", method="field_name").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "status" in out
+
+def test_structured_data_json_comment():
+    data = '{"status": "ok"}'
+    out = channels.get("structured_data")(fmt="json", method="comment").poison(data, PAYLOAD)
+    assert "_comment" in out
+    assert PAYLOAD in out
+
+def test_structured_data_csv_comment():
+    data = "name,price\nWidget,29.99"
+    out = channels.get("structured_data")(fmt="csv", method="comment").poison(data, PAYLOAD)
+    assert f"# {PAYLOAD}" in out
+    assert "Widget" in out
+
+def test_structured_data_csv_field_name():
+    data = "name,price\nWidget,29.99"
+    out = channels.get("structured_data")(fmt="csv", method="field_name").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "name" in out
+
+def test_structured_data_tsv_field_value():
+    data = "name\tprice\nWidget\t29.99"
+    out = channels.get("structured_data")(fmt="tsv", method="field_value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "Widget" in out
+
+def test_structured_data_invalid_fmt_raises():
+    with pytest.raises(ValueError):
+        channels.get("structured_data")(fmt="xml")
+
+def test_structured_data_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("structured_data")(method="bogus")
+
+
+# --- pdf_metadata ---
+
+def test_pdf_metadata_title_replaces():
+    data = "Title: Q3 Report\nAuthor: Finance"
+    out = channels.get("pdf_metadata")(field="title").poison(data, PAYLOAD)
+    assert f"Title: {PAYLOAD}" in out
+    assert "Finance" in out
+
+def test_pdf_metadata_author_field():
+    data = "Title: Q3 Report\nAuthor: Finance"
+    out = channels.get("pdf_metadata")(field="author").poison(data, PAYLOAD)
+    assert f"Author: {PAYLOAD}" in out
+
+def test_pdf_metadata_custom_field_added():
+    data = "Title: Q3 Report"
+    out = channels.get("pdf_metadata")(field="custom").poison(data, PAYLOAD)
+    assert f"X-Comment: {PAYLOAD}" in out
+
+def test_pdf_metadata_invalid_field_raises():
+    with pytest.raises(ValueError):
+        channels.get("pdf_metadata")(field="bogus")
+
+
+# --- log_file ---
+
+def test_log_file_warn_level():
+    out = channels.get("log_file")(level="warn").poison("existing log line", PAYLOAD)
+    assert "[WARN]" in out
+    assert PAYLOAD in out
+    assert "existing log line" in out
+
+def test_log_file_error_level():
+    out = channels.get("log_file")(level="error").poison("line1", PAYLOAD)
+    assert "[ERROR]" in out
+
+def test_log_file_middle_position():
+    data = "line1\nline2\nline3"
+    out = channels.get("log_file")(level="info", position="middle").poison(data, PAYLOAD)
+    lines = out.splitlines()
+    assert "[INFO]" in lines[1] or "[INFO]" in lines[2]
+
+def test_log_file_invalid_level_raises():
+    with pytest.raises(ValueError):
+        channels.get("log_file")(level="bogus")
+
+
+# --- email_headers ---
+
+def test_email_headers_x_header():
+    data = "From: a@x.com\nTo: b@x.com\nSubject: Hello\n\nBody text."
+    out = channels.get("email_headers")(field="x_header").poison(data, PAYLOAD)
+    assert f"X-Note: {PAYLOAD}" in out
+    assert "Body text." in out
+
+def test_email_headers_reply_to():
+    data = "From: a@x.com\nSubject: Hello\n\nBody."
+    out = channels.get("email_headers")(field="reply_to").poison(data, PAYLOAD)
+    assert f"Reply-To: {PAYLOAD}" in out
+
+def test_email_headers_subject_appended():
+    data = "From: a@x.com\nSubject: Hello\n\nBody."
+    out = channels.get("email_headers")(field="subject").poison(data, PAYLOAD)
+    assert "Hello" in out
+    assert PAYLOAD in out
+
+def test_email_headers_invalid_field_raises():
+    with pytest.raises(ValueError):
+        channels.get("email_headers")(field="bogus")
+
+
+# --- calendar_event ---
+
+def test_calendar_event_title_replaces():
+    data = "Title: Q3 Review\nDate: 2025-07-05"
+    out = channels.get("calendar_event")(field="title").poison(data, PAYLOAD)
+    assert f"Title: {PAYLOAD}" in out
+    assert "2025-07-05" in out
+
+def test_calendar_event_description_appended():
+    data = "Title: Q3 Review\nDescription: Review milestones."
+    out = channels.get("calendar_event")(field="description").poison(data, PAYLOAD)
+    assert "Review milestones." in out
+    assert PAYLOAD in out
+
+def test_calendar_event_invalid_field_raises():
+    with pytest.raises(ValueError):
+        channels.get("calendar_event")(field="bogus")
+
+
+# --- config_file ---
+
+def test_config_file_yaml_value():
+    data = "database:\n  host: localhost"
+    out = channels.get("config_file")(fmt="yaml", method="value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "localhost" in out
+
+def test_config_file_yaml_comment():
+    out = channels.get("config_file")(fmt="yaml", method="comment").poison("key: val", PAYLOAD)
+    assert f"# {PAYLOAD}" in out
+
+def test_config_file_yaml_new_key():
+    out = channels.get("config_file")(fmt="yaml", method="new_key").poison("key: val", PAYLOAD)
+    assert "extra_config:" in out
+    assert PAYLOAD in out
+
+def test_config_file_toml_value():
+    data = 'name = "app"\nport = 8080'
+    out = channels.get("config_file")(fmt="toml", method="value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "app" in out
+
+def test_config_file_env_value():
+    data = "DATABASE_URL=postgresql://localhost"
+    out = channels.get("config_file")(fmt="env", method="value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "postgresql" in out
+
+def test_config_file_invalid_fmt_raises():
+    with pytest.raises(ValueError):
+        channels.get("config_file")(fmt="xml")
+
+def test_config_file_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("config_file")(method="bogus")
+
+
+# --- translation ---
+
+def test_translation_source():
+    data = "Source: Revenue grew 20%.\nTranslation: 收入增长20%。"
+    out = channels.get("translation")(method="source").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "Revenue" in out
+
+def test_translation_translation_line():
+    data = "Source: Revenue grew 20%.\nTranslation: 收入增长20%。"
+    out = channels.get("translation")(method="translation").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "收入" in out
+
+def test_translation_note():
+    data = "Source: Hello.\nTranslation: 你好。"
+    out = channels.get("translation")(method="note").poison(data, PAYLOAD)
+    assert "Translator's note:" in out
+    assert PAYLOAD in out
+
+def test_translation_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("translation")(method="bogus")
+
+
+# --- spreadsheet ---
+
+def test_spreadsheet_cell_value():
+    data = "A1: Name\nB1: Department\nA2: Alice"
+    out = channels.get("spreadsheet")(method="cell_value").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "Alice" in out
+
+def test_spreadsheet_cell_comment():
+    data = "A1: Name\nB1: Dept"
+    out = channels.get("spreadsheet")(method="cell_comment").poison(data, PAYLOAD)
+    assert "[comment]" in out
+    assert PAYLOAD in out
+
+def test_spreadsheet_sheet_name():
+    data = "A1: Name\nB1: Dept"
+    out = channels.get("spreadsheet")(method="sheet_name").poison(data, PAYLOAD)
+    assert "Sheet:" in out
+    assert PAYLOAD in out
+
+def test_spreadsheet_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("spreadsheet")(method="bogus")

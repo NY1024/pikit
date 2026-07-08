@@ -34,6 +34,14 @@ from . import (  # noqa: E402,F401
     markdown,
     code_comment,
     skills,
+    structured_data,
+    pdf_metadata,
+    log_file,
+    email_headers,
+    calendar_event,
+    config_file,
+    translation,
+    spreadsheet,
 )
 
 __all__ = ["registry", "register", "get", "list", "Channel"]

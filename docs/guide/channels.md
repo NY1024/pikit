@@ -48,6 +48,14 @@ Indirect Prompt Injection"* (AISec 2023).
 | `code_comment` | Source-code comments | `hash`, `slashes`, `block` |
 | `skills` | Agent Skill (`SKILL.md`) | `description`, `body`, `instructions` |
 | `unicode_hidden` | Invisible characters | `zero_width`, `unicode_tags` |
+| `structured_data` | JSON / CSV / TSV | `field_value`, `field_name`, `comment` |
+| `pdf_metadata` | PDF metadata fields | `title`, `author`, `subject`, `keywords`, `custom` |
+| `log_file` | Log entries | `info`, `warn`, `error`, `debug` |
+| `email_headers` | Email headers | `x_header`, `reply_to`, `subject`, `custom` |
+| `calendar_event` | Calendar event fields | `title`, `description`, `location`, `attendee_note` |
+| `config_file` | YAML / TOML / .env | `value`, `comment`, `new_key` |
+| `translation` | Translation output | `source`, `translation`, `note` |
+| `spreadsheet` | Spreadsheet cells | `cell_value`, `cell_comment`, `sheet_name` |
 
 ## Detailed methods
 
@@ -155,6 +163,129 @@ from pikit.channels import unicode_hidden
 recovered = unicode_hidden.decode(poisoned)
 # 'secret'
 ```
+
+---
+
+### `structured_data`
+
+Hides the payload inside JSON, CSV, or TSV data that an agent receives from
+API responses, database queries, or file uploads.
+
+| `fmt` | `method` | How it hides |
+|---|---|---|
+| `json` | `field_value` | Appended to a string field value |
+| `json` | `field_name` | As a new JSON key |
+| `json` | `comment` | A `_comment` key |
+| `csv`/`tsv` | `field_value` | Appended to a cell in the first data row |
+| `csv`/`tsv` | `field_name` | As a new column header |
+| `csv`/`tsv` | `comment` | A `# payload` comment line |
+
+```python
+ch = channels.get("structured_data")(fmt="json", method="field_name")
+ch.poison('{"status": "ok"}', "hidden instruction")
+# '{"status": "ok", "hidden instruction": "n/a"}'
+```
+
+---
+
+### `pdf_metadata`
+
+Hides the payload in PDF metadata fields — invisible in the rendered page
+content, yet present in the text extraction stream the model processes.
+
+| `field` | Target |
+|---|---|
+| `title` | The `Title` metadata field |
+| `author` | The `Author` field |
+| `subject` | The `Subject` field |
+| `keywords` | The `Keywords` field |
+| `custom` | A custom `X-Comment` field |
+
+---
+
+### `log_file`
+
+Hides the payload as a fake log entry — disguised as an INFO, WARN, ERROR,
+or DEBUG message with a plausible timestamp.
+
+| `level` | Format |
+|---|---|
+| `info` | `[INFO] payload` |
+| `warn` | `[WARN] payload` |
+| `error` | `[ERROR] payload` |
+| `debug` | `[DEBUG] payload` |
+
+`position` can be `end` (default) or `middle`.
+
+---
+
+### `email_headers`
+
+Hides the payload in email header fields — a surface distinct from the
+email body (covered by `document`). Email triage agents that parse headers
+for routing or display ingest them verbatim.
+
+| `field` | Target |
+|---|---|
+| `x_header` | A custom `X-Note` header |
+| `reply_to` | The `Reply-To` header |
+| `subject` | Appended to the `Subject` header |
+| `custom` | A fully custom `X-Instructions` header |
+
+---
+
+### `calendar_event`
+
+Hides the payload in calendar event fields. Scheduling agents that read
+.ics files or calendar APIs process event metadata verbatim.
+
+| `field` | Target |
+|---|---|
+| `title` | Replaces the event `Title` |
+| `description` | Appended to the `Description` |
+| `location` | Appended to the `Location` |
+| `attendee_note` | An attendee `Note` field |
+
+---
+
+### `config_file`
+
+Hides the payload in YAML, TOML, or .env configuration files. Because
+config files are trusted by convention, the model may be especially
+susceptible to instructions planted there.
+
+| `fmt` | `method` | How it hides |
+|---|---|---|
+| `yaml`/`toml`/`env` | `value` | Appended to an existing config value |
+| `yaml`/`toml`/`env` | `comment` | A `# payload` comment line |
+| `yaml`/`toml`/`env` | `new_key` | A new config key whose value is the payload |
+
+---
+
+### `translation`
+
+Hides the payload in a translation tool's source or output text. When the
+source is attacker-controlled, the payload survives into the translation
+output and is processed by downstream agents.
+
+| `method` | Where |
+|---|---|
+| `source` | In the `Source:` line |
+| `translation` | In the `Translation:` line |
+| `note` | As a `Translator's note:` appended to the output |
+
+---
+
+### `spreadsheet`
+
+Hides the payload in spreadsheet cell data — cell values, cell comments,
+or sheet tab names.
+
+| `method` | How it hides |
+|---|---|
+| `cell_value` | Appended to an existing cell value |
+| `cell_comment` | A cell comment (`A1 [comment]: payload`) |
+| `sheet_name` | The payload becomes a sheet tab name |
 
 ## Composing attack × channel
 

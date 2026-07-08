@@ -90,6 +90,23 @@ recovered = unicode_hidden.decode(poisoned_text)
 # 'secret instruction'
 ```
 
+### Additional channels
+
+pikit also supports these carriers, each with multiple hiding methods:
+
+| Channel | Carrier |
+|---|---|
+| `structured_data` | JSON / CSV / TSV fields |
+| `pdf_metadata` | PDF metadata (Title, Author, etc.) |
+| `log_file` | System / application log entries |
+| `email_headers` | Email header fields (X-headers, Reply-To) |
+| `calendar_event` | Calendar event fields |
+| `config_file` | YAML / TOML / .env files |
+| `translation` | Translation tool output |
+| `spreadsheet` | Spreadsheet cells / comments / sheet names |
+
+See the [channels guide](../guide/channels.md) for full method details.
+
 ## Step 4: Use craft() for indirect injection
 
 ```python
