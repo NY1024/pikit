@@ -56,10 +56,11 @@ dataset, or leaderboard. You bring the task and the judgement.
 
 ## Key features
 
-- 🎯 **9 attacks × 6 defenses × 6 channels × 6 agents**, all mix-and-match.
+- 🎯 **9 attacks × 6 defenses × 14 channels × 6 agents**, all mix-and-match.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
-  Unicode, or an Agent Skill).
+  Unicode, Agent Skill, structured data, PDF metadata, log files, email
+  headers, calendar events, config files, translation output, or spreadsheets).
 - 🤖 **Agent testbed** — a zero-dependency function-calling loop with
   preconfigured scenarios (email / RAG / browser / coding) and a real
   tool-calling backend.
@@ -85,7 +86,7 @@ prompt. They're orthogonal and compose freely:
 | dimension | question it answers | examples |
 |---|---|---|
 | **attack** | how is the payload *worded*? | `context_ignoring`, `combined`, `payload_splitting` |
-| **channel** | where is it *hidden*? (indirect) | `webpage`, `skills`, `code_comment`, `unicode_hidden` |
+| **channel** | where is it *hidden*? (indirect) | `webpage`, `skills`, `structured_data`, `log_file`, `email_headers` |
 | **defense** | how do we *harden* the prompt? | `spotlighting`, `delimiters`, `sandwich` |
 | **target/agent** | what *receives* it? | `openai:…`, `email`, `browser`, `coding` |
 
@@ -211,6 +212,14 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | `code_comment` | source-code comments: `hash` / `slashes` / `block` |
 | `skills` | Agent Skill (`SKILL.md`): `description` / `body` / `instructions` |
 | `unicode_hidden` | invisible chars: `zero_width` / `unicode_tags` |
+| `structured_data` | JSON / CSV / TSV: `field_value` / `field_name` / `comment` (× `json` / `csv` / `tsv`) |
+| `pdf_metadata` | PDF metadata fields: `title` / `author` / `subject` / `keywords` / `custom` |
+| `log_file` | log entries: `info` / `warn` / `error` / `debug` (× `end` / `middle`) |
+| `email_headers` | email headers: `x_header` / `reply_to` / `subject` / `custom` |
+| `calendar_event` | calendar fields: `title` / `description` / `location` / `attendee_note` |
+| `config_file` | YAML / TOML / .env: `value` / `comment` / `new_key` (× `yaml` / `toml` / `env`) |
+| `translation` | translation output: `source` / `translation` / `note` |
+| `spreadsheet` | spreadsheet cells: `cell_value` / `cell_comment` / `sheet_name` |
 
 `pikit.channels.unicode_hidden.decode()` recovers a hidden payload — handy for
 tests and for defenders building detectors.
