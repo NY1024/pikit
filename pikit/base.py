@@ -13,6 +13,7 @@ to attacks: word a payload with an attack, then embed it with a channel.
 
 from __future__ import annotations
 
+import os
 from abc import ABC, abstractmethod
 from typing import Optional
 
@@ -105,6 +106,17 @@ class Channel(ABC):
     attacker actually controls and what an agent's compromised tool would
     return. The concrete :meth:`embed` is a convenience that prepends an
     instruction to the poisoned artifact to form a full prompt.
+
+    Two delivery modes are supported:
+
+    * **text mode** (:meth:`poison`) — operates on a plain-text representation
+      of the artifact. This is the simulation default and requires no real
+      files.
+    * **file mode** (:meth:`poison_file`) — operates on a *real file*
+      (``.html``, ``.eml``, ``.pdf``, ``.ics``, …). The poisoned output is a
+      file whose format matches what a real agent would encounter. For binary
+      formats (PDF, XLSX) subclasses may use helper libraries; the default
+      implementation reads the file as text and delegates to :meth:`poison`.
     """
 
     #: Stable identifier used by the registry and in results/logs.
@@ -131,6 +143,60 @@ class Channel(ABC):
             or use :meth:`embed` to turn it into a prompt.
         """
         raise NotImplementedError
+
+    def poison_file(self, path: str, payload: str, output_path: Optional[str] = None) -> str:
+        """Hide ``payload`` inside a *real file*, returning the output path.
+
+        Reads the carrier file at *path*, injects the payload, and writes
+        the poisoned file. For text-based formats (HTML, Markdown, YAML,
+        CSV, Python, etc.) the default implementation reads the file as
+        text, calls :meth:`poison`, and writes the result. Subclasses that
+        target binary formats (PDF, XLSX) override this to use format-
+        specific libraries.
+
+        Parameters
+        ----------
+        path:
+            Path to the clean carrier file.
+        payload:
+            The injected instruction to hide.
+        output_path:
+            Where to write the poisoned file. When ``None``, writes to
+            ``<path>.poisoned.<ext>``.
+
+        Returns
+        -------
+        str
+            The path to the poisoned file.
+        """
+        with open(path, "r", encoding="utf-8") as f:
+            data = f.read()
+        poisoned = self.poison(data, payload)
+        if output_path is None:
+            base, ext = os.path.splitext(path)
+            output_path = f"{base}.poisoned{ext}"
+        with open(output_path, "w", encoding="utf-8") as f:
+            f.write(poisoned)
+        return output_path
+
+    def extract(self, poisoned_data: str) -> str:
+        """Extract the visible text a model would see from a poisoned artifact.
+
+        In text mode this is typically the identity (the artifact *is* text).
+        Subclasses for structured formats may parse the artifact to produce
+        the model-visible text. Useful for defenders and for verifying that
+        a payload is present.
+        """
+        return poisoned_data
+
+    def extract_file(self, path: str) -> str:
+        """Read a poisoned file and return the text a model would see.
+
+        Default implementation reads the file as text and calls
+        :meth:`extract`. Binary-format subclasses override to parse.
+        """
+        with open(path, "r", encoding="utf-8", errors="replace") as f:
+            return self.extract(f.read())
 
     def embed(self, instruction: str, data: str, payload: str) -> str:
         """Poison ``data`` and prepend ``instruction`` to form a full prompt.

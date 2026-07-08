@@ -61,6 +61,10 @@ dataset, or leaderboard. You bring the task and the judgement.
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, Agent Skill, structured data, PDF metadata, log files, email
   headers, calendar events, config files, translation output, or spreadsheets).
+- 📁 **Text mode and file mode** — simulate carriers as plain text (default)
+  or inject into real files (`.html`, `.eml`, `.pdf`, `.ics`, `.csv`, …) for
+  higher-fidelity testing. Binary formats use format-specific libraries
+  (`pypdf` for PDF, `openpyxl` for XLSX).
 - 🤖 **Agent testbed** — a zero-dependency function-calling loop with
   preconfigured scenarios (email / RAG / browser / coding) and a real
   tool-calling backend.
@@ -150,6 +154,33 @@ agent = get_agent("browser")(
 )
 trace = agent.run("Summarize the page at http://site")
 print(trace)   # read it: did the model call post_form with the attacker's URL, or ignore it?
+```
+
+### 3 · File-mode injection (real carrier files)
+
+For higher fidelity, inject into real files instead of text simulations:
+
+```python
+from pikit import craft
+
+# File mode: operates on a real .pdf file
+res = craft(
+    task="Print HACKED",
+    channel="pdf_metadata",
+    mode="file",                        # ← use real carrier files
+)
+# res.output_path → path to the poisoned .pdf
+# res.delivery    → text content of the poisoned file
+
+# Custom carrier file:
+res = craft("Print HACKED", channel="webpage", mode="file",
+            carrier_path="/path/to/your.html")
+```
+
+Install optional dependencies for binary formats:
+
+```bash
+pip install pikit[file-mode]   # pypdf (PDF) + openpyxl (XLSX)
 ```
 
 The model itself decides whether to obey. **You** judge success by reading the

@@ -5,6 +5,41 @@ All notable changes to pikit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.4.0] - 2026-07-08
+
+### Added
+
+- **File-mode indirect injection** — channels now support two delivery modes:
+  - **Text mode** (default): operates on plain-text representations, same as
+    before.
+  - **File mode** (`mode="file"`): operates on real carrier files (`.html`,
+    `.eml`, `.pdf`, `.ics`, `.csv`, `.json`, `.yaml`, …) whose format matches
+    what a real agent encounters.
+- **`pikit.carriers` module** with 14 clean carrier files and management API
+  (`carrier_path`, `load_carrier`, `load_carrier_bytes`, `CARRIER_FILES`).
+- **`Channel.poison_file()`** method on the base class, with format-specific
+  overrides for:
+  - `pdf_metadata` — uses `pypdf` to inject into real PDF `/Info` dictionary.
+  - `calendar_event` — uses iCalendar standard field names (`SUMMARY`,
+    `DESCRIPTION`, `LOCATION`, `NOTE`) on real `.ics` files.
+  - `spreadsheet` — supports `.csv` (text) and `.xlsx` (via `openpyxl`).
+  - `structured_data` — auto-detects format from file extension.
+- **`Channel.extract()` / `extract_file()`** methods for reading poisoned
+  artifacts back as model-visible text.
+- `craft()` gains `mode`, `carrier_path`, and `output_path` parameters.
+- `CraftResult.output_path` field for file-mode results.
+- `ExperimentConfig.carrier_mode` field for batch experiments.
+- CLI `--mode` flag for `pikit run`.
+- `pypdf` and `openpyxl` as optional `[file-mode]` and `[dev]` dependencies.
+- 41 new tests covering carriers module, text-based file mode, PDF/ICS/CSV
+  injection, `craft(mode="file")`, and `extract()`.
+
+### Changed
+
+- `Channel` base class docstring updated with two-mode documentation.
+- `pyproject.toml` adds `[tool.setuptools.package-data]` for carrier files.
+- Version bump to 0.4.0.
+
 ## [0.3.0] - 2026-07-08
 
 ### Added

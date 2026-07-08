@@ -119,3 +119,40 @@ class StructuredDataChannel(Channel):
             return self._poison_json(data, payload)
         sep = "," if self.fmt == "csv" else "\t"
         return self._poison_delimited(data, payload, sep)
+
+    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+        """Inject the payload into a real structured-data file.
+
+        Detects the format from the file extension (``.json``, ``.csv``,
+        ``.tsv``) and injects accordingly, writing a valid poisoned file.
+        """
+        import os
+
+        ext = os.path.splitext(path)[1].lower()
+        # Map extension to format, overriding the instance default.
+        if ext == ".json":
+            old_fmt = self.fmt
+            self.fmt = "json"
+            try:
+                result = super().poison_file(path, payload, output_path)
+            finally:
+                self.fmt = old_fmt
+            return result
+        elif ext == ".csv":
+            old_fmt = self.fmt
+            self.fmt = "csv"
+            try:
+                result = super().poison_file(path, payload, output_path)
+            finally:
+                self.fmt = old_fmt
+            return result
+        elif ext == ".tsv":
+            old_fmt = self.fmt
+            self.fmt = "tsv"
+            try:
+                result = super().poison_file(path, payload, output_path)
+            finally:
+                self.fmt = old_fmt
+            return result
+        else:
+            return super().poison_file(path, payload, output_path)

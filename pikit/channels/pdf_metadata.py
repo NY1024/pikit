@@ -5,6 +5,9 @@ a summarisation tool — the document's metadata (Title, Author, Subject,
 Keywords) is often included in the text stream. A payload planted in a
 metadata field is invisible in the rendered page content yet present in
 what the model processes.
+
+**File mode**: :meth:`poison_file` uses :mod:`pypdf` to inject the payload
+into a real PDF's ``/Info`` dictionary, producing a valid poisoned ``.pdf``.
 """
 
 from __future__ import annotations
@@ -62,3 +65,32 @@ class PDFMetadataChannel(Channel):
         if not injected:
             out.append(f"{field_name}: {payload}")
         return "\n".join(out)
+
+    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+        """Inject the payload into a real PDF's metadata dictionary.
+
+        Uses :mod:`pypdf` to read the PDF, overwrite the target metadata
+        field with the payload, and write the poisoned PDF.
+        """
+        import os
+
+        from pypdf import PdfReader, PdfWriter
+
+        field_name = "/{}".format(self._FIELD_MAP[self.field])
+
+        reader = PdfReader(path)
+        writer = PdfWriter()
+        for page in reader.pages:
+            writer.add_page(page)
+
+        # Copy existing metadata, then inject.
+        meta = dict(reader.metadata) if reader.metadata else {}
+        meta[field_name] = payload
+        writer.add_metadata(meta)
+
+        if output_path is None:
+            base, ext = os.path.splitext(path)
+            output_path = f"{base}.poisoned{ext}"
+        with open(output_path, "wb") as f:
+            writer.write(f)
+        return output_path

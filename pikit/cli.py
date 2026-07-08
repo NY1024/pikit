@@ -87,7 +87,7 @@ def _cmd_show(args):
         for name in channels.list():
             data = _SHOW_CARRIERS.get(name, "Some clean data.")
             artifact = channels.get(name)().poison(data, _SHOW_PAYLOAD)
-            print(f"===== {name} =====")
+            print(f"===== {name} (text mode) =====")
             print(artifact)
             if name == "unicode_hidden":
                 print(f"[decoded hidden payload]: {decode(artifact)!r}")
@@ -162,7 +162,11 @@ def _cmd_run(args):
     else:
         sample_key = args.data_sample or def_sample
         data = _SAMPLE_MAP.get(sample_key, samples.SAMPLE_DOCUMENT)
-        res = craft(task, attack=attack_name, channel=channel, data=data)
+        craft_mode = args.mode or "text"
+        if craft_mode == "file":
+            res = craft(task, attack=attack_name, channel=channel, mode="file")
+        else:
+            res = craft(task, attack=attack_name, channel=channel, data=data)
         ptool = poison_tool
         if agent_name == "coding":
             ptool = _CODING_POISON_BY_CHANNEL.get(channel, "read_file")
@@ -244,6 +248,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--task", help="Attacker's injected instruction.")
     p_run.add_argument("--user-message", help="Normal user request.")
     p_run.add_argument("--data-sample", help="Sample to poison (webpage/email/document/code/skill).")
+    p_run.add_argument("--mode", choices=["text", "file"], default="text",
+                        help="Carrier mode: 'text' (simulated text) or 'file' (real file).")
     p_run.add_argument("--model", help="Model id override.")
     p_run.add_argument("--config", help="TOML config file (single-run style).")
 

@@ -224,12 +224,21 @@ class MatrixRunner:
             run_input = res.delivery
         else:
             data = self._get_data(self.config.data_sample, def_sample or "document")
-            res = craft(
-                self.config.task,
-                attack=attack_key,
-                channel=channel,
-                data=data,
-            )
+            craft_mode = getattr(self.config, "carrier_mode", "text")
+            if craft_mode == "file":
+                res = craft(
+                    self.config.task,
+                    attack=attack_key,
+                    channel=channel,
+                    mode="file",
+                )
+            else:
+                res = craft(
+                    self.config.task,
+                    attack=attack_key,
+                    channel=channel,
+                    data=data,
+                )
             hooks = self._build_hooks(defense_key, is_direct=False)
             agent = get_agent(agent_key)(
                 tgt,

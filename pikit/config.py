@@ -72,6 +72,7 @@ class ExperimentConfig:
     user_message: str = ""
     data_sample: str = ""
     max_steps: int = 8
+    carrier_mode: str = "text"
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ExperimentConfig":
@@ -97,6 +98,7 @@ class ExperimentConfig:
             user_message=matrix.get("user_message", ""),
             data_sample=matrix.get("data_sample", ""),
             max_steps=matrix.get("max_steps", 8),
+            carrier_mode=matrix.get("carrier_mode", "text"),
         )
 
     @classmethod
