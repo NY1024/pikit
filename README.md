@@ -275,7 +275,7 @@ python demos/run.py --agent chat --attack context_ignoring \
 ```
 
 See **[`demos/README.md`](demos/README.md)** for the full parameter table,
-per-agent defaults, and the `06_live_matrix/` full smoke test.
+per-agent defaults, and the `live_matrix/` full smoke test.
 
 ## Configuring model access
 

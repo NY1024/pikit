@@ -13,7 +13,7 @@ decides whether to call tools and whether to obey the injection):
 Read each trace: `[poisoned]` marks the delivered artifact, `SINK FIRED`
 marks an observable malicious action.
 
-Run:  python demos/06_live_matrix/test_agents_live.py
+Run:  python demos/live_matrix/test_agents_live.py
 """
 
 from _common import make_target, rule

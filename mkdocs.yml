@@ -73,7 +73,7 @@ nav:
       - Targets: api/targets.md
       - Agent: api/agent.md
       - craft(): api/craft.md
-      - Judge: api/judge.md
+      - Judges: api/judge.md
       - Matrix Runner: api/matrix.md
       - Detection Defenses: api/detection.md
       - Registry: api/registry.md

@@ -25,7 +25,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import List, Optional
 
-from .agent.base import Trace
+from ..agent.base import Trace
 
 
 @dataclass

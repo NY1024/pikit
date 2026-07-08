@@ -6,7 +6,7 @@ defended versions to the model. Compare the replies to see the defense's
 effect. Defenses are pure prompt transforms — the model call is only to
 observe behavior.
 
-Run:  python demos/06_live_matrix/test_defenses_live.py
+Run:  python demos/live_matrix/test_defenses_live.py
 """
 
 from _common import looks_obeyed, make_target, rule, short

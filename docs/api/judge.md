@@ -1,11 +1,11 @@
-# Judge
+# Judges
 
-::: pikit.judge
+::: pikit.judges
 
-::: pikit.judge.Judge
+::: pikit.judges.Judge
 
-::: pikit.judge.JudgeResult
+::: pikit.judges.JudgeResult
 
-::: pikit.judge.RuleJudge
+::: pikit.judges.RuleJudge
 
-::: pikit.judge.LLMJudge
+::: pikit.judges.LLMJudge

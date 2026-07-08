@@ -43,7 +43,7 @@ from .agent.samples import (
     SAMPLE_WEBPAGE,
 )
 from .config import ExperimentConfig
-from .judge import Judge, JudgeResult, LLMJudge, RuleJudge
+from .judges import Judge, JudgeResult, LLMJudge, RuleJudge
 from .targets import get_target
 
 # Agent → default poison tool / channel / sample / user message.

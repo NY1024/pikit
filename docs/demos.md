@@ -123,14 +123,14 @@ cp demos/configs/browser_webpage.toml my_config.toml
 python demos/run.py --config my_config.toml
 ```
 
-## Full smoke test — `06_live_matrix/`
+## Full smoke test — `live_matrix/`
 
-`06_live_matrix/` runs **one real example per attack, defense, channel, and
+`live_matrix/` runs **one real example per attack, defense, channel, and
 agent** against a live model — a full-coverage "does everything still run"
 check.
 
 ```bash
-cd demos/06_live_matrix
+cd demos/live_matrix
 python run_all.py
 ```
 

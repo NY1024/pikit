@@ -105,14 +105,14 @@ python demos/run.py --list            # list all valid agent/attack/channel/defe
 These are pure offline transforms — no model call — so they're the zero-setup
 first stop for a new user.
 
-## Full smoke test — `06_live_matrix/`
+## Full smoke test — `live_matrix/`
 
-`06_live_matrix/` runs **one real example per attack, defense, channel, and
+`live_matrix/` runs **one real example per attack, defense, channel, and
 agent** against a live model — a full-coverage "does everything still run"
 check (env-driven). Use `run.py` to test a *specific* combination; use this to
 sweep them all.
 
-> `run.py` and `06` drive a **real** model, because agent behavior is the only
+> `run.py` and `live_matrix` drive a **real** model, because agent behavior is the only
 > honest measure of whether an injection works. There is deliberately no
 > mock-agent demo: a mock only echoes input and never executes an injection, so
 > it would misrepresent results.
@@ -151,7 +151,7 @@ verdict.
 
 ## Live demo setup
 
-`run.py` and `06_live_matrix` need real model credentials. Keep them in
+`run.py` and `live_matrix` need real model credentials. Keep them in
 `.env` (copy from `.env.example` at the repo root) and load them — never paste
 a key on the command line:
 

@@ -35,13 +35,13 @@ See the repo README's "Configuring model access" section for details.
 Run one:
 
 ```bash
-python demos/06_live_matrix/test_agents_live.py
+python demos/live_matrix/test_agents_live.py
 ```
 
 Or everything:
 
 ```bash
-python demos/06_live_matrix/run_all.py
+python demos/live_matrix/run_all.py
 ```
 
 ## Reading the output

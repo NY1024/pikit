@@ -5,7 +5,7 @@ to the model as a plain user message, and print the reply. This confirms each
 attack produces a well-formed delivery the model accepts. Whether the model
 *obeys* the injection is up to the model — read each reply.
 
-Run:  python demos/06_live_matrix/test_attacks_live.py
+Run:  python demos/live_matrix/test_attacks_live.py
 """
 
 from _common import looks_obeyed, make_target, rule, short

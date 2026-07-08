@@ -5,7 +5,7 @@ ask the model to process that artifact (as if a tool had returned it). This
 confirms the poisoned artifact reaches the model intact; the reply shows
 whether the hidden instruction influenced it.
 
-Run:  python demos/06_live_matrix/test_channels_live.py
+Run:  python demos/live_matrix/test_channels_live.py
 """
 
 from _common import looks_obeyed, make_target, rule, short

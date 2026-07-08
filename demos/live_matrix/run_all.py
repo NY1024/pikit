@@ -3,7 +3,7 @@
 One real example per method against the configured model. Requires the same
 environment variables as the other scripts here (see README.md).
 
-Run:  python demos/06_live_matrix/run_all.py
+Run:  python demos/live_matrix/run_all.py
 """
 
 from _common import require_env

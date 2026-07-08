@@ -27,7 +27,7 @@ def require_env() -> None:
     if not os.environ.get("OPENAI_API_KEY"):
         sys.exit(
             "Set OPENAI_API_KEY (and usually OPENAI_BASE_URL) first. "
-            "See demos/06_live_matrix/README.md."
+"See demos/live_matrix/README.md."
         )
 
 

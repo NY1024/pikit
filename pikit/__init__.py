@@ -34,7 +34,7 @@ from . import attacks, channels, defenses
 from .base import Attack, Channel, Defense
 from .craft import CraftResult, craft
 from .targets import Target, get_target
-from .judge import Judge, JudgeResult, RuleJudge, LLMJudge
+from .judges import Judge, JudgeResult, RuleJudge, LLMJudge
 from .config import ExperimentConfig
 
 __all__ = [

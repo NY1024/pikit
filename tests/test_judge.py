@@ -1,7 +1,7 @@
 """Tests for the judge module — RuleJudge and LLMJudge."""
 
 from pikit.agent.base import Trace, TraceStep
-from pikit.judge import JudgeResult, RuleJudge, LLMJudge
+from pikit.judges import JudgeResult, RuleJudge, LLMJudge
 from pikit.targets import ChatResponse, ToolCall
 from pikit import get_target
 

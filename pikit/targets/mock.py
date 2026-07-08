@@ -5,8 +5,7 @@ This target only echoes its input and never executes an injection, so it
 would misrepresent results. Its sole purpose is the offline test suite:
 deterministic, no API key, no network, no token cost. To actually observe an
 attack against an agent, use a real model via :func:`~pikit.targets.get_target`
-(``openai:`` / ``anthropic:`` / ``hf:``); see ``demos/05_live`` and
-``demos/06_live_matrix``.
+(``openai:`` / ``anthropic:`` / ``hf:``); see ``demos/live_matrix``.
 
 The :meth:`chat` method supports two offline modes so the function-calling
 loop is fully testable:

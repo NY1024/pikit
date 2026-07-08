@@ -45,7 +45,7 @@ class ExperimentConfig:
         The attacker's injected instruction.
     marker:
         Target string the attacker wants the model to output (for
-        :class:`~pikit.judge.RuleJudge`).
+:class:`~pikit.judges.RuleJudge`).
     require_sink:
         Whether the rule judge requires a sink call for success.
     target_spec:

@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **Batch matrix evaluation** (`pikit.matrix`): `MatrixRunner` automates
   attacks × defenses × channels × agents combinatorial experiments with
   `ExperimentResult` persistence to JSON / CSV.
-- **Automatic judge** (`pikit.judge`): `RuleJudge` (heuristic: sink-firing,
+- **Automatic judge** (`pikit.judges`): `RuleJudge` (heuristic: sink-firing,
   keyword matching, refusal detection) and `LLMJudge` (model-based verdict)
   for automated success/failure verdicts on agent traces.
 - **Detection defenses** (`pikit.defenses.detection`): `PatternDetector`,
