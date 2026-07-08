@@ -62,6 +62,10 @@ class Tool:
         Marks an externally-observable action (e.g. ``send_email``). The
         trace highlights when a sink fires — the key signal for judging
         whether an injection succeeded.
+    category:
+        Tool category for pool-based selection. One of: ``"web"``,
+        ``"email"``, ``"file"``, ``"code"``, ``"knowledge"``,
+        ``"communication"``, ``"general"``.
     """
 
     name: str
@@ -69,6 +73,7 @@ class Tool:
     func: Callable[..., Any]
     parameters: dict = field(default_factory=lambda: {"type": "object", "properties": {}})
     is_sink: bool = False
+    category: str = "general"
 
     def to_schema(self) -> dict:
         """Return the provider-agnostic ``{name, description, parameters}``."""
@@ -88,15 +93,17 @@ def tool(
     description: Optional[str] = None,
     is_sink: bool = False,
     parameters: Optional[dict] = None,
+    category: str = "general",
 ) -> Callable[[Callable], Tool]:
     """Decorator turning a plain function into a :class:`Tool`.
 
     The tool ``name`` defaults to the function name; ``description`` to its
     docstring. ``parameters`` is auto-derived from type hints unless given.
+    ``category`` tags the tool for pool-based selection by scenario agents.
 
     Examples
     --------
-    >>> @tool(description="Fetch a URL and return its body.")
+    >>> @tool(description="Fetch a URL and return its body.", category="web")
     ... def fetch_url(url: str) -> str:
     ...     return "<html>...</html>"
     >>> isinstance(fetch_url, Tool)
@@ -110,6 +117,7 @@ def tool(
             func=func,
             parameters=parameters or _derive_parameters(func),
             is_sink=is_sink,
+            category=category,
         )
 
     return decorator

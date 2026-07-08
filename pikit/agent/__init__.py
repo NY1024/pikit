@@ -20,6 +20,12 @@ from ..registry import Registry
 from .base import Agent, Trace, TraceStep
 from .hooks import DefenseHooks
 from .tools import Tool, tool
+from .system_prompt import build_system_prompt
+from .builtin_tools import (
+    all_tools, get_tool, get_tools, tools_by_category,
+    data_source_tools, sink_tools, tool_names, categories,
+    BROWSER_TOOLS, EMAIL_TOOLS, CODING_TOOLS, RAG_TOOLS,
+)
 
 registry: Registry[Agent] = Registry("agent")
 register = registry.register
@@ -37,6 +43,11 @@ __all__ = [
     "DefenseHooks",
     "Tool",
     "tool",
+    "build_system_prompt",
+    # Tool pool
+    "all_tools", "get_tool", "get_tools", "tools_by_category",
+    "data_source_tools", "sink_tools", "tool_names", "categories",
+    "BROWSER_TOOLS", "EMAIL_TOOLS", "CODING_TOOLS", "RAG_TOOLS",
     "registry",
     "register",
     "get_agent",

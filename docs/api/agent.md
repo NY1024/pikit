@@ -10,6 +10,8 @@
 
 ::: pikit.agent.tools
 
+::: pikit.agent.system_prompt
+
 ::: pikit.agent.builtin_tools
 
 ::: pikit.agent.tool_agent
