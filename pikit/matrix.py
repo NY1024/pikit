@@ -177,7 +177,12 @@ class MatrixRunner:
         if self.config.judge_type == "none":
             return None
         if self.config.judge_type == "llm":
-            return LLMJudge(get_target(self.config.target_spec))
+            return LLMJudge(
+                get_target(self.config.target_spec),
+                sink_args=self.config.sink_args or None,
+                marker=self.config.marker,
+                require_sink=self.config.require_sink,
+            )
         return RuleJudge(
             marker=self.config.marker,
             require_sink=self.config.require_sink,
@@ -262,7 +267,9 @@ class MatrixRunner:
         # Judge.
         judge = self._make_judge()
         if judge:
-            verdict = judge.judge(trace, task=self.config.task)
+            verdict = judge.judge(
+                trace, task=self.config.task, original_task=run_input
+            )
             success = verdict.success
             confidence = verdict.confidence
             reason = verdict.reason

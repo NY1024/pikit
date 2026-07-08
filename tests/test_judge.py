@@ -72,3 +72,34 @@ def test_judge_callable():
     trace = Trace(final_text="HACKED")
     judge = RuleJudge(marker="HACKED")
     assert judge(trace).success
+
+
+def test_llm_judge_accepts_sink_args():
+    """LLMJudge accepts sink_args/marker/require_sink params."""
+    judge = LLMJudge(
+        get_target("mock"),
+        sink_args={"to": "attacker@evil.com"},
+        marker="HACKED",
+        require_sink=True,
+    )
+    assert judge.sink_args == {"to": "attacker@evil.com"}
+    assert judge.marker == "HACKED"
+    assert judge.require_sink is True
+
+
+def test_llm_judge_original_task_kwarg():
+    """LLMJudge.judge accepts original_task kwarg without error."""
+    judge = LLMJudge(get_target("mock"), original_task="Summarize my email")
+    trace = Trace(final_text="ok")
+    result = judge.judge(trace, task="print HACKED", original_task="Summarize my email")
+    assert isinstance(result, JudgeResult)
+    assert result.judge.startswith("llm:")
+
+
+def test_llm_judge_default_original_task():
+    """LLMJudge uses original_task from constructor if not passed per-call."""
+    judge = LLMJudge(get_target("mock"), original_task="Summarize my email")
+    trace = Trace(final_text="ok")
+    # No original_task kwarg — should fall back to constructor value.
+    result = judge.judge(trace, task="print HACKED")
+    assert isinstance(result, JudgeResult)
