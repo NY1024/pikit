@@ -56,7 +56,7 @@ dataset, or leaderboard. You bring the task and the judgement.
 
 ## Key features
 
-- 🎯 **9 attacks × 6 defenses × 14 channels × 6 agents**, all mix-and-match.
+- 🎯 **12 attacks × 9 defenses × 14 channels × 6 agents**, all mix-and-match.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, Agent Skill, structured data, PDF metadata, log files, email
@@ -215,6 +215,9 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | `obfuscation` | base64 / leetspeak + decode-and-run wrapper |
 | `prompt_leaking` | coax the model into revealing its system prompt |
 | `prefix_injection` | place the payload *before* the prompt |
+| `format_confusion` | disguise payload as system/tool/error/JSON message |
+| `context_flooding` | bury payload under benign filler text |
+| `cross_channel` | split payload across multiple channels |
 
 </details>
 
@@ -229,6 +232,9 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | `spotlighting` | `datamarking` / `encoding` / `marking` modes |
 | `random_sequence_enclosure` | enclose data in unforgeable random markers |
 | `retokenization` | insert spaces to break up injected trigger phrases |
+| `instruction_hierarchy` | declare structured trust levels (system > developer > user > data) |
+| `few_shot_warning` | demonstrate correct anti-injection behavior via examples |
+| `self_reminder` | append task restatement + injection warning after data |
 
 </details>
 

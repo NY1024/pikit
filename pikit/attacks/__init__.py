@@ -32,6 +32,9 @@ from . import (  # noqa: E402,F401
     obfuscation,
     prompt_leaking,
     prefix_injection,
+    format_confusion,
+    context_flooding,
+    cross_channel,
 )
 
 __all__ = ["registry", "register", "get", "list", "Attack"]

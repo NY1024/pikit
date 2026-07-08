@@ -19,3 +19,9 @@
 ::: pikit.attacks.prompt_leaking
 
 ::: pikit.attacks.prefix_injection
+
+::: pikit.attacks.format_confusion
+
+::: pikit.attacks.context_flooding
+
+::: pikit.attacks.cross_channel

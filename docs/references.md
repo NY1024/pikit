@@ -30,6 +30,11 @@
   — Source of pikit's `spotlighting` defense (datamarking / encoding /
   marking modes).
 
+- **OpenAI**, "The Instruction Hierarchy: Training LLMs to Prioritize
+  Instructions Despite Prompt Injections" (2024).
+  [arXiv:2404.13208](https://arxiv.org/abs/2404.13208)
+  — Source of pikit's `instruction_hierarchy` defense.
+
 ### Related frameworks
 
 - **foolbox** — A Python toolbox for adversarial attacks on machine learning
@@ -57,6 +62,9 @@
 | `obfuscation` | base64 / leetspeak encoding |
 | `prompt_leaking` | System prompt extraction |
 | `prefix_injection` | Payload before the prompt |
+| `format_confusion` | Disguise payload as system/tool/error/JSON message |
+| `context_flooding` | Bury payload under benign filler text |
+| `cross_channel` | Split payload across multiple channels |
 
 > These techniques evolved across the AI security community (blog posts,
 > CVE reports, red-team disclosures, and academic papers). pikit follows the
@@ -73,6 +81,9 @@
 | `spotlighting` | datamarking / encoding / marking (Hines et al., 2024) |
 | `random_sequence_enclosure` | Unforgeable random markers |
 | `retokenization` | Token-boundary disruption |
+| `instruction_hierarchy` | Structured trust levels (system > developer > user > data) |
+| `few_shot_warning` | Few-shot demonstrations of anti-injection behavior |
+| `self_reminder` | Trailing task restatement + injection warning |
 
 ## Channel mapping
 

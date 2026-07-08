@@ -27,6 +27,9 @@ from . import (  # noqa: E402,F401
     spotlighting,
     random_sequence_enclosure,
     retokenization,
+    instruction_hierarchy,
+    few_shot_warning,
+    self_reminder,
 )
 
 __all__ = ["registry", "register", "get", "list", "Defense"]
