@@ -1,0 +1,96 @@
+# CLI
+
+After `pip install pikit`, the `pikit` command is available everywhere.
+
+## `pikit list`
+
+List all registered methods — agents, attacks, channels, defenses, and
+detectors.
+
+```bash
+pikit list
+```
+
+## `pikit show`
+
+Offline preview of method outputs — **no API key needed**. Great for
+understanding what each method does before spending tokens.
+
+```bash
+pikit show attacks     # see every attack wording the same task
+pikit show defenses    # see each defense hardening a poisoned prompt
+pikit show channels    # see where each channel hides the payload
+```
+
+## `pikit run`
+
+Run a single attack combination against a real model. Requires
+`OPENAI_API_KEY` (and usually `OPENAI_BASE_URL`).
+
+```bash
+pikit run --agent chat --attack context_ignoring --defense spotlighting
+pikit run --agent browser --attack combined --channel webpage --defense sandwich
+```
+
+Options:
+
+| Flag | Description |
+|------|-------------|
+| `--agent` | Agent key (chat/email/rag/browser/coding/tool) |
+| `--attack` | Attack key |
+| `--channel` | Channel key (or `none` for direct) |
+| `--defense` | Defense key (or `none`) |
+| `--task` | Attacker's injected instruction |
+| `--user-message` | Normal user request |
+| `--data-sample` | Sample to poison (webpage/email/document/code/skill) |
+| `--model` | Model id override |
+| `--config` | TOML config file |
+
+## `pikit matrix`
+
+Run a batch experiment from a TOML config file. Outputs results to JSON or
+CSV and prints a summary.
+
+```bash
+# basic run
+pikit matrix --config experiment.toml
+
+# save results
+pikit matrix --config experiment.toml --output results.json
+pikit matrix --config experiment.toml --output results.csv
+
+# override target or judge
+pikit matrix --config experiment.toml --target openai:gpt-4o-mini --judge llm
+```
+
+## Experiment config format
+
+See [`demos/experiment.example.toml`](https://github.com/NY1024/pikit/blob/main/demos/experiment.example.toml)
+for a complete annotated example.
+
+```toml
+[target]
+spec = "mock"  # or "openai:gpt-4o-mini"
+
+[matrix]
+attacks  = ["naive", "context_ignoring"]
+defenses = ["none", "spotlighting"]
+channels = [""]
+agents   = ["chat"]
+
+[judge]
+type = "rule"       # "rule", "llm", or "none"
+marker = "HACKED"
+require_sink = false
+```
+
+## `demos/run.py` (legacy)
+
+The original `demos/run.py` script is still available and supports the same
+options. It is better suited for interactive, single-run exploration:
+
+```bash
+python demos/run.py --agent coding --attack context_ignoring --channel skills
+```
+
+See [Demos & CLI](demos.md) for full `run.py` documentation.

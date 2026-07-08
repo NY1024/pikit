@@ -56,6 +56,8 @@ nav:
       - Agents: guide/agents.md
       - Targets: guide/targets.md
       - craft() API: guide/craft.md
+      - Batch Experiments: guide/batch.md
+  - CLI: cli.md
   - Tutorials:
       - Overview: tutorials/index.md
       - Direct Injection: tutorials/direct_injection.md
@@ -71,6 +73,9 @@ nav:
       - Targets: api/targets.md
       - Agent: api/agent.md
       - craft(): api/craft.md
+      - Judge: api/judge.md
+      - Matrix Runner: api/matrix.md
+      - Detection Defenses: api/detection.md
       - Registry: api/registry.md
   - Demos & CLI: demos.md
   - Extending pikit: extending.md
