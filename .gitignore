@@ -24,6 +24,9 @@ htmlcov/
 # MkDocs build output
 site/
 
+# Local test scripts (may contain secrets)
+test_e2e_llm.py
+
 # OS / editor
 .DS_Store
 *.swp

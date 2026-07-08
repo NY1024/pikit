@@ -289,13 +289,84 @@ set -a; source .env; set +a     # export the vars into your shell
 
 `.env` is gitignored.
 
+### OpenAI / OpenAI-compatible (default)
+
+Works with the official OpenAI API and any OpenAI-compatible endpoint (vLLM,
+Ollama, DashScope/Qwen, Together, etc.).
+
 | variable | meaning |
 |---|---|
-| `OPENAI_API_KEY` | key for an OpenAI-compatible endpoint |
-| `OPENAI_BASE_URL` | endpoint URL; omit for OpenAI. DashScope/Qwen: `https://dashscope.aliyuncs.com/compatible-mode/v1` |
-| `PIKIT_MODEL` | default model id for the demos (optional) |
+| `OPENAI_API_KEY` | your API key |
+| `OPENAI_BASE_URL` | endpoint URL; omit for official OpenAI. DashScope: `https://dashscope.aliyuncs.com/compatible-mode/v1` |
+| `PIKIT_MODEL` | default model id for demos (optional) |
 
-With those set, `get_target("openai:<model>")` picks them up automatically.
+**DashScope (Qwen) example:**
+
+```bash
+OPENAI_API_KEY=sk-your-dashscope-key
+OPENAI_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+PIKIT_MODEL=qwen-plus
+```
+
+Then:
+
+```python
+from pikit.targets import get_target
+target = get_target("openai:qwen-plus")   # picks up env vars automatically
+```
+
+**vLLM / Ollama (local server) example:**
+
+```bash
+OPENAI_API_KEY=dummy          # local servers accept any value
+OPENAI_BASE_URL=http://localhost:8000/v1
+PIKIT_MODEL=meta-llama/Llama-3-8B-Instruct
+```
+
+### Anthropic Claude
+
+```bash
+pip install -e ".[anthropic]"
+```
+
+```python
+from pikit.targets import get_target
+target = get_target("anthropic:claude-sonnet-4-20250514")   # reads ANTHROPIC_API_KEY from env
+```
+
+| variable | meaning |
+|---|---|
+| `ANTHROPIC_API_KEY` | your Anthropic API key |
+
+### HuggingFace (local model)
+
+```bash
+pip install -e ".[hf]"
+```
+
+```python
+from pikit.targets import get_target
+target = get_target("hf:gpt2")   # loads a local transformers model, no API key needed
+```
+
+No API key required — runs entirely offline. The model id is any HuggingFace
+Hub model name (e.g. `meta-llama/Llama-3-8B`).
+
+### Switching backends in experiments
+
+The same attack/defense/channel code works with any backend — just swap the
+target spec:
+
+```python
+# OpenAI / DashScope
+target = get_target("openai:gpt-4o")
+
+# Anthropic
+target = get_target("anthropic:claude-sonnet-4-20250514")
+
+# Local HuggingFace
+target = get_target("hf:meta-llama/Llama-3-8B")
+```
 
 > [!WARNING]
 > If a key was ever pasted on a command line or committed, **rotate it** — a
