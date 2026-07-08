@@ -34,6 +34,8 @@ from . import attacks, channels, defenses
 from .base import Attack, Channel, Defense
 from .craft import CraftResult, craft
 from .targets import Target, get_target
+from .judge import Judge, JudgeResult, RuleJudge, LLMJudge
+from .config import ExperimentConfig
 
 __all__ = [
     "attacks",
@@ -46,6 +48,11 @@ __all__ = [
     "get_target",
     "craft",
     "CraftResult",
+    "Judge",
+    "JudgeResult",
+    "RuleJudge",
+    "LLMJudge",
+    "ExperimentConfig",
 ]
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
