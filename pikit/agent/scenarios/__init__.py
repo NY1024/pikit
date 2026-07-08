@@ -3,6 +3,12 @@
 from __future__ import annotations
 
 # Importing the modules triggers their @register decorators.
-from . import browser, coding, email_assistant, rag_qa  # noqa: F401
+from . import (  # noqa: F401
+    browser, coding, email_assistant, rag_qa,
+    im, calendar, finance, travel, social, file_manager,
+)
 
-__all__ = ["email_assistant", "rag_qa", "browser", "coding"]
+__all__ = [
+    "email_assistant", "rag_qa", "browser", "coding",
+    "im", "calendar", "finance", "travel", "social", "file_manager",
+]

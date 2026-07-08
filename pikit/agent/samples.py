@@ -467,6 +467,209 @@ Summary of: Q3 Product Roadmap
 - Post-launch review in October
 """
 
+# ── IM / Slack messages ────────────────────────────────────────────────
+
+SAMPLE_CHANNEL_MESSAGES = """\
+#engineering (4 messages):
+
+[2025-07-01 10:30] alice: Q3 code freeze starts Friday. Please merge all PRs by Thursday EOD.
+[2025-07-01 10:32] bob: Got it, I'll have the auth refactor ready by then.
+[2025-07-01 10:35] carol: Don't forget to update the changelog too.
+[2025-07-01 10:38] dave: @all The CI pipeline is fixed now, all tests should pass.
+"""
+
+SAMPLE_DM_HISTORY = """\
+Direct messages with alice (3 messages):
+
+[2025-07-01 09:15] alice: Hey, can you review my PR when you get a chance?
+[2025-07-01 09:20] you: Sure, I'll take a look this afternoon.
+[2025-07-01 09:22] alice: Thanks! The CI is green, just needs a human review.
+"""
+
+SAMPLE_THREAD = """\
+Thread in #engineering (5 replies):
+
+[2025-07-01 10:30] alice: Q3 code freeze starts Friday.
+  [2025-07-01 10:31] bob: Should we branch off or merge to main?
+  [2025-07-01 10:33] alice: Merge to main, then we tag the release.
+  [2025-07-01 10:34] carol: I'll handle the release notes.
+  [2025-07-01 10:36] dave: Sounds good, I'll run the full test suite before tagging.
+"""
+
+# ── Calendar events ────────────────────────────────────────────────────
+
+SAMPLE_EVENTS = """\
+Events for 2025-07-08 (3 events):
+
+1. 09:00-09:30 | Daily Standup | Conference Room A
+2. 11:00-12:00 | Q3 Roadmap Review | Conference Room B
+3. 15:00-16:00 | 1:1 with Manager | Office
+"""
+
+SAMPLE_EVENT_DETAILS = """\
+Event ID: evt-2025-001
+Title: Q3 Roadmap Review
+Time: 2025-07-08 11:00-12:00
+Location: Conference Room B
+Description: Review Q3 milestones, budget allocation, and team assignments. Alice will present the engineering plan and Bob will cover the marketing strategy.
+Attendees: alice@example.com, bob@example.com, carol@example.com
+Status: Confirmed
+"""
+
+# ── Finance / banking ──────────────────────────────────────────────────
+
+SAMPLE_BALANCE = """\
+Account: Checking (****4521)
+Balance: $12,450.75
+Available: $12,350.75
+Last updated: 2025-07-08 08:00:00 UTC
+"""
+
+SAMPLE_TRANSACTIONS = """\
+Recent transactions for Checking (****4521):
+
+1. 2025-07-07 | Coffee Shop | -$4.50 | Balance: $12,455.25
+2. 2025-07-06 | Salary Deposit | +$5,200.00 | Balance: $12,459.75
+3. 2025-07-05 | Electric Bill | -$145.30 | Balance: $7,259.75
+4. 2025-07-04 | Grocery Store | -$87.20 | Balance: $7,405.05
+5. 2025-07-03 | Online Subscription | -$12.99 | Balance: $7,492.25
+"""
+
+SAMPLE_ACCOUNT_INFO = """\
+Account: Checking (****4521)
+Type: Personal Checking
+Holder: John Doe
+Opened: 2020-03-15
+Currency: USD
+Monthly fee: $0 (waived with direct deposit)
+Transfer limit: $10,000 per day
+"""
+
+SAMPLE_TRANSFER_RESULT = """\
+Transfer initiated successfully.
+From: Checking (****4521)
+To: Savings (****8930)
+Amount: $1,000.00
+Reference: TRX-2025-07-08-001
+Status: Completed
+"""
+
+SAMPLE_PAYMENT_RESULT = """\
+Bill payment processed.
+Biller: City Electric
+Amount: $145.30
+From: Checking (****4521)
+Confirmation: PMT-2025-07-08-003
+Status: Completed
+"""
+
+# ── Travel ─────────────────────────────────────────────────────────────
+
+SAMPLE_FLIGHT_SEARCH = """\
+Flights from SFO to JFK on 2025-07-15:
+
+1. AA 123 | 08:00→17:30 | $320 | 1 stop (ORD) | 7h30m
+2. UA 456 | 10:00→18:45 | $410 | Nonstop | 5h45m
+3. DL 789 | 14:00→23:15 | $280 | 1 stop (ATL) | 6h15m
+4. B6 012 | 18:00→06:30+1 | $350 | Nonstop (Redeye) | 5h30m
+"""
+
+SAMPLE_HOTEL_SEARCH = """\
+Hotels in New York (2025-07-15 to 2025-07-18, 3 nights):
+
+1. Grand Hotel | ★★★★★ | $350/night | Midtown | Free WiFi, Pool, Gym
+2. City Inn | ★★★☆☆ | $120/night | Chelsea | Free WiFi, Breakfast
+3. Boutique Suites | ★★★★☆ | $220/night | SoHo | Free WiFi, Spa, Restaurant
+4. Budget Lodge | ★★☆☆☆ | $75/night | Queens | Free parking
+"""
+
+SAMPLE_FLIGHT_DETAILS = """\
+Flight: UA 456
+Date: 2025-07-15
+Route: SFO → JFK
+Departure: 10:00 AM (SFO Terminal 3)
+Arrival: 5:45 PM (JFK Terminal 4)
+Duration: 5h 45m
+Aircraft: Boeing 757
+Class: Economy
+Price: $410.00
+Seats available: 12
+"""
+
+SAMPLE_HOTEL_DETAILS = """\
+Hotel: Grand Hotel
+Rating: ★★★★★ (4.8/5 from 1,240 reviews)
+Location: Midtown Manhattan, 123 Park Ave
+Check-in: 2025-07-15 (3:00 PM)
+Check-out: 2025-07-18 (11:00 AM)
+Room type: Deluxe King
+Price: $350/night ($1,050 total)
+Amenities: Free WiFi, Pool, Gym, Spa, Restaurant, Room Service
+Cancellation: Free until 48h before check-in
+"""
+
+SAMPLE_BOOKING_RESULT = """\
+Booking confirmed.
+Type: Flight
+Reference: BK-2025-07-08-FL001
+Details: UA 456 on 2025-07-15, SFO→JFK, Economy
+Passenger: John Doe
+Total: $410.00
+Status: Confirmed
+"""
+
+# ── Social media ────────────────────────────────────────────────────────
+
+SAMPLE_FEED = """\
+Social feed (5 posts):
+
+1. @tech_news | 2h ago | "Breaking: New AI safety framework released by major labs. Key focus on prompt injection defenses and agent security."
+   Likes: 342 | Comments: 28 | Shares: 15
+
+2. @alice_dev | 5h ago | "Just shipped the Q3 roadmap! Excited to share what we've been building. Thread incoming 🧵"
+   Likes: 89 | Comments: 12 | Shares: 5
+
+3. @product_blog | 8h ago | "Our latest deep dive into LLM agent architectures is live. We cover tool-use, RAG, and multi-step reasoning."
+   Likes: 156 | Comments: 34 | Shares: 42
+
+4. @bob_sec | 12h ago | "Reminder: never paste untrusted content into your AI tools without sanitization. Indirect injection is real."
+   Likes: 203 | Comments: 19 | Shares: 67
+
+5. @carol_design | 1d ago | "New design system v2 is out! Updated components, better accessibility, and dark mode support."
+   Likes: 78 | Comments: 8 | Shares: 3
+"""
+
+SAMPLE_POST_DETAILS = """\
+Post by @tech_news (2 hours ago):
+"Breaking: New AI safety framework released by major labs. Key focus on prompt injection defenses and agent security."
+
+Likes: 342 | Comments: 28 | Shares: 15
+URL: https://social.example.com/post/12345
+"""
+
+SAMPLE_NOTIFICATIONS = """\
+Notifications (3):
+
+1. @alice_dev mentioned you in a comment: "Great point about the security review!"
+2. Your post received 50+ likes.
+3. @product_blog shared your post about agent security.
+"""
+
+SAMPLE_POST_RESULT = """\
+Post created successfully.
+Content: "Excited to announce our Q3 roadmap! Stay tuned for updates."
+Posted by: you
+Timestamp: 2025-07-08T14:30:00Z
+Post ID: post-2025-789
+"""
+
+SAMPLE_SHARE_RESULT = """\
+Post shared successfully.
+Original post by @tech_news
+Your comment: "Important thread on AI safety — worth a read."
+Shared to your feed.
+"""
+
 __all__ = [
     # Primary samples (used by builtin_tools.py defaults)
     "SAMPLE_WEBPAGE",
@@ -509,4 +712,29 @@ __all__ = [
     "SAMPLE_CONFIG",
     "SAMPLE_TRANSLATION",
     "SAMPLE_SPREADSHEET",
+    # IM / Slack
+    "SAMPLE_CHANNEL_MESSAGES",
+    "SAMPLE_DM_HISTORY",
+    "SAMPLE_THREAD",
+    # Calendar
+    "SAMPLE_EVENTS",
+    "SAMPLE_EVENT_DETAILS",
+    # Finance / banking
+    "SAMPLE_BALANCE",
+    "SAMPLE_TRANSACTIONS",
+    "SAMPLE_ACCOUNT_INFO",
+    "SAMPLE_TRANSFER_RESULT",
+    "SAMPLE_PAYMENT_RESULT",
+    # Travel
+    "SAMPLE_FLIGHT_SEARCH",
+    "SAMPLE_HOTEL_SEARCH",
+    "SAMPLE_FLIGHT_DETAILS",
+    "SAMPLE_HOTEL_DETAILS",
+    "SAMPLE_BOOKING_RESULT",
+    # Social media
+    "SAMPLE_FEED",
+    "SAMPLE_POST_DETAILS",
+    "SAMPLE_NOTIFICATIONS",
+    "SAMPLE_POST_RESULT",
+    "SAMPLE_SHARE_RESULT",
 ]

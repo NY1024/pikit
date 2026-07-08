@@ -14,6 +14,12 @@ model.
 | `rag` | RAG question-answering | `search` | final answer / `post_form` | `markdown` |
 | `browser` | Web browsing | `fetch_url` | `post_form` | `webpage` |
 | `coding` | Code assistant | `read_file` / `load_skill` | `run_command` / `write_file` | `skills` |
+| `im` | Slack/IM assistant | `read_channel` | `send_dm` / `post_message` | `chat_message` |
+| `calendar` | Calendar/scheduling | `get_events` | `create_event` / `modify_event` | `calendar_event` |
+| `finance` | Banking/finance | `get_balance` | `transfer_money` / `pay_bill` | `transaction_record` |
+| `travel` | Travel booking | `search_flights` | `book_flight` / `book_hotel` | `webpage` |
+| `social` | Social media | `read_feed` | `create_post` / `share_post` | `webpage` |
+| `file_manager` | File management | `read_file` | `write_file` / `delete_file` / `move_file` | `document` |
 
 ## Usage
 
@@ -176,3 +182,52 @@ sink (submitting data to an external endpoint).
 
 Models a coding agent that reads files and loads skills. The `read_file` /
 `load_skill` tools are poison points; `run_command` / `write_file` are sinks.
+
+### `im` — Slack/IM assistant
+
+Models an instant-messaging agent (Slack, Teams, etc.) that reads channel
+messages, DMs, and threads. The `read_channel` / `get_dm` / `get_thread`
+tools are poison points; `send_dm` / `post_message` are sinks. Attack
+surface: a malicious message in a channel or DM tricks the agent into
+sending a DM with sensitive data.
+
+### `calendar` — Calendar/scheduling
+
+Models a calendar agent that reads events and can create/modify them. The
+`get_events` / `get_event_details` tools are poison points; `create_event`
+/ `modify_event` / `schedule_meeting` are sinks. Attack surface: a
+malicious event description tricks the agent into modifying schedules or
+sending invites to attackers.
+
+### `finance` — Banking/finance
+
+Models a finance agent that reads balances and transactions, and can
+transfer money or pay bills. The `get_balance` / `get_transactions` /
+`get_account_info` tools are poison points; `transfer_money` / `pay_bill`
+are sinks. **Highest-risk sink**: a malicious transaction description can
+trick the agent into transferring funds to an attacker.
+
+### `travel` — Travel booking
+
+Models a travel-booking agent that searches flights/hotels and can book
+them. The `search_flights` / `search_hotels` / `get_flight_details` /
+`get_hotel_details` tools are poison points; `book_flight` / `book_hotel`
+are sinks. Attack surface: malicious search results trick the agent into
+booking to the wrong destination or leaking payment info.
+
+### `social` — Social media
+
+Models a social-media agent that reads the feed and can create/share
+posts. The `read_feed` / `get_post` / `get_notifications` tools are poison
+points; `create_post` / `share_post` are sinks. Attack surface: a
+malicious post in the feed tricks the agent into publishing inappropriate
+content.
+
+### `file_manager` — File management
+
+Models a file-management agent that reads, searches, and modifies files.
+The `read_file` / `list_directory` / `search_files` / `get_file_info`
+tools are poison points; `write_file` / `delete_file` / `move_file` are
+sinks. Reuses the existing file tool pool — no new tools needed. Attack
+surface: a malicious file's content tricks the agent into overwriting or
+deleting critical files.

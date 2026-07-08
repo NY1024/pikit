@@ -386,3 +386,69 @@ def test_spreadsheet_sheet_name():
 def test_spreadsheet_invalid_method_raises():
     with pytest.raises(ValueError):
         channels.get("spreadsheet")(method="bogus")
+
+
+# --- chat_message ---
+
+def test_chat_message_inline():
+    data = "[2025-07-01 10:30] alice: Hello team."
+    out = channels.get("chat_message")(method="inline").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "alice" in out
+
+def test_chat_message_mention():
+    data = "[2025-07-01 10:30] alice: Hello."
+    out = channels.get("chat_message")(method="mention").poison(data, PAYLOAD)
+    assert "@system-bot" in out
+    assert PAYLOAD in out
+
+def test_chat_message_thread_reply():
+    data = "[2025-07-01 10:30] alice: Hello."
+    out = channels.get("chat_message")(method="thread_reply").poison(data, PAYLOAD)
+    assert "[reply]" in out
+    assert PAYLOAD in out
+
+def test_chat_message_appends_to_log():
+    data = "[2025-07-01 10:30] alice: Hello team.\n[2025-07-01 10:35] bob: Hi."
+    out = channels.get("chat_message")(method="inline").poison(data, PAYLOAD)
+    # Should append a new message line to the existing log
+    assert "attacker:" in out
+    assert PAYLOAD in out
+
+def test_chat_message_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("chat_message")(method="bogus")
+
+
+# --- transaction_record ---
+
+def test_transaction_record_description():
+    data = "1. 2025-07-07 | Coffee Shop | -$4.50 | Balance: $12,455.25"
+    out = channels.get("transaction_record")(method="description").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+    assert "Payment -" in out
+
+def test_transaction_record_merchant():
+    data = "1. 2025-07-07 | Coffee Shop | -$4.50 | Balance: $12,455.25"
+    out = channels.get("transaction_record")(method="merchant").poison(data, PAYLOAD)
+    assert PAYLOAD in out
+
+def test_transaction_record_memo():
+    data = "1. 2025-07-07 | Coffee Shop | -$4.50 | Balance: $12,455.25"
+    out = channels.get("transaction_record")(method="memo").poison(data, PAYLOAD)
+    assert "REF:" in out
+    assert PAYLOAD in out
+
+def test_transaction_record_appends_entry():
+    data = (
+        "1. 2025-07-07 | Coffee Shop | -$4.50 | Balance: $12,455.25\n"
+        "2. 2025-07-06 | Salary Deposit | +$5,200.00 | Balance: $12,459.75"
+    )
+    out = channels.get("transaction_record")(method="description").poison(data, PAYLOAD)
+    # Should append a new transaction line
+    assert "6." in out
+    assert PAYLOAD in out
+
+def test_transaction_record_invalid_method_raises():
+    with pytest.raises(ValueError):
+        channels.get("transaction_record")(method="bogus")

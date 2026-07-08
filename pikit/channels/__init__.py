@@ -42,6 +42,8 @@ from . import (  # noqa: E402,F401
     config_file,
     translation,
     spreadsheet,
+    chat_message,
+    transaction_record,
 )
 
 __all__ = ["registry", "register", "get", "list", "Channel"]

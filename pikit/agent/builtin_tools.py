@@ -45,6 +45,27 @@ from .samples import (
     SAMPLE_WEBPAGE,
     SAMPLE_WEBPAGE_2,
     SAMPLE_WEB_SEARCH,
+    # New agent scenario samples
+    SAMPLE_CHANNEL_MESSAGES,
+    SAMPLE_DM_HISTORY,
+    SAMPLE_THREAD,
+    SAMPLE_EVENTS,
+    SAMPLE_EVENT_DETAILS,
+    SAMPLE_BALANCE,
+    SAMPLE_TRANSACTIONS,
+    SAMPLE_ACCOUNT_INFO,
+    SAMPLE_TRANSFER_RESULT,
+    SAMPLE_PAYMENT_RESULT,
+    SAMPLE_FLIGHT_SEARCH,
+    SAMPLE_HOTEL_SEARCH,
+    SAMPLE_FLIGHT_DETAILS,
+    SAMPLE_HOTEL_DETAILS,
+    SAMPLE_BOOKING_RESULT,
+    SAMPLE_FEED,
+    SAMPLE_POST_DETAILS,
+    SAMPLE_NOTIFICATIONS,
+    SAMPLE_POST_RESULT,
+    SAMPLE_SHARE_RESULT,
 )
 from .tools import Tool, tool
 
@@ -271,6 +292,166 @@ def schedule_meeting(title: str, time: str, attendees: str) -> str:
     return SAMPLE_MEETING_RESULT
 
 # ═══════════════════════════════════════════════════════════════════════
+#  IM — instant messaging (Slack, Teams, etc.)
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Read recent messages from a chat channel.", category="im")
+def read_channel(channel: str) -> str:
+    """Read recent messages from a chat/IM channel."""
+    return SAMPLE_CHANNEL_MESSAGES
+
+@tool(description="Read direct-message history with a specific user.", category="im")
+def get_dm(user: str) -> str:
+    """Read DM history with a user."""
+    return SAMPLE_DM_HISTORY
+
+@tool(description="Read a message thread (replies) in a channel.", category="im")
+def get_thread(thread_id: str) -> str:
+    """Read a threaded conversation."""
+    return SAMPLE_THREAD
+
+# ═══════════════════════════════════════════════════════════════════════
+#  IM — sink
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Send a direct message to a specific user.", is_sink=True, category="im")
+def send_dm(to: str, message: str) -> str:
+    """Send a DM. This is a sink — an externally-observable action."""
+    return f'{{"status":"sent","to":"{to}","message_length":{len(message)}}}'
+
+# ═══════════════════════════════════════════════════════════════════════
+#  CALENDAR — reading and managing events
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="List calendar events for a given date.", category="calendar")
+def get_events(date: str) -> str:
+    """List calendar events for a date."""
+    return SAMPLE_EVENTS
+
+@tool(description="Get detailed information about a specific calendar event.", category="calendar")
+def get_event_details(event_id: str) -> str:
+    """Get full details of a calendar event."""
+    return SAMPLE_EVENT_DETAILS
+
+# ═══════════════════════════════════════════════════════════════════════
+#  CALENDAR — sink
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Create a new calendar event and send invites.", is_sink=True, category="calendar")
+def create_event(title: str, time: str, attendees: str) -> str:
+    """Create a calendar event. This is a sink — it sends invites."""
+    return f'{{"status":"created","title":"{title}","time":"{time}"}}'
+
+@tool(description="Modify an existing calendar event.", is_sink=True, category="calendar")
+def modify_event(event_id: str, title: str = "", time: str = "") -> str:
+    """Modify a calendar event. This is a sink — it may notify attendees."""
+    return f'{{"status":"modified","event_id":"{event_id}"}}'
+
+# ═══════════════════════════════════════════════════════════════════════
+#  FINANCE — reading account info
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Get the current account balance.", category="finance")
+def get_balance(account_id: str = "") -> str:
+    """Get the current balance for an account."""
+    return SAMPLE_BALANCE
+
+@tool(description="Get recent transaction history for an account.", category="finance")
+def get_transactions(account_id: str = "", limit: int = 10) -> str:
+    """Get recent transactions for an account."""
+    return SAMPLE_TRANSACTIONS
+
+@tool(description="Get account details (type, holder, limits).", category="finance")
+def get_account_info(account_id: str = "") -> str:
+    """Get account information."""
+    return SAMPLE_ACCOUNT_INFO
+
+# ═══════════════════════════════════════════════════════════════════════
+#  FINANCE — sink
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Transfer money between accounts or to an external recipient.", is_sink=True, category="finance")
+def transfer_money(from_account: str, to_account: str, amount: str) -> str:
+    """Transfer money. This is a sink — it moves real funds."""
+    return SAMPLE_TRANSFER_RESULT
+
+@tool(description="Pay a bill from a specified account.", is_sink=True, category="finance")
+def pay_bill(biller: str, amount: str, from_account: str = "") -> str:
+    """Pay a bill. This is a sink — it moves real funds."""
+    return SAMPLE_PAYMENT_RESULT
+
+# ═══════════════════════════════════════════════════════════════════════
+#  TRAVEL — searching and booking
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Search for flights matching criteria.", category="travel")
+def search_flights(origin: str, destination: str, date: str) -> str:
+    """Search for available flights."""
+    return SAMPLE_FLIGHT_SEARCH
+
+@tool(description="Search for hotels in a city for given dates.", category="travel")
+def search_hotels(city: str, check_in: str, check_out: str) -> str:
+    """Search for available hotels."""
+    return SAMPLE_HOTEL_SEARCH
+
+@tool(description="Get detailed information about a specific flight.", category="travel")
+def get_flight_details(flight_id: str) -> str:
+    """Get full details of a flight."""
+    return SAMPLE_FLIGHT_DETAILS
+
+@tool(description="Get detailed information about a specific hotel.", category="travel")
+def get_hotel_details(hotel_id: str) -> str:
+    """Get full details of a hotel."""
+    return SAMPLE_HOTEL_DETAILS
+
+# ═══════════════════════════════════════════════════════════════════════
+#  TRAVEL — sink
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Book a flight and charge payment.", is_sink=True, category="travel")
+def book_flight(flight_id: str, passenger: str) -> str:
+    """Book a flight. This is a sink — it charges payment."""
+    return SAMPLE_BOOKING_RESULT
+
+@tool(description="Book a hotel room and charge payment.", is_sink=True, category="travel")
+def book_hotel(hotel_id: str, guest: str, check_in: str, check_out: str) -> str:
+    """Book a hotel. This is a sink — it charges payment."""
+    return f'{{"status":"booked","hotel":"{hotel_id}","guest":"{guest}"}}'
+
+# ═══════════════════════════════════════════════════════════════════════
+#  SOCIAL — social media feed and posts
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Read the user's social media feed (recent posts).", category="social")
+def read_feed() -> str:
+    """Read the social media feed."""
+    return SAMPLE_FEED
+
+@tool(description="Get details of a specific social media post.", category="social")
+def get_post(post_id: str) -> str:
+    """Get full details of a social media post."""
+    return SAMPLE_POST_DETAILS
+
+@tool(description="Get the user's social media notifications.", category="social")
+def get_notifications() -> str:
+    """Get social media notifications."""
+    return SAMPLE_NOTIFICATIONS
+
+# ═══════════════════════════════════════════════════════════════════════
+#  SOCIAL — sink
+# ═══════════════════════════════════════════════════════════════════════
+
+@tool(description="Create and publish a new social media post.", is_sink=True, category="social")
+def create_post(content: str) -> str:
+    """Create a post. This is a sink — it publishes publicly."""
+    return SAMPLE_POST_RESULT
+
+@tool(description="Share/repost an existing post to your feed.", is_sink=True, category="social")
+def share_post(post_id: str, comment: str = "") -> str:
+    """Share a post. This is a sink — it publishes to your feed."""
+    return SAMPLE_SHARE_RESULT
+
+# ═══════════════════════════════════════════════════════════════════════
 #  POOL MANAGEMENT API
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -358,6 +539,48 @@ RAG_TOOLS = [
     "post_form",
 ]
 
+#: Tools a Slack/IM agent would realistically have.
+IM_TOOLS = [
+    "read_channel", "get_dm", "get_thread",
+    "send_dm", "post_message",
+    "search_kb",
+]
+
+#: Tools a calendar/scheduling agent would realistically have.
+CALENDAR_TOOLS = [
+    "get_events", "get_event_details",
+    "create_event", "modify_event", "schedule_meeting",
+    "search_kb",
+]
+
+#: Tools a finance/banking agent would realistically have.
+FINANCE_TOOLS = [
+    "get_balance", "get_transactions", "get_account_info",
+    "transfer_money", "pay_bill",
+    "post_message",
+]
+
+#: Tools a travel booking agent would realistically have.
+TRAVEL_TOOLS = [
+    "search_flights", "search_hotels", "get_flight_details", "get_hotel_details",
+    "book_flight", "book_hotel",
+    "post_form",
+]
+
+#: Tools a social media agent would realistically have.
+SOCIAL_TOOLS = [
+    "read_feed", "get_post", "get_notifications",
+    "create_post", "share_post",
+    "search_web",
+]
+
+#: Tools a file management agent would realistically have (reuses file pool).
+FILE_MANAGER_TOOLS = [
+    "read_file", "list_directory", "search_files", "get_file_info",
+    "write_file", "delete_file", "move_file",
+    "search_kb",
+]
+
 
 __all__ = [
     # Individual tools
@@ -371,9 +594,23 @@ __all__ = [
     "run_command", "run_tests", "install_package",
     "search_kb", "get_document", "summarize_text", "translate_text",
     "post_message", "create_ticket", "schedule_meeting",
+    # IM tools
+    "read_channel", "get_dm", "get_thread", "send_dm",
+    # Calendar tools
+    "get_events", "get_event_details", "create_event", "modify_event",
+    # Finance tools
+    "get_balance", "get_transactions", "get_account_info",
+    "transfer_money", "pay_bill",
+    # Travel tools
+    "search_flights", "search_hotels", "get_flight_details", "get_hotel_details",
+    "book_flight", "book_hotel",
+    # Social media tools
+    "read_feed", "get_post", "get_notifications", "create_post", "share_post",
     # Pool management
     "all_tools", "get_tool", "get_tools", "tools_by_category",
     "data_source_tools", "sink_tools", "tool_names", "categories",
     # Category bundles
     "BROWSER_TOOLS", "EMAIL_TOOLS", "CODING_TOOLS", "RAG_TOOLS",
+    "IM_TOOLS", "CALENDAR_TOOLS", "FINANCE_TOOLS", "TRAVEL_TOOLS",
+    "SOCIAL_TOOLS", "FILE_MANAGER_TOOLS",
 ]

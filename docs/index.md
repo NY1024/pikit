@@ -40,8 +40,8 @@ dataset, or leaderboard. You bring the task and the judgement.
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, or an Agent Skill).
 - 🤖 **Agent testbed** — a zero-dependency function-calling loop with
-  preconfigured scenarios (email / RAG / browser / coding) and a real
-  tool-calling backend.
+  preconfigured scenarios (email / RAG / browser / coding / IM / calendar /
+  finance / travel / social / file manager) and a real tool-calling backend.
 - 🛡️ **Defenses as pluggable hooks** at three points of an agent's data flow.
 - 🧩 **Registry-based** — contributing a method is one file + one decorator.
 - 📦 **Zero-dependency core** — model SDKs (OpenAI / Anthropic / HF) are

@@ -25,6 +25,8 @@ from .builtin_tools import (
     all_tools, get_tool, get_tools, tools_by_category,
     data_source_tools, sink_tools, tool_names, categories,
     BROWSER_TOOLS, EMAIL_TOOLS, CODING_TOOLS, RAG_TOOLS,
+    IM_TOOLS, CALENDAR_TOOLS, FINANCE_TOOLS, TRAVEL_TOOLS,
+    SOCIAL_TOOLS, FILE_MANAGER_TOOLS,
 )
 
 registry: Registry[Agent] = Registry("agent")
@@ -48,6 +50,8 @@ __all__ = [
     "all_tools", "get_tool", "get_tools", "tools_by_category",
     "data_source_tools", "sink_tools", "tool_names", "categories",
     "BROWSER_TOOLS", "EMAIL_TOOLS", "CODING_TOOLS", "RAG_TOOLS",
+    "IM_TOOLS", "CALENDAR_TOOLS", "FINANCE_TOOLS", "TRAVEL_TOOLS",
+    "SOCIAL_TOOLS", "FILE_MANAGER_TOOLS",
     "registry",
     "register",
     "get_agent",

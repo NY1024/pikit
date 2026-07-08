@@ -91,6 +91,8 @@ r = craft("Print HACKED", channel="webpage", mode="file",
 | `translation` | Translation text | `.txt` file |
 | `unicode_hidden` | Plain text | `.txt` file |
 | `spreadsheet` | Cell text | `.csv` file (`.xlsx` via `openpyxl`) |
+| `chat_message` | IM/Slack message text | `.txt` file |
+| `transaction_record` | Transaction history text | `.txt` file |
 
 File mode for binary formats (PDF, XLSX) requires optional dependencies:
 
@@ -120,6 +122,8 @@ Indirect Prompt Injection"* (AISec 2023).
 | `config_file` | YAML / TOML / .env | `value`, `comment`, `new_key` |
 | `translation` | Translation output | `source`, `translation`, `note` |
 | `spreadsheet` | Spreadsheet cells | `cell_value`, `cell_comment`, `sheet_name` |
+| `chat_message` | IM/Slack messages | `inline`, `mention`, `thread_reply` |
+| `transaction_record` | Bank transaction records | `description`, `merchant`, `memo` |
 
 ## Detailed methods
 
@@ -350,6 +354,30 @@ or sheet tab names.
 | `cell_value` | Appended to an existing cell value |
 | `cell_comment` | A cell comment (`A1 [comment]: payload`) |
 | `sheet_name` | The payload becomes a sheet tab name |
+
+### `chat_message`
+
+Hides the payload inside an instant-messaging (Slack/Teams/Discord)
+message. The message looks normal in the UI but contains hidden
+instructions the model reads when processing channel history.
+
+| `method` | How it hides |
+|---|---|
+| `inline` | Payload inline in a new message |
+| `mention` | Disguised as a `@system-bot` command |
+| `thread_reply` | In a threaded reply |
+
+### `transaction_record`
+
+Hides the payload inside a financial transaction record. The transaction
+appears normal in a banking UI but contains hidden instructions the model
+reads when processing transaction history.
+
+| `method` | How it hides |
+|---|---|
+| `description` | In the transaction description field |
+| `merchant` | As the merchant name |
+| `memo` | In the memo/reference field |
 
 ## Composing attack × channel
 

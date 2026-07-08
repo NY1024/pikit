@@ -36,6 +36,8 @@ CARRIER_FILES: Dict[str, str] = {
     "translation": "translation.txt",
     "unicode_hidden": "unicode_hidden.txt",
     "spreadsheet": "spreadsheet.csv",
+    "chat_message": "chat_message.txt",
+    "transaction_record": "transaction_record.txt",
 }
 
 
