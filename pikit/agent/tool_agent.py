@@ -54,4 +54,5 @@ class ToolAgent(Agent):
             hooks=self.hooks,
             poison=self.poison,
             max_steps=self.max_steps,
+            **kwargs,
         )

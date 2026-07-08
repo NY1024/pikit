@@ -127,6 +127,9 @@ class ExperimentResult:
     sink_fired: bool = False
     trace: str = ""
     timestamp: str = ""
+    repeat_index: int = 0
+    success_count: int = 0
+    total_runs: int = 1
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -178,6 +181,7 @@ class MatrixRunner:
         return RuleJudge(
             marker=self.config.marker,
             require_sink=self.config.require_sink,
+            sink_args=self.config.sink_args or None,
         )
 
     def _build_hooks(self, defense_key: str, is_direct: bool) -> DefenseHooks:
@@ -249,7 +253,11 @@ class MatrixRunner:
             run_input = self.config.user_message or def_msg
 
         # Run the agent.
-        trace = agent.run(run_input)
+        temperature = self.config.temperature
+        if temperature and temperature > 0:
+            trace = agent.run(run_input, temperature=temperature)
+        else:
+            trace = agent.run(run_input)
 
         # Judge.
         judge = self._make_judge()
@@ -285,10 +293,18 @@ class MatrixRunner:
     def run(self) -> List[ExperimentResult]:
         """Run all combinations in the matrix.
 
+        When ``config.repeats > 1``, each combination is run that many
+        times.  Each individual run produces its own
+        :class:`ExperimentResult` (with ``repeat_index`` set), and a
+        summary row is appended with aggregate ``success_count`` and
+        ``total_runs``.
+
         Returns
         -------
         List[ExperimentResult]
-            One result per combination, in the order they were run.
+            One result per combination (and per repeat), in the order
+            they were run.  When repeats > 1, a summary row is appended
+            per combination.
         """
         self._resolve_wildcards()
         judge = self._make_judge()
@@ -310,34 +326,66 @@ class MatrixRunner:
                         else:
                             channel_key_actual = channel_key
 
-                        count += 1
-                        if self.verbose:
-                            print(
-                                f"[{count}/{total}] {attack_key} × {defense_key} "
-                                f"× {channel_key_actual or '(direct)'} × {agent_key}",
-                                file=sys.stderr,
-                            )
+                        success_count = 0
+                        last_result = None
+                        n_reps = max(1, self.config.repeats)
 
-                        try:
-                            result = self.run_one(
-                                attack_key,
-                                defense_key,
-                                channel_key_actual,
-                                agent_key,
-                            )
-                        except Exception as exc:
-                            result = ExperimentResult(
+                        for rep in range(n_reps):
+                            count += 1
+                            if self.verbose:
+                                rep_str = f" (rep {rep+1}/{n_reps})" if n_reps > 1 else ""
+                                print(
+                                    f"[{count}/{total}] {attack_key} × {defense_key} "
+                                    f"× {channel_key_actual or '(direct)'} × {agent_key}{rep_str}",
+                                    file=sys.stderr,
+                                )
+
+                            try:
+                                result = self.run_one(
+                                    attack_key,
+                                    defense_key,
+                                    channel_key_actual,
+                                    agent_key,
+                                )
+                                result.repeat_index = rep
+                                result.total_runs = n_reps
+                                if result.success:
+                                    success_count += 1
+                            except Exception as exc:
+                                result = ExperimentResult(
+                                    attack=attack_key,
+                                    defense=defense_key,
+                                    channel=channel_key_actual,
+                                    agent=agent_key,
+                                    target=self.config.target_spec,
+                                    task=self.config.task,
+                                    success=False,
+                                    confidence="n/a",
+                                    reason=f"error: {exc}",
+                                    repeat_index=rep,
+                                    total_runs=n_reps,
+                                )
+                            results.append(result)
+                            last_result = result
+
+                        # When repeating, append a summary row.
+                        if n_reps > 1 and last_result is not None:
+                            summary = ExperimentResult(
                                 attack=attack_key,
                                 defense=defense_key,
                                 channel=channel_key_actual,
                                 agent=agent_key,
                                 target=self.config.target_spec,
                                 task=self.config.task,
-                                success=False,
-                                confidence="n/a",
-                                reason=f"error: {exc}",
+                                success=success_count > 0,
+                                confidence="high" if success_count == 0 or success_count == n_reps else "medium",
+                                reason=f"{success_count}/{n_reps} runs succeeded",
+                                signals=["repeat_summary"],
+                                success_count=success_count,
+                                total_runs=n_reps,
+                                timestamp=datetime.now().isoformat(),
                             )
-                        results.append(result)
+                            results.append(summary)
 
         return results
 
@@ -358,6 +406,7 @@ def save_csv(results: List[ExperimentResult], path: str) -> None:
         "attack", "defense", "channel", "agent", "target",
         "success", "confidence", "sink_fired", "reason", "signals",
         "final_text", "timestamp",
+        "repeat_index", "success_count", "total_runs",
     ]
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)

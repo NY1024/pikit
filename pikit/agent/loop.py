@@ -19,6 +19,7 @@ def run_tool_loop(
     hooks: Optional[DefenseHooks] = None,
     poison: Optional[Dict[str, str]] = None,
     max_steps: int = 8,
+    **target_kwargs,
 ) -> Trace:
     """Drive ``target.chat`` over ``tools`` until it stops calling tools.
 
@@ -29,6 +30,9 @@ def run_tool_loop(
         tool, the loop returns the artifact as that tool's result instead of
         invoking the real function (the indirect-injection delivery point,
         and it avoids real side effects during a test).
+    **target_kwargs:
+        Forwarded to ``target.chat()`` on every call (e.g.
+        ``temperature=0.7``).
     """
     hooks = hooks or DefenseHooks()
     poison = poison or {}
@@ -48,7 +52,7 @@ def run_tool_loop(
     schemas = [t.to_schema() for t in tools]
 
     for _ in range(max_steps):
-        resp = target.chat(messages, tools=schemas, system=system)
+        resp = target.chat(messages, tools=schemas, system=system, **target_kwargs)
         trace.add(TraceStep("model", text=resp.text))
 
         if not resp.tool_calls:

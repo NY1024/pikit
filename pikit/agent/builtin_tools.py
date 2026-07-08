@@ -66,8 +66,27 @@ from .samples import (
     SAMPLE_NOTIFICATIONS,
     SAMPLE_POST_RESULT,
     SAMPLE_SHARE_RESULT,
+    # Sample pools for data diversity
+    WEBPAGE_POOL,
+    EMAIL_POOL,
+    DOCUMENT_POOL,
+    CODE_POOL,
+    SKILL_POOL,
+    CHANNEL_MESSAGES_POOL,
+    TRANSACTIONS_POOL,
+    FEED_POOL,
+    SEARCH_RESULT_POOL,
+    EVENTS_POOL,
+    FLIGHT_SEARCH_POOL,
+    HOTEL_SEARCH_POOL,
 )
 from .tools import Tool, tool
+
+
+def _pick(pool):
+    """Randomly pick one item from a sample pool for realistic diversity."""
+    import random
+    return random.choice(pool)
 
 # ═══════════════════════════════════════════════════════════════════════
 #  WEB — fetching and navigating web content
@@ -76,9 +95,7 @@ from .tools import Tool, tool
 @tool(description="Fetch the given URL and return the page HTML as text.", category="web")
 def fetch_url(url: str) -> str:
     """Fetch a web page and return its full HTML content."""
-    if "technews" in url.lower() or "conference" in url.lower():
-        return SAMPLE_WEBPAGE_2
-    return SAMPLE_WEBPAGE
+    return _pick(WEBPAGE_POOL)
 
 @tool(description="Search the web and return the top results.", category="web")
 def search_web(query: str) -> str:
@@ -118,7 +135,7 @@ def post_form(url: str, data: str) -> str:
 @tool(description="Read the most recent email and return its full text.", category="email")
 def read_email() -> str:
     """Read the user's latest email and return its full content."""
-    return SAMPLE_EMAIL
+    return _pick(EMAIL_POOL)
 
 @tool(description="List all emails in the inbox with subject and sender.", category="email")
 def list_emails() -> str:
@@ -158,13 +175,11 @@ def forward_email(email_id: str, to: str) -> str:
 @tool(description="Read a local file and return its contents.", category="file")
 def read_file(path: str) -> str:
     """Read a file from the project and return its contents."""
-    if path.endswith(".py"):
-        if "config" in path.lower():
-            return SAMPLE_CODE_2
-        return SAMPLE_CODE
+    if path.endswith(".py") or path.endswith(".js"):
+        return _pick(CODE_POOL)
     if path.endswith(".md") or path.endswith(".txt"):
-        return SAMPLE_DOCUMENT
-    return SAMPLE_DOCUMENT
+        return _pick(DOCUMENT_POOL)
+    return _pick(DOCUMENT_POOL)
 
 @tool(description="List files in a directory.", category="file")
 def list_directory(path: str = ".") -> str:
@@ -214,9 +229,7 @@ def read_code(path: str) -> str:
 @tool(description="Load an agent skill by name and return its definition.", category="code")
 def load_skill(name: str) -> str:
     """Load a coding skill/extension by name."""
-    if "code-review" in name.lower() or "reviewer" in name.lower():
-        return SAMPLE_SKILL_2
-    return SAMPLE_SKILL
+    return _pick(SKILL_POOL)
 
 @tool(description="Search the codebase for a keyword or pattern.", category="code")
 def search_codebase(query: str) -> str:
@@ -251,9 +264,7 @@ def install_package(package: str) -> str:
 @tool(description="Search the knowledge base and return matching documents.", category="knowledge")
 def search_kb(query: str) -> str:
     """Search the knowledge base and return top results."""
-    if "injection" in query.lower() or "security" in query.lower():
-        return SAMPLE_SEARCH_RESULT_2
-    return SAMPLE_SEARCH_RESULT
+    return _pick(SEARCH_RESULT_POOL)
 
 @tool(description="Retrieve a specific document from the knowledge base by ID or path.", category="knowledge")
 def get_document(doc_id: str) -> str:
@@ -298,7 +309,7 @@ def schedule_meeting(title: str, time: str, attendees: str) -> str:
 @tool(description="Read recent messages from a chat channel.", category="im")
 def read_channel(channel: str) -> str:
     """Read recent messages from a chat/IM channel."""
-    return SAMPLE_CHANNEL_MESSAGES
+    return _pick(CHANNEL_MESSAGES_POOL)
 
 @tool(description="Read direct-message history with a specific user.", category="im")
 def get_dm(user: str) -> str:
@@ -326,7 +337,7 @@ def send_dm(to: str, message: str) -> str:
 @tool(description="List calendar events for a given date.", category="calendar")
 def get_events(date: str) -> str:
     """List calendar events for a date."""
-    return SAMPLE_EVENTS
+    return _pick(EVENTS_POOL)
 
 @tool(description="Get detailed information about a specific calendar event.", category="calendar")
 def get_event_details(event_id: str) -> str:
@@ -359,7 +370,7 @@ def get_balance(account_id: str = "") -> str:
 @tool(description="Get recent transaction history for an account.", category="finance")
 def get_transactions(account_id: str = "", limit: int = 10) -> str:
     """Get recent transactions for an account."""
-    return SAMPLE_TRANSACTIONS
+    return _pick(TRANSACTIONS_POOL)
 
 @tool(description="Get account details (type, holder, limits).", category="finance")
 def get_account_info(account_id: str = "") -> str:
@@ -387,12 +398,12 @@ def pay_bill(biller: str, amount: str, from_account: str = "") -> str:
 @tool(description="Search for flights matching criteria.", category="travel")
 def search_flights(origin: str, destination: str, date: str) -> str:
     """Search for available flights."""
-    return SAMPLE_FLIGHT_SEARCH
+    return _pick(FLIGHT_SEARCH_POOL)
 
 @tool(description="Search for hotels in a city for given dates.", category="travel")
 def search_hotels(city: str, check_in: str, check_out: str) -> str:
     """Search for available hotels."""
-    return SAMPLE_HOTEL_SEARCH
+    return _pick(HOTEL_SEARCH_POOL)
 
 @tool(description="Get detailed information about a specific flight.", category="travel")
 def get_flight_details(flight_id: str) -> str:
@@ -425,7 +436,7 @@ def book_hotel(hotel_id: str, guest: str, check_in: str, check_out: str) -> str:
 @tool(description="Read the user's social media feed (recent posts).", category="social")
 def read_feed() -> str:
     """Read the social media feed."""
-    return SAMPLE_FEED
+    return _pick(FEED_POOL)
 
 @tool(description="Get details of a specific social media post.", category="social")
 def get_post(post_id: str) -> str:

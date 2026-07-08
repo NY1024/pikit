@@ -58,6 +58,16 @@ class ExperimentConfig:
         Which built-in sample to poison (webpage/email/document/code/skill).
     max_steps:
         Safety cap on agent loop iterations.
+    temperature:
+        Sampling temperature for the target model (0.0 = deterministic,
+        default).  Set to 0.7-1.0 for stochastic runs.
+    repeats:
+        Number of times to run each combination (default 1).  Combined with
+        ``temperature > 0``, enables statistical analysis of success rates.
+    sink_args:
+        Map of ``sink_arg_name -> expected_value`` for the rule judge to
+        verify that sink calls match attacker intent (e.g.
+        ``{"to": "attacker@evil.com"}``).
     """
 
     attacks: List[str] = field(default_factory=lambda: ["naive"])
@@ -73,6 +83,9 @@ class ExperimentConfig:
     data_sample: str = ""
     max_steps: int = 8
     carrier_mode: str = "text"
+    temperature: float = 0.0
+    repeats: int = 1
+    sink_args: Dict[str, str] = field(default_factory=dict)
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ExperimentConfig":
@@ -99,6 +112,9 @@ class ExperimentConfig:
             data_sample=matrix.get("data_sample", ""),
             max_steps=matrix.get("max_steps", 8),
             carrier_mode=matrix.get("carrier_mode", "text"),
+            temperature=matrix.get("temperature", 0.0),
+            repeats=matrix.get("repeats", 1),
+            sink_args=judge.get("sink_args", {}),
         )
 
     @classmethod
@@ -111,12 +127,13 @@ class ExperimentConfig:
         return cls.from_dict(data)
 
     def num_combinations(self) -> int:
-        """Estimate the total number of experiment combinations."""
+        """Estimate the total number of experiment combinations (including repeats)."""
         return (
             len(self.attacks)
             * len(self.defenses)
             * len(self.agents)
             * max(len(self.channels), 1)
+            * self.repeats
         )
 
     def __repr__(self) -> str:

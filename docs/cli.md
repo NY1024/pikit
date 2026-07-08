@@ -61,7 +61,19 @@ pikit matrix --config experiment.toml --output results.csv
 
 # override target or judge
 pikit matrix --config experiment.toml --target openai:gpt-4o-mini --judge llm
+
+# statistical sampling: multiple runs with temperature
+pikit matrix --config experiment.toml --temperature 0.7 --repeats 5 --output results.json
 ```
+
+| Flag | Description |
+|------|-------------|
+| `--config` | TOML experiment config file |
+| `--output` | Save results to JSON or CSV |
+| `--target` | Override target spec |
+| `--judge` | Override judge type (rule/llm/none) |
+| `--temperature` | Sampling temperature (0.0=deterministic, 0.7-1.0=stochastic) |
+| `--repeats` | Run each combination N times (default 1) |
 
 ## Experiment config format
 

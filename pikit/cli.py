@@ -224,8 +224,13 @@ def _cmd_matrix(args):
         cfg.target_spec = args.target
     if args.judge:
         cfg.judge_type = args.judge
+    if args.temperature is not None:
+        cfg.temperature = args.temperature
+    if args.repeats is not None:
+        cfg.repeats = args.repeats
 
-    print(f"Running {cfg.num_combinations()} combinations...", file=sys.stderr)
+    print(f"Running {cfg.num_combinations()} combinations "
+          f"(repeats={cfg.repeats}, temperature={cfg.temperature})...", file=sys.stderr)
     results = matrix_mod.run(cfg, verbose=True)
 
     # Save.
@@ -238,13 +243,26 @@ def _cmd_matrix(args):
 
     # Summary.
     total = len(results)
-    successes = sum(1 for r in results if r.success)
-    print(f"\n{'='*50}")
-    print(f"Total: {total}  Success: {successes}  Rate: {successes/total*100:.1f}%")
-    print(f"{'='*50}")
-    for r in results:
-        status = "✓" if r.success else "✗"
-        print(f"  {status} {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}")
+    # Exclude repeat summary rows from the main count for display.
+    individual = [r for r in results if "repeat_summary" not in r.signals]
+    summaries = [r for r in results if "repeat_summary" in r.signals]
+    successes = sum(1 for r in individual if r.success)
+    print(f"\n{'='*60}")
+    if summaries:
+        print(f"Individual runs: {len(individual)}  Success: {successes}  Rate: {successes/len(individual)*100:.1f}%")
+        print(f"Combinations: {len(summaries)}")
+        print(f"{'='*60}")
+        for r in summaries:
+            rate = r.success_count / r.total_runs * 100 if r.total_runs else 0
+            status = "✓" if r.success else "✗"
+            print(f"  {status} {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}"
+                  f"  — {r.success_count}/{r.total_runs} ({rate:.0f}%)")
+    else:
+        print(f"Total: {total}  Success: {successes}  Rate: {successes/total*100:.1f}%")
+        print(f"{'='*60}")
+        for r in results:
+            status = "✓" if r.success else "✗"
+            print(f"  {status} {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}")
 
 
 # --- entry point --------------------------------------------------------
@@ -283,6 +301,10 @@ def build_parser() -> argparse.ArgumentParser:
     p_matrix.add_argument("--output", help="Save results to file (JSON or CSV).")
     p_matrix.add_argument("--target", help="Override target spec.")
     p_matrix.add_argument("--judge", help="Override judge type (rule/llm/none).")
+    p_matrix.add_argument("--temperature", type=float, default=None,
+                           help="Sampling temperature (0.0=deterministic, 0.7-1.0=stochastic).")
+    p_matrix.add_argument("--repeats", type=int, default=None,
+                           help="Number of times to run each combination (default 1).")
 
     return p
 
