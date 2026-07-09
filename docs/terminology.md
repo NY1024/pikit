@@ -23,10 +23,6 @@ agent = get_agent("browser")(target, taint={"fetch_url": tainted_page})
 
 The term comes from **taint analysis** in program security: data flows from
 untrusted *sources* and must not reach sensitive *sinks* without sanitisation.
-pikit uses "taint" rather than "poison" deliberately — **data poisoning**
-refers to *training-time* attacks (corrupting the training dataset), whereas
-prompt injection is an *inference-time* attack. Mixing the two would blur
-distinct threat surfaces.
 
 ### Sink
 
@@ -105,22 +101,4 @@ Attacker crafts payload
    Trace records everything → Judge renders verdict
 ```
 
-## Why not "poisoned"?
 
-The term "poisoned" is avoided because **data poisoning** is a
-*training-time* attack: an adversary corrupts the model's training data to
-implant backdoors or biases. Prompt injection, by contrast, is an
-*inference-time* attack: the adversary injects instructions at runtime
-through data the model reads. Using the same word for both would conflate
-two fundamentally different threat surfaces. **Taint** is the correct
-analogy — it describes runtime data-flow contamination, which is exactly
-what indirect prompt injection is.
-
-## Why not "marker"?
-
-The term "marker" is ambiguous — it could refer to a defence's delimiter
-character (e.g. the `^` used in spotlighting datamarking) or to the
-attacker's target output string. pikit reserves **canary** exclusively for
-the attacker's target output, keeping "marker" for defence delimiter tokens
-where it still appears in the spotlighting and random-sequence-enclosure
-modules.
