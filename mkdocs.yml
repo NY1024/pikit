@@ -48,6 +48,7 @@ nav:
   - Installation: installation.md
   - Quick Start: quickstart.md
   - Concepts: concepts.md
+  - Terminology: terminology.md
   - Guides:
       - Overview: guide/index.md
       - Attacks: guide/attacks.md

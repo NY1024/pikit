@@ -72,7 +72,7 @@ pytest -v
 2. Subclass `ToolAgent` (or `Agent`), configure tools and system prompt.
 3. Use `@register("my_scenario")` to register it.
 4. Add the import to `scenarios/__init__.py`.
-5. Define which tool is the **poison point** and which is the **sink**.
+5. Define which tool is the **taint point** and which is the **sink**.
 
 ## Adding a new target backend
 

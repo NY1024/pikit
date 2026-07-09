@@ -177,7 +177,7 @@ class TestNewScenarioAgents:
             (t.name for t in tmp_agent.tools if not t.is_sink),
             tmp_agent.tools[0].name if tmp_agent.tools else "read_channel",
         )
-        agent = cls(MockTarget(), poison={first_source: "poisoned content"})
+        agent = cls(MockTarget(), taint={first_source: "tainted content"})
         trace = agent.run("test message")
         assert trace is not None
         assert len(trace.steps) > 0
@@ -187,19 +187,19 @@ class TestNewScenarioAgents:
 
 
 class TestExpandedAttackSurfaceAll:
-    """Verify the expanded tool pool provides more poison points across all scenarios."""
+    """Verify the expanded tool pool provides more taint points across all scenarios."""
 
-    def test_total_poison_points_across_all_scenarios(self):
-        all_poison = set()
+    def test_total_taint_points_across_all_scenarios(self):
+        all_taint = set()
         for bundle in [BROWSER_TOOLS, EMAIL_TOOLS, CODING_TOOLS, RAG_TOOLS,
                        IM_TOOLS, CALENDAR_TOOLS, FINANCE_TOOLS, TRAVEL_TOOLS,
                        SOCIAL_TOOLS, FILE_MANAGER_TOOLS]:
             tools = get_tools(bundle)
             for t in tools:
                 if not t.is_sink:
-                    all_poison.add(t.name)
-        assert len(all_poison) >= 20, (
-            f"Expected >=20 unique poison points, got {len(all_poison)}: {all_poison}"
+                    all_taint.add(t.name)
+        assert len(all_taint) >= 20, (
+            f"Expected >=20 unique taint points, got {len(all_taint)}: {all_taint}"
         )
 
     def test_total_sinks_across_all_scenarios(self):

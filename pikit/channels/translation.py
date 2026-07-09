@@ -36,7 +36,7 @@ class TranslationChannel(Channel):
             raise ValueError("method must be 'source', 'translation', or 'note'")
         self.method = method
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         lines = data.splitlines()
         out = []
         injected = False

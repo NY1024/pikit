@@ -3,7 +3,7 @@
 These tests verify that:
 
 * The ``pikit.carriers`` module maps every channel to a carrier file.
-* ``Channel.poison_file()`` produces a valid poisoned file for text-based,
+* ``Channel.taint_file()`` produces a valid tainted file for text-based,
   PDF, ICS, CSV, and JSON carriers.
 * ``craft(mode="file")`` works end-to-end.
 * ``Channel.extract()`` / ``extract_file()`` round-trip correctly.
@@ -56,22 +56,22 @@ class TestCarriersModule:
         assert "%PDF" in content
 
 
-# ── text-based channels (default poison_file) ──────────────────────────
+# ── text-based channels (default taint_file) ──────────────────────────
 
 
 class TestTextBasedFileMode:
-    """Verify poison_file works for text-based format channels."""
+    """Verify taint_file works for text-based format channels."""
 
     @pytest.mark.parametrize("channel_name", [
         "webpage", "document", "markdown", "code_comment", "skills",
         "config_file", "log_file", "translation", "unicode_hidden",
         "email_headers",
     ])
-    def test_poison_file_text_based(self, channel_name, tmp_path):
-        """poison_file produces a file with the payload inside."""
+    def test_taint_file_text_based(self, channel_name, tmp_path):
+        """taint_file produces a file with the payload inside."""
         src = carrier_path(channel_name)
         ch = channels.get(channel_name)()
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             assert os.path.isfile(out)
             with open(out, "r", encoding="utf-8", errors="replace") as f:
@@ -85,21 +85,21 @@ class TestTextBasedFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_file_custom_output_path(self, tmp_path):
-        """poison_file respects output_path."""
+    def test_taint_file_custom_output_path(self, tmp_path):
+        """taint_file respects output_path."""
         src = carrier_path("webpage")
         out = str(tmp_path / "custom.html")
-        result = channels.get("webpage")().poison_file(src, PAYLOAD, output_path=out)
+        result = channels.get("webpage")().taint_file(src, PAYLOAD, output_path=out)
         assert result == out
         assert os.path.isfile(out)
 
-    def test_poison_file_default_output_naming(self):
-        """poison_file generates .poisoned extension by default."""
+    def test_taint_file_default_output_naming(self):
+        """taint_file generates .tainted extension by default."""
         src = carrier_path("document")
         ch = channels.get("document")()
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
-            assert ".poisoned." in out or out.endswith(".poisoned.md")
+            assert ".tainted." in out or out.endswith(".tainted.md")
         finally:
             if os.path.exists(out):
                 os.remove(out)
@@ -109,12 +109,12 @@ class TestTextBasedFileMode:
 
 
 class TestStructuredDataFileMode:
-    """Verify poison_file for JSON and CSV files."""
+    """Verify taint_file for JSON and CSV files."""
 
-    def test_poison_json_file(self, tmp_path):
+    def test_taint_json_file(self, tmp_path):
         src = carrier_path("structured_data")
         ch = channels.get("structured_data")(fmt="json", method="field_value")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 data = json.load(f)
@@ -128,10 +128,10 @@ class TestStructuredDataFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_csv_file(self, tmp_path):
+    def test_taint_csv_file(self, tmp_path):
         src = carrier_path("spreadsheet")
         ch = channels.get("structured_data")(fmt="csv", method="field_value")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 content = f.read()
@@ -145,12 +145,12 @@ class TestStructuredDataFileMode:
 
 
 class TestPDFFileMode:
-    """Verify poison_file for real PDF files using pypdf."""
+    """Verify taint_file for real PDF files using pypdf."""
 
-    def test_poison_pdf_metadata_title(self):
+    def test_taint_pdf_metadata_title(self):
         src = carrier_path("pdf_metadata")
         ch = channels.get("pdf_metadata")(field="title")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             from pypdf import PdfReader
             reader = PdfReader(out)
@@ -159,10 +159,10 @@ class TestPDFFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_pdf_metadata_author(self):
+    def test_taint_pdf_metadata_author(self):
         src = carrier_path("pdf_metadata")
         ch = channels.get("pdf_metadata")(field="author")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             from pypdf import PdfReader
             reader = PdfReader(out)
@@ -171,10 +171,10 @@ class TestPDFFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_pdf_preserves_pages(self):
+    def test_taint_pdf_preserves_pages(self):
         src = carrier_path("pdf_metadata")
         ch = channels.get("pdf_metadata")(field="title")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             from pypdf import PdfReader
             reader = PdfReader(out)
@@ -188,12 +188,12 @@ class TestPDFFileMode:
 
 
 class TestCalendarFileMode:
-    """Verify poison_file for real .ics files."""
+    """Verify taint_file for real .ics files."""
 
-    def test_poison_ics_summary(self):
+    def test_taint_ics_summary(self):
         src = carrier_path("calendar_event")
         ch = channels.get("calendar_event")(field="title")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 content = f.read()
@@ -206,10 +206,10 @@ class TestCalendarFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_ics_description(self):
+    def test_taint_ics_description(self):
         src = carrier_path("calendar_event")
         ch = channels.get("calendar_event")(field="description")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 content = f.read()
@@ -224,12 +224,12 @@ class TestCalendarFileMode:
 
 
 class TestSpreadsheetFileMode:
-    """Verify poison_file for CSV files."""
+    """Verify taint_file for CSV files."""
 
-    def test_poison_csv_cell_value(self):
+    def test_taint_csv_cell_value(self):
         src = carrier_path("spreadsheet")
         ch = channels.get("spreadsheet")(method="cell_value")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 content = f.read()
@@ -238,10 +238,10 @@ class TestSpreadsheetFileMode:
             if os.path.exists(out):
                 os.remove(out)
 
-    def test_poison_csv_cell_comment(self):
+    def test_taint_csv_cell_comment(self):
         src = carrier_path("spreadsheet")
         ch = channels.get("spreadsheet")(method="cell_comment")
-        out = ch.poison_file(src, PAYLOAD)
+        out = ch.taint_file(src, PAYLOAD)
         try:
             with open(out, "r") as f:
                 content = f.read()
@@ -314,7 +314,7 @@ class TestCraftFileMode:
                 os.remove(r.output_path)
 
     def test_craft_file_mode_delivery_is_file_content(self):
-        """In file mode, delivery is the content of the poisoned file."""
+        """In file mode, delivery is the content of the tainted file."""
         r = craft(PAYLOAD, channel="webpage", mode="file")
         try:
             assert isinstance(r.delivery, str)

@@ -76,7 +76,7 @@ class Defense(ABC):
         Parameters
         ----------
         prompt:
-            The (possibly poisoned) prompt containing untrusted data.
+            The (possibly tainted) prompt containing untrusted data.
         instruction:
             The original benign instruction, when the caller can separate it
             from the data. Defenses that need to re-assert the task
@@ -101,30 +101,30 @@ class Channel(ABC):
     email). The two are orthogonal and compose freely: word a payload with an
     attack, then embed it with a channel.
 
-    Subclasses implement :meth:`poison`, which returns the poisoned data
+    Subclasses implement :meth:`taint`, which returns the tainted data
     artifact itself (the web page / document / email). This is what an
     attacker actually controls and what an agent's compromised tool would
     return. The concrete :meth:`embed` is a convenience that prepends an
-    instruction to the poisoned artifact to form a full prompt.
+    instruction to the tainted artifact to form a full prompt.
 
     Two delivery modes are supported:
 
-    * **text mode** (:meth:`poison`) — operates on a plain-text representation
+    * **text mode** (:meth:`taint`) — operates on a plain-text representation
       of the artifact. This is the simulation default and requires no real
       files.
-    * **file mode** (:meth:`poison_file`) — operates on a *real file*
-      (``.html``, ``.eml``, ``.pdf``, ``.ics``, …). The poisoned output is a
+    * **file mode** (:meth:`taint_file`) — operates on a *real file*
+      (``.html``, ``.eml``, ``.pdf``, ``.ics``, …). The tainted output is a
       file whose format matches what a real agent would encounter. For binary
       formats (PDF, XLSX) subclasses may use helper libraries; the default
-      implementation reads the file as text and delegates to :meth:`poison`.
+      implementation reads the file as text and delegates to :meth:`taint`.
     """
 
     #: Stable identifier used by the registry and in results/logs.
     name: str = "channel"
 
     @abstractmethod
-    def poison(self, data: str, payload: str) -> str:
-        """Hide ``payload`` inside ``data``, returning the poisoned artifact.
+    def taint(self, data: str, payload: str) -> str:
+        """Hide ``payload`` inside ``data``, returning the tainted artifact.
 
         Parameters
         ----------
@@ -138,19 +138,19 @@ class Channel(ABC):
         Returns
         -------
         str
-            The poisoned artifact — the data with the payload hidden inside,
+            The tainted artifact — the data with the payload hidden inside,
             **not** a full prompt. Feed this to an agent's compromised tool,
             or use :meth:`embed` to turn it into a prompt.
         """
         raise NotImplementedError
 
-    def poison_file(self, path: str, payload: str, output_path: Optional[str] = None) -> str:
+    def taint_file(self, path: str, payload: str, output_path: Optional[str] = None) -> str:
         """Hide ``payload`` inside a *real file*, returning the output path.
 
         Reads the carrier file at *path*, injects the payload, and writes
-        the poisoned file. For text-based formats (HTML, Markdown, YAML,
+        the tainted file. For text-based formats (HTML, Markdown, YAML,
         CSV, Python, etc.) the default implementation reads the file as
-        text, calls :meth:`poison`, and writes the result. Subclasses that
+        text, calls :meth:`taint`, and writes the result. Subclasses that
         target binary formats (PDF, XLSX) override this to use format-
         specific libraries.
 
@@ -161,36 +161,36 @@ class Channel(ABC):
         payload:
             The injected instruction to hide.
         output_path:
-            Where to write the poisoned file. When ``None``, writes to
-            ``<path>.poisoned.<ext>``.
+            Where to write the tainted file. When ``None``, writes to
+            ``<path>.tainted.<ext>``.
 
         Returns
         -------
         str
-            The path to the poisoned file.
+            The path to the tainted file.
         """
         with open(path, "r", encoding="utf-8") as f:
             data = f.read()
-        poisoned = self.poison(data, payload)
+        tainted = self.taint(data, payload)
         if output_path is None:
             base, ext = os.path.splitext(path)
-            output_path = f"{base}.poisoned{ext}"
+            output_path = f"{base}.tainted{ext}"
         with open(output_path, "w", encoding="utf-8") as f:
-            f.write(poisoned)
+            f.write(tainted)
         return output_path
 
-    def extract(self, poisoned_data: str) -> str:
-        """Extract the visible text a model would see from a poisoned artifact.
+    def extract(self, tainted_data: str) -> str:
+        """Extract the visible text a model would see from a tainted artifact.
 
         In text mode this is typically the identity (the artifact *is* text).
         Subclasses for structured formats may parse the artifact to produce
         the model-visible text. Useful for defenders and for verifying that
         a payload is present.
         """
-        return poisoned_data
+        return tainted_data
 
     def extract_file(self, path: str) -> str:
-        """Read a poisoned file and return the text a model would see.
+        """Read a tainted file and return the text a model would see.
 
         Default implementation reads the file as text and calls
         :meth:`extract`. Binary-format subclasses override to parse.
@@ -199,12 +199,12 @@ class Channel(ABC):
             return self.extract(f.read())
 
     def embed(self, instruction: str, data: str, payload: str) -> str:
-        """Poison ``data`` and prepend ``instruction`` to form a full prompt.
+        """Taint ``data`` and prepend ``instruction`` to form a full prompt.
 
         Convenience for the non-agent case: returns ``instruction`` followed
-        by the poisoned artifact — the full prompt a target would receive.
+        by the tainted artifact — the full prompt a target would receive.
         """
-        return f"{instruction}\n{self.poison(data, payload)}"
+        return f"{instruction}\n{self.taint(data, payload)}"
 
     def __call__(self, instruction: str, data: str, payload: str) -> str:
         return self.embed(instruction, data, payload)

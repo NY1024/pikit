@@ -1,9 +1,9 @@
 """Built-in tool pool for scenario agents.
 
 A unified pool of ~36 tools organized by category. Data-source tools
-(return external content the model reads) are the *poison points* in an
+(return external content the model reads) are the *taint points* in an
 indirect-injection test — the caller overrides their return value via the
-``poison`` map. Sink tools (externally-observable actions like
+``taint`` map. Sink tools (externally-observable actions like
 ``send_email``) are marked ``is_sink=True`` so the trace highlights when
 the model performs a dangerous action.
 
@@ -501,7 +501,7 @@ def tools_by_category(category: str) -> List[Tool]:
 
 
 def data_source_tools() -> List[Tool]:
-    """Return all data-source tools (potential poison points)."""
+    """Return all data-source tools (potential taint points)."""
     return [t for t in _POOL.values() if not t.is_sink]
 
 

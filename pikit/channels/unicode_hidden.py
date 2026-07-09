@@ -1,7 +1,7 @@
 """Unicode-hidden channel: encode the payload as invisible characters.
 
 The payload is rendered as characters that occupy no visible space, so the
-poisoned data looks identical to the clean data to a human, yet the model
+tainted data looks identical to the clean data to a human, yet the model
 still receives the hidden instruction in its token stream.
 
 Two schemes are provided, both losslessly decodable (see :func:`decode`):
@@ -84,7 +84,7 @@ class UnicodeHiddenChannel(Channel):
             return _to_zero_width(payload)
         return _to_unicode_tags(payload)
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         hidden = self._encode(payload)
         if self.position == "start":
             return hidden + data

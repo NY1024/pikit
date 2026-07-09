@@ -64,7 +64,7 @@ from . import register
 class MyChannel(Channel):
     """Hide payload in a custom data format."""
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         # Hide the payload inside the data artifact
         return f"{data}\n<!-- {payload} -->"
 ```
@@ -88,13 +88,13 @@ _SYSTEM = "You are a custom assistant."
 
 @register("my_scenario")
 class MyScenarioAgent(ToolAgent):
-    """Custom scenario. Poison point: some_tool. Sink: sink_tool."""
+    """Custom scenario. Taint point: some_tool. Sink: sink_tool."""
 
     def __init__(
         self,
         target: Target,
         *,
-        poison: Optional[Dict[str, str]] = None,
+        taint: Optional[Dict[str, str]] = None,
         system: Optional[str] = None,
         defenses: Optional[DefenseHooks] = None,
         max_steps: int = 8,
@@ -102,7 +102,7 @@ class MyScenarioAgent(ToolAgent):
         super().__init__(
             target,
             tools=[some_tool, sink_tool],
-            poison=poison,
+            taint=taint,
             system=system or _SYSTEM,
             defenses=defenses,
             max_steps=max_steps,
@@ -132,7 +132,7 @@ class Channel(ABC):
     name: str = "channel"
 
     @abstractmethod
-    def poison(self, data: str, payload: str) -> str: ...
+    def taint(self, data: str, payload: str) -> str: ...
 
 class Target(ABC):
     @abstractmethod

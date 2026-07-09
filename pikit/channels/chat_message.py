@@ -39,9 +39,9 @@ class ChatMessageChannel(Channel):
         # thread_reply
         return f"  [reply] {payload}"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         hidden = self._hide(payload)
-        # Append the poisoned message to the channel history.
+        # Append the tainted message to the channel history.
         # If data already looks like a message list, append a new entry;
         # otherwise wrap it.
         lines = data.strip().splitlines()

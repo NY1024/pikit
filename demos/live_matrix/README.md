@@ -27,7 +27,7 @@ See the repo README's "Configuring model access" section for details.
 | script | covers |
 |---|---|
 | `test_attacks_live.py` | every attack (direct injection: benign request + payload → model) |
-| `test_defenses_live.py` | every defense (poisoned prompt, undefended vs hardened → model) |
+| `test_defenses_live.py` | every defense (tainted prompt, undefended vs hardened → model) |
 | `test_channels_live.py` | every channel (payload hidden in the matching sample → model) |
 | `test_agents_live.py` | every agent (chat/email/rag/browser/coding/tool), real tool loop |
 | `run_all.py` | all of the above in sequence |
@@ -47,9 +47,9 @@ python demos/live_matrix/run_all.py
 ## Reading the output
 
 - Attack/defense/channel scripts print `-> injection obeyed? YES/no` based on
-  whether the reply contains the marker string (`HACKED`). This is a rough
+  whether the reply contains the canary string (`HACKED`). This is a rough
   eyeball signal, **not** a scorer — pikit ships no evaluator.
-- Agent scripts print a full `Trace`; look for `[poisoned]` (artifact
+- Agent scripts print a full `Trace`; look for `[tainted]` (artifact
   delivered) and `SINK FIRED` (observable malicious action), then
   `-> sink fired: ...`.
 

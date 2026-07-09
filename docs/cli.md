@@ -18,7 +18,7 @@ understanding what each method does before spending tokens.
 
 ```bash
 pikit show attacks     # see every attack wording the same task
-pikit show defenses    # see each defense hardening a poisoned prompt
+pikit show defenses    # see each defense hardening a tainted prompt
 pikit show channels    # see where each channel hides the payload
 ```
 
@@ -42,7 +42,7 @@ Options:
 | `--defense` | Defense key (or `none`) |
 | `--task` | Attacker's injected instruction |
 | `--user-message` | Normal user request |
-| `--data-sample` | Sample to poison (webpage/email/document/code/skill) |
+| `--data-sample` | Sample to taint (webpage/email/document/code/skill) |
 | `--model` | Model id override |
 | `--config` | TOML config file |
 
@@ -92,7 +92,7 @@ agents   = ["chat"]
 
 [judge]
 type = "rule"       # "rule", "llm", or "none"
-marker = "HACKED"
+canary = "HACKED"
 require_sink = false
 ```
 

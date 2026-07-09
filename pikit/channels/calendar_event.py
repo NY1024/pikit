@@ -5,7 +5,7 @@ metadata — title, description, location, attendee notes. A payload
 planted in one of these fields is ingested verbatim when the agent
 summarises, triages, or acts on the event.
 
-**File mode**: :meth:`poison_file` operates on real ``.ics`` files using
+**File mode**: :meth:`taint_file` operates on real ``.ics`` files using
 iCalendar standard field names (``SUMMARY``, ``DESCRIPTION``, ``LOCATION``,
 ``NOTE``).
 """
@@ -59,7 +59,7 @@ class CalendarEventChannel(Channel):
             )
         self.field = field
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         field_name = self._FIELD_MAP[self.field]
         lines = data.splitlines()
         injected = False
@@ -77,7 +77,7 @@ class CalendarEventChannel(Channel):
             out.append(f"{field_name}: {payload}")
         return "\n".join(out)
 
-    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+    def taint_file(self, path: str, payload: str, output_path=None) -> str:
         """Inject the payload into a real ``.ics`` calendar file.
 
         Uses iCalendar standard property names (``SUMMARY``, ``DESCRIPTION``,
@@ -111,7 +111,7 @@ class CalendarEventChannel(Channel):
 
         if output_path is None:
             base, ext = os.path.splitext(path)
-            output_path = f"{base}.poisoned{ext}"
+            output_path = f"{base}.tainted{ext}"
         with open(output_path, "w", encoding="utf-8") as f:
             f.write("\n".join(out) + "\n")
         return output_path

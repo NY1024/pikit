@@ -244,18 +244,18 @@ class TestScenarioAgentsWithPool:
     def test_all_scenarios_run_with_mock(self):
         """Each scenario agent should run without error on MockTarget.
 
-        Uses the ``poison`` map so the mock's heuristic tool call (which
+        Uses the ``taint`` map so the mock's heuristic tool call (which
         passes empty args) doesn't hit a real function requiring arguments.
         """
         for name in ["browser", "email", "coding", "rag"]:
             cls = get_agent(name)
-            # Find the first data-source tool name to poison it.
+            # Find the first data-source tool name to taint it.
             tmp_agent = cls(MockTarget())
             first_source = next(
                 (t.name for t in tmp_agent.tools if not t.is_sink),
                 tmp_agent.tools[0].name if tmp_agent.tools else "fetch_url",
             )
-            agent = cls(MockTarget(), poison={first_source: "poisoned"})
+            agent = cls(MockTarget(), taint={first_source: "tainted"})
             trace = agent.run("test message")
             assert trace is not None
             assert len(trace.steps) > 0
@@ -265,20 +265,20 @@ class TestScenarioAgentsWithPool:
 
 
 class TestExpandedAttackSurface:
-    """Verify the expanded tool pool provides more poison points than before."""
+    """Verify the expanded tool pool provides more taint points than before."""
 
-    def test_total_poison_points_across_scenarios(self):
+    def test_total_taint_points_across_scenarios(self):
         """Count unique data-source tools across all scenarios."""
-        all_poison = set()
+        all_taint = set()
         for bundle in [BROWSER_TOOLS, EMAIL_TOOLS, CODING_TOOLS, RAG_TOOLS]:
             tools = get_tools(bundle)
             for t in tools:
                 if not t.is_sink:
-                    all_poison.add(t.name)
-        # Previously each scenario had 2-3 poison points (~8 total unique).
+                    all_taint.add(t.name)
+        # Previously each scenario had 2-3 taint points (~8 total unique).
         # Now we expect significantly more.
-        assert len(all_poison) >= 12, (
-            f"Expected >=12 unique poison points, got {len(all_poison)}: {all_poison}"
+        assert len(all_taint) >= 12, (
+            f"Expected >=12 unique taint points, got {len(all_taint)}: {all_taint}"
         )
 
     def test_total_sinks_across_scenarios(self):

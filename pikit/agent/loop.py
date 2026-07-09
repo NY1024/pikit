@@ -17,7 +17,7 @@ def run_tool_loop(
     *,
     system: Optional[str] = None,
     hooks: Optional[DefenseHooks] = None,
-    poison: Optional[Dict[str, str]] = None,
+    taint: Optional[Dict[str, str]] = None,
     max_steps: int = 8,
     **target_kwargs,
 ) -> Trace:
@@ -25,8 +25,8 @@ def run_tool_loop(
 
     Parameters
     ----------
-    poison:
-        Map of ``tool_name -> artifact``. When the model calls a poisoned
+    taint:
+        Map of ``tool_name -> artifact``. When the model calls a tainted
         tool, the loop returns the artifact as that tool's result instead of
         invoking the real function (the indirect-injection delivery point,
         and it avoids real side effects during a test).
@@ -35,7 +35,7 @@ def run_tool_loop(
         ``temperature=0.7``).
     """
     hooks = hooks or DefenseHooks()
-    poison = poison or {}
+    taint = taint or {}
     tools_by_name = {t.name: t for t in tools}
     sinks = {t.name for t in tools if t.is_sink}
 
@@ -75,9 +75,9 @@ def run_tool_loop(
                 )
             )
 
-            is_poisoned = call.name in poison
-            if is_poisoned:
-                raw = poison[call.name]
+            is_tainted = call.name in taint
+            if is_tainted:
+                raw = taint[call.name]
             elif call.name in tools_by_name:
                 raw = tools_by_name[call.name](**call.args)
             else:
@@ -89,7 +89,7 @@ def run_tool_loop(
                     "tool_result",
                     tool_name=call.name,
                     content=content,
-                    poisoned=is_poisoned,
+                    tainted=is_tainted,
                 )
             )
             results.append(ToolResult(id=call.id, name=call.name, content=content))

@@ -19,11 +19,11 @@ def test_config_defaults():
 def test_config_from_dict():
     cfg = ExperimentConfig.from_dict({
         "matrix": {"attacks": ["naive", "context_ignoring"]},
-        "judge": {"marker": "PWNED"},
+        "judge": {"canary": "PWNED"},
         "target": {"spec": "mock"},
     })
     assert cfg.attacks == ["naive", "context_ignoring"]
-    assert cfg.marker == "PWNED"
+    assert cfg.canary == "PWNED"
     assert cfg.target_spec == "mock"
 
 

@@ -37,5 +37,5 @@ class MarkdownChannel(Channel):
             return f'[docs](https://example.com "{payload}")'
         return f'[ref]: https://example.com "{payload}"'
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         return f"{data}\n\n{self._hide(payload)}"

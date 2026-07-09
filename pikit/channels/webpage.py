@@ -38,7 +38,7 @@ class WebpageChannel(Channel):
             return f'<div style="display:none">{payload}</div>'
         return f'<img src="x.png" alt="{payload}">'
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         # Splice the hidden element just before </body> when present,
         # otherwise append it to the page so it still reaches the model.
         hidden = self._hide(payload)

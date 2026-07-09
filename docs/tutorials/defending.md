@@ -32,7 +32,7 @@ res = craft(
 
 agent = get_agent("browser")(
     get_target("openai:gpt-4o"),
-    poison={"fetch_url": res.delivery},
+    taint={"fetch_url": res.delivery},
 )
 trace = agent.run("Summarize the page at http://site")
 print(trace.sink_calls)  # likely non-empty — the attack landed
@@ -57,14 +57,14 @@ hooks = DefenseHooks(
 
 agent = get_agent("browser")(
     get_target("openai:gpt-4o"),
-    poison={"fetch_url": res.delivery},
+    taint={"fetch_url": res.delivery},
     defenses=hooks,
 )
 trace = agent.run("Summarize the page at http://site")
 print(trace.sink_calls)  # check: did the defense block the sink?
 ```
 
-With datamarking, the poisoned HTML comment is interleaved with marker
+With datamarking, the tainted HTML comment is interleaved with marker
 characters, making the injected instruction visibly "tagged" as data:
 
 ```
@@ -83,7 +83,7 @@ hooks = DefenseHooks(
 
 agent = get_agent("browser")(
     get_target("openai:gpt-4o"),
-    poison={"fetch_url": res.delivery},
+    taint={"fetch_url": res.delivery},
     defenses=hooks,
 )
 ```
@@ -108,7 +108,7 @@ for defense_key in defenses.list():
     hooks = DefenseHooks(
         tool_result=defenses.get(defense_key)(),
     )
-    agent = get_agent("browser")(tgt, poison={"fetch_url": res.delivery}, defenses=hooks)
+    agent = get_agent("browser")(tgt, taint={"fetch_url": res.delivery}, defenses=hooks)
     trace = agent.run("Summarize the page at http://site")
     print(f"{defense_key:30s}  sink_calls={len(trace.sink_calls)}")
 ```

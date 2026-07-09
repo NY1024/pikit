@@ -1,7 +1,7 @@
 """Realistic-but-fictional sample artifacts for demos and tests.
 
 These are the *clean* carriers an agent would legitimately read. In a demo
-you poison one with ``craft(..., data=SAMPLE_WEBPAGE)`` and watch what the
+you taint one with ``craft(..., data=SAMPLE_WEBPAGE)`` and watch what the
 agent does. They are deliberately benign and self-contained — no real URLs,
 addresses, secrets, or exploitable code.
 
@@ -345,7 +345,7 @@ SAMPLE_WEB_SEARCH = """\
 ### 1. OWASP Top 10 for LLM Applications (2025)
 **URL:** https://owasp.org/llm-top-10
 **Snippet:** The OWASP Top 10 for LLMs covers prompt injection, insecure
-output handling, training data poisoning, and more.
+output handling, training data tainting, and more.
 
 ### 2. NIST AI Risk Management Framework
 **URL:** https://nist.gov/ai-rmf

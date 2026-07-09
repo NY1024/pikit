@@ -80,7 +80,7 @@ def _cmd_show(args):
             print(f"{r.delivery}\n")
     elif kind == "defenses":
         prompt = f"{_SHOW_INSTRUCTION} {_SHOW_DATA}"
-        print(f"original (poisoned) prompt:\n{prompt}\n")
+        print(f"original (tainted) prompt:\n{prompt}\n")
         for name in defenses.list():
             hardened = defenses.get(name)().apply(prompt, instruction=_SHOW_INSTRUCTION)
             print(f"--- {name} ---")
@@ -88,7 +88,7 @@ def _cmd_show(args):
     elif kind == "channels":
         for name in channels.list():
             data = _SHOW_CARRIERS.get(name, "Some clean data.")
-            artifact = channels.get(name)().poison(data, _SHOW_PAYLOAD)
+            artifact = channels.get(name)().taint(data, _SHOW_PAYLOAD)
             print(f"===== {name} (text mode) =====")
             print(artifact)
             if name == "unicode_hidden":
@@ -113,7 +113,7 @@ _AGENT_DEFAULTS = {
     "file_manager": ("read_file",       "document",     "document",             "List the files in the project directory."),
 }
 
-_CODING_POISON_BY_CHANNEL = {"skills": "load_skill"}
+_CODING_TAINT_BY_CHANNEL = {"skills": "load_skill"}
 
 _SAMPLE_MAP = {
     "webpage": samples.SAMPLE_WEBPAGE,
@@ -167,7 +167,7 @@ def _cmd_run(args):
         channel_name = ""
 
     is_direct = agent_name == "chat"
-    poison_tool, def_channel, def_sample, def_msg = _AGENT_DEFAULTS[agent_name]
+    taint_tool, def_channel, def_sample, def_msg = _AGENT_DEFAULTS[agent_name]
 
     tgt = get_target(f"openai:{model}")
     channel = None if is_direct else (channel_name or def_channel)
@@ -191,14 +191,14 @@ def _cmd_run(args):
             res = craft(task, attack=attack_name, channel=channel, mode="file")
         else:
             res = craft(task, attack=attack_name, channel=channel, data=data)
-        ptool = poison_tool
+        ptool = taint_tool
         if agent_name == "coding":
-            ptool = _CODING_POISON_BY_CHANNEL.get(channel, "read_file")
+            ptool = _CODING_TAINT_BY_CHANNEL.get(channel, "read_file")
         hooks = DefenseHooks()
         if defense_name:
             dfn = defenses.get(defense_name)()
             hooks = DefenseHooks(tool_result=dfn)
-        agent = get_agent(agent_name)(tgt, poison={ptool: res.delivery}, defenses=hooks, max_steps=6)
+        agent = get_agent(agent_name)(tgt, taint={ptool: res.delivery}, defenses=hooks, max_steps=6)
         user_message = args.user_message or def_msg
 
     print(f"\n--- payload ---\n{res.payload}")
@@ -289,7 +289,7 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--defense", help="Defense key (or 'none').")
     p_run.add_argument("--task", help="Attacker's injected instruction.")
     p_run.add_argument("--user-message", help="Normal user request.")
-    p_run.add_argument("--data-sample", help="Sample to poison (webpage/email/document/code/skill).")
+    p_run.add_argument("--data-sample", help="Sample to taint (webpage/email/document/code/skill).")
     p_run.add_argument("--mode", choices=["text", "file"], default="text",
                         help="Carrier mode: 'text' (simulated text) or 'file' (real file).")
     p_run.add_argument("--model", help="Model id override.")

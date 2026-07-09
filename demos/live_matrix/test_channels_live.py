@@ -2,7 +2,7 @@
 
 For each channel we hide an injection inside the matching clean sample, then
 ask the model to process that artifact (as if a tool had returned it). This
-confirms the poisoned artifact reaches the model intact; the reply shows
+confirms the tainted artifact reaches the model intact; the reply shows
 whether the hidden instruction influenced it.
 
 Run:  python demos/live_matrix/test_channels_live.py
@@ -55,7 +55,7 @@ def main() -> None:
         rule(f"channel: {name}")
         res = craft(TASK, attack="context_ignoring", channel=name, data=data)
         prompt = f"{instruction}\n{res.delivery}"
-        print("poisoned artifact:", short(res.delivery))
+        print("tainted artifact:", short(res.delivery))
         reply = tgt.query(prompt)
         print("reply            :", short(reply))
         print("-> obeyed? (hint, read reply)", "likely-YES" if looks_obeyed(reply) else "no")

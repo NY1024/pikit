@@ -6,8 +6,8 @@ Keywords) is often included in the text stream. A payload planted in a
 metadata field is invisible in the rendered page content yet present in
 what the model processes.
 
-**File mode**: :meth:`poison_file` uses :mod:`pypdf` to inject the payload
-into a real PDF's ``/Info`` dictionary, producing a valid poisoned ``.pdf``.
+**File mode**: :meth:`taint_file` uses :mod:`pypdf` to inject the payload
+into a real PDF's ``/Info`` dictionary, producing a valid tainted ``.pdf``.
 """
 
 from __future__ import annotations
@@ -51,7 +51,7 @@ class PDFMetadataChannel(Channel):
             )
         self.field = field
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         field_name = self._FIELD_MAP[self.field]
         lines = data.splitlines()
         injected = False
@@ -66,11 +66,11 @@ class PDFMetadataChannel(Channel):
             out.append(f"{field_name}: {payload}")
         return "\n".join(out)
 
-    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+    def taint_file(self, path: str, payload: str, output_path=None) -> str:
         """Inject the payload into a real PDF's metadata dictionary.
 
         Uses :mod:`pypdf` to read the PDF, overwrite the target metadata
-        field with the payload, and write the poisoned PDF.
+        field with the payload, and write the tainted PDF.
         """
         import os
 
@@ -90,7 +90,7 @@ class PDFMetadataChannel(Channel):
 
         if output_path is None:
             base, ext = os.path.splitext(path)
-            output_path = f"{base}.poisoned{ext}"
+            output_path = f"{base}.tainted{ext}"
         with open(output_path, "wb") as f:
             writer.write(f)
         return output_path

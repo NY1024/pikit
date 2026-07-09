@@ -2,7 +2,7 @@
 """Generate a clean PDF carrier file with metadata for pikit.
 
 The PDF is minimal but valid — it has a visible page with text content and
-metadata fields (Title, Author, Subject, Keywords) that can be poisoned.
+metadata fields (Title, Author, Subject, Keywords) that can be tainted.
 """
 import struct
 

@@ -38,7 +38,7 @@ class StructuredDataChannel(Channel):
         self.fmt = fmt
         self.method = method
 
-    def _poison_json(self, data: str, payload: str) -> str:
+    def _taint_json(self, data: str, payload: str) -> str:
         if self.method == "comment":
             try:
                 obj = _json.loads(data)
@@ -86,7 +86,7 @@ class StructuredDataChannel(Channel):
             obj = {"_value": obj, "_note": payload}
         return _json.dumps(obj, indent=2, ensure_ascii=False)
 
-    def _poison_delimited(self, data: str, payload: str, sep: str) -> str:
+    def _taint_delimited(self, data: str, payload: str, sep: str) -> str:
         lines = data.splitlines()
         if not lines:
             lines = [""]
@@ -114,17 +114,17 @@ class StructuredDataChannel(Channel):
             lines[0] = f"{lines[0]}{sep}{payload}"
         return "\n".join(lines)
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         if self.fmt == "json":
-            return self._poison_json(data, payload)
+            return self._taint_json(data, payload)
         sep = "," if self.fmt == "csv" else "\t"
-        return self._poison_delimited(data, payload, sep)
+        return self._taint_delimited(data, payload, sep)
 
-    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+    def taint_file(self, path: str, payload: str, output_path=None) -> str:
         """Inject the payload into a real structured-data file.
 
         Detects the format from the file extension (``.json``, ``.csv``,
-        ``.tsv``) and injects accordingly, writing a valid poisoned file.
+        ``.tsv``) and injects accordingly, writing a valid tainted file.
         """
         import os
 
@@ -134,7 +134,7 @@ class StructuredDataChannel(Channel):
             old_fmt = self.fmt
             self.fmt = "json"
             try:
-                result = super().poison_file(path, payload, output_path)
+                result = super().taint_file(path, payload, output_path)
             finally:
                 self.fmt = old_fmt
             return result
@@ -142,7 +142,7 @@ class StructuredDataChannel(Channel):
             old_fmt = self.fmt
             self.fmt = "csv"
             try:
-                result = super().poison_file(path, payload, output_path)
+                result = super().taint_file(path, payload, output_path)
             finally:
                 self.fmt = old_fmt
             return result
@@ -150,9 +150,9 @@ class StructuredDataChannel(Channel):
             old_fmt = self.fmt
             self.fmt = "tsv"
             try:
-                result = super().poison_file(path, payload, output_path)
+                result = super().taint_file(path, payload, output_path)
             finally:
                 self.fmt = old_fmt
             return result
         else:
-            return super().poison_file(path, payload, output_path)
+            return super().taint_file(path, payload, output_path)

@@ -43,7 +43,7 @@ class CodeCommentChannel(Channel):
             return f"// {one_line}"
         return f"/* {one_line} */"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         comment = self._hide(payload)
         if self.position == "start":
             return f"{comment}\n{data}"

@@ -1,6 +1,6 @@
 """Live smoke test: every DEFENSE against the real model.
 
-We take one poisoned prompt (a benign instruction plus data that carries an
+We take one tainted prompt (a benign instruction plus data that carries an
 injection), harden it with each defense, and send both the undefended and
 defended versions to the model. Compare the replies to see the defense's
 effect. Defenses are pure prompt transforms — the model call is only to

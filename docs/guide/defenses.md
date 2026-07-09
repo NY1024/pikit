@@ -56,7 +56,7 @@ defenses.get("delimiters")().apply(
 ### `sandwich`
 
 Restates the original instruction *after* the untrusted data, so the model
-encounters the real task both before and after the potentially poisoned
+encounters the real task both before and after the potentially tainted
 content.
 
 ```python

@@ -5,7 +5,7 @@ read cell values, formulas, and comments. A payload planted in a cell
 value, a cell comment, or a sheet name blends in with legitimate data
 and is processed verbatim by the model.
 
-**File mode**: :meth:`poison_file` operates on real ``.csv`` files.
+**File mode**: :meth:`taint_file` operates on real ``.csv`` files.
 For ``.xlsx`` files, :mod:`openpyxl` is used to inject cell values and
 comments.
 """
@@ -41,7 +41,7 @@ class SpreadsheetChannel(Channel):
             )
         self.method = method
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         lines = data.splitlines()
         out = []
         injected = False
@@ -81,7 +81,7 @@ class SpreadsheetChannel(Channel):
 
         return "\n".join(out)
 
-    def poison_file(self, path: str, payload: str, output_path=None) -> str:
+    def taint_file(self, path: str, payload: str, output_path=None) -> str:
         """Inject the payload into a real spreadsheet file.
 
         Supports ``.csv`` files (text-based) and ``.xlsx`` files (via
@@ -91,17 +91,17 @@ class SpreadsheetChannel(Channel):
 
         if output_path is None:
             base, e = os.path.splitext(path)
-            output_path = f"{base}.poisoned{e}"
+            output_path = f"{base}.tainted{e}"
 
         if ext == ".csv":
-            return self._poison_csv(path, payload, output_path)
+            return self._taint_csv(path, payload, output_path)
         elif ext == ".xlsx":
-            return self._poison_xlsx(path, payload, output_path)
+            return self._taint_xlsx(path, payload, output_path)
         else:
             # Fall back to text mode for unknown extensions.
-            return super().poison_file(path, payload, output_path)
+            return super().taint_file(path, payload, output_path)
 
-    def _poison_csv(self, path: str, payload: str, output_path: str) -> str:
+    def _taint_csv(self, path: str, payload: str, output_path: str) -> str:
         """Inject payload into a CSV file."""
         with open(path, "r", encoding="utf-8") as f:
             lines = f.read().splitlines()
@@ -127,7 +127,7 @@ class SpreadsheetChannel(Channel):
             f.write("\n".join(lines) + "\n")
         return output_path
 
-    def _poison_xlsx(self, path: str, payload: str, output_path: str) -> str:
+    def _taint_xlsx(self, path: str, payload: str, output_path: str) -> str:
         """Inject payload into an XLSX file using openpyxl."""
         from openpyxl import load_workbook
         from openpyxl.comments import Comment

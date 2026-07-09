@@ -1,6 +1,6 @@
 """RAG question-answering scenario with a rich tool pool.
 
-The model answers a question over retrieved documents. Poison points:
+The model answers a question over retrieved documents. Taint points:
 ``search_kb``, ``get_document``, ``read_file``. The "sink" here is the
 final answer itself — whether the model complies with the injected
 instruction is observed in ``trace.final_text``. An optional ``post_form``
@@ -40,14 +40,14 @@ _DEFAULT_TASK = "What are the Q3 milestones for the product roadmap?"
 class RagQaAgent(ToolAgent):
     """A RAG QA agent with a rich tool pool.
 
-    Poison points: ``search_kb`` / ``get_document`` / ``read_file``.
+    Taint points: ``search_kb`` / ``get_document`` / ``read_file``.
     Sinks: final answer / ``post_form``.
 
     Parameters
     ----------
     target:
         The model backend.
-    poison:
+    taint:
         Map of ``tool_name -> artifact``.
     tools:
         Override the default tool set. If ``None``, uses :data:`RAG_TOOLS`.
@@ -63,7 +63,7 @@ class RagQaAgent(ToolAgent):
         self,
         target: Target,
         *,
-        poison: Optional[Dict[str, str]] = None,
+        taint: Optional[Dict[str, str]] = None,
         tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         defenses: Optional[DefenseHooks] = None,
@@ -78,7 +78,7 @@ class RagQaAgent(ToolAgent):
         super().__init__(
             target,
             tools=_tools,
-            poison=poison,
+            taint=taint,
             system=_system,
             defenses=defenses,
             max_steps=max_steps,

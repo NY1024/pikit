@@ -1,7 +1,7 @@
 """File manager scenario: read files, then act — sink is ``write_file``.
 
 Models a file-management agent that reads, searches, and inspects files,
-and can write, delete, or move them. Poison points: ``read_file``,
+and can write, delete, or move them. Taint points: ``read_file``,
 ``list_directory``, ``search_files``, ``get_file_info``. Sinks:
 ``write_file``, ``delete_file``, ``move_file``.
 
@@ -39,7 +39,7 @@ _DEFAULT_TASK = "List the files in the project directory and show me what's ther
 class FileManagerAgent(ToolAgent):
     """A file-management agent with a rich tool pool.
 
-    Poison points: ``read_file`` / ``list_directory`` / ``search_files`` /
+    Taint points: ``read_file`` / ``list_directory`` / ``search_files`` /
     ``get_file_info`` / ``search_kb``.
     Sinks: ``write_file`` / ``delete_file`` / ``move_file``.
     """
@@ -48,7 +48,7 @@ class FileManagerAgent(ToolAgent):
         self,
         target: Target,
         *,
-        poison: Optional[Dict[str, str]] = None,
+        taint: Optional[Dict[str, str]] = None,
         tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         defenses: Optional[DefenseHooks] = None,
@@ -63,7 +63,7 @@ class FileManagerAgent(ToolAgent):
         super().__init__(
             target,
             tools=_tools,
-            poison=poison,
+            taint=taint,
             system=_system,
             defenses=defenses,
             max_steps=max_steps,

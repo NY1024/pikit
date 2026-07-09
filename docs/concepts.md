@@ -1,7 +1,9 @@
 # Concepts
 
 Understanding pikit's design comes down to four orthogonal dimensions and a
-few key terms.
+few key terms. For detailed definitions of **taint point**, **sink**,
+**canary**, and **tainted artifact**, see the [Terminology](terminology.md)
+page.
 
 ## The four dimensions
 
@@ -50,7 +52,7 @@ class Defense:
     def apply(self, prompt: str, instruction: str = None) -> str: ...
 
 class Channel:
-    def poison(self, data: str, payload: str) -> str: ...
+    def taint(self, data: str, payload: str) -> str: ...
 
 class Target:
     def query(self, prompt: str, system: str = None, **kw) -> str: ...
@@ -66,8 +68,8 @@ attack output can be fed into any defense, and vice versa.
 An **Agent** wraps a `Target` and exposes `run()` → `Trace`. The agent
 testbed models two critical concepts for indirect injection:
 
-- **Poison point** — a compromised tool whose return value is the attacker's
-  poisoned artifact (e.g. `fetch_url` returns a malicious web page).
+- **Taint point** — a compromised tool whose return value is the attacker's
+  tainted artifact (e.g. `fetch_url` returns a malicious web page).
 - **Sink** — an externally-observable action the attacker wants to trigger
   (e.g. `send_email`, `run_command`, `post_form`).
 
@@ -77,7 +79,7 @@ injection succeeded:
 ```python
 trace = agent.run("Summarize the page at http://site")
 trace.sink_calls      # tool calls that hit a sink
-trace.poisoned_steps  # steps that carried the injected artifact
+trace.tainted_steps  # steps that carried the injected artifact
 print(trace)          # human-readable step-by-step log
 ```
 
@@ -96,7 +98,7 @@ three points of an agent's data flow via `DefenseHooks`:
 | `tool_result` | Untrusted tool output re-entering the model | **Indirect injection** |
 
 The `tool_result` hook is the most valuable for indirect injection — it's the
-layer through which an attacker's poisoned artifact re-enters the model.
+layer through which an attacker's tainted artifact re-enters the model.
 
 ## The registry
 

@@ -17,7 +17,7 @@ the two delivery paths — **direct** and **indirect** — into one object whose
 - **Direct** (no `channel`): the worded payload is the *user message* sent to
   the agent. `delivery` = the full message.
 - **Indirect** (`channel` set): the worded payload is hidden inside a data
-  artifact. `delivery` = the poisoned artifact.
+  artifact. `delivery` = the tainted artifact.
 
 ## Signature
 
@@ -41,7 +41,7 @@ def craft(
 | `attack_kwargs` | `dict` | `None` | Constructor kwargs for the attack |
 | `channel` | `str` | `None` | Registry key of the [carrier](../guide/channels.md); `None` = direct |
 | `channel_kwargs` | `dict` | `None` | Constructor kwargs for the channel |
-| `data` | `str` | `None` | Clean artifact to poison (required for indirect) |
+| `data` | `str` | `None` | Clean artifact to taint (required for indirect) |
 | `instruction` | `str` | `None` | Benign user request (prepended for direct) |
 
 ## CraftResult
@@ -114,7 +114,7 @@ res = craft(
 )
 
 tgt = get_target("openai:gpt-4o")
-agent = get_agent("browser")(tgt, poison={"fetch_url": res.delivery})
+agent = get_agent("browser")(tgt, taint={"fetch_url": res.delivery})
 trace = agent.run("Summarize the page at http://site")
 print(trace)
 ```
@@ -124,4 +124,4 @@ print(trace)
 Without `craft()`, you'd handle direct and indirect injection with different
 code paths. `craft()` normalizes them: regardless of mode, `res.delivery` is
 the single thing the agent consumes — as the user message (direct) or as a
-`poison` map value (indirect). This keeps agent code and the demo CLI simple.
+`taint` map value (indirect). This keeps agent code and the demo CLI simple.

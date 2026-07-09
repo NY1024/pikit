@@ -17,14 +17,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
     what a real agent encounters.
 - **`pikit.carriers` module** with 14 clean carrier files and management API
   (`carrier_path`, `load_carrier`, `load_carrier_bytes`, `CARRIER_FILES`).
-- **`Channel.poison_file()`** method on the base class, with format-specific
+- **`Channel.taint_file()`** method on the base class, with format-specific
   overrides for:
   - `pdf_metadata` — uses `pypdf` to inject into real PDF `/Info` dictionary.
   - `calendar_event` — uses iCalendar standard field names (`SUMMARY`,
     `DESCRIPTION`, `LOCATION`, `NOTE`) on real `.ics` files.
   - `spreadsheet` — supports `.csv` (text) and `.xlsx` (via `openpyxl`).
   - `structured_data` — auto-detects format from file extension.
-- **`Channel.extract()` / `extract_file()`** methods for reading poisoned
+- **`Channel.extract()` / `extract_file()`** methods for reading tainted
   artifacts back as model-visible text.
 - `craft()` gains `mode`, `carrier_path`, and `output_path` parameters.
 - `CraftResult.output_path` field for file-mode results.
@@ -60,15 +60,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - Scenario agents (browser, email, coding, rag) now select tools from the
   unified pool via category bundles instead of hard-coding individual tools.
 - `Tool` dataclass and `@tool` decorator gain a `category` field.
-- Browser agent: 6 tools (was 3), 5 poison points (was 2).
-- Email agent: 8 tools (was 3), 5 poison points (was 2), 3 sinks (was 1),
+- Browser agent: 6 tools (was 3), 5 taint points (was 2).
+- Email agent: 8 tools (was 3), 5 taint points (was 2), 3 sinks (was 1),
   cross-domain tools (`search_kb`, `post_message`).
-- Coding agent: 13 tools (was 5), 7 poison points (was 3), 6 sinks (was 2).
-- RAG agent: 6 tools (was 3), 5 poison points (was 2), added `summarize_text`
+- Coding agent: 13 tools (was 5), 7 taint points (was 3), 6 sinks (was 2).
+- RAG agent: 6 tools (was 3), 5 taint points (was 2), added `summarize_text`
   and `translate_text`.
 - System prompts are now dynamically generated instead of hard-coded.
 - Scenario agents accept optional `tools=` parameter for custom tool sets.
-- Total attack surface expanded from ~8 to 17 unique poison points, and
+- Total attack surface expanded from ~8 to 17 unique taint points, and
   from 4 to 12 unique sink tools.
 
 ## [0.2.0] - 2026-07-08

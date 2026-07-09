@@ -45,7 +45,7 @@ class EmailHeadersChannel(Channel):
             "custom": "X-Instructions",
         }[self.field]
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         lines = data.splitlines()
         header_end = len(lines)
         # Find the blank line separating headers from body.

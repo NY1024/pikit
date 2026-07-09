@@ -3,7 +3,7 @@
 The same prevention-style :class:`~pikit.base.Defense` objects used for
 direct injection can be slotted into three points of an agent's data flow.
 The most valuable for *indirect* injection is ``tool_result`` — the layer
-through which an attacker's poisoned artifact re-enters the model.
+through which an attacker's tainted artifact re-enters the model.
 """
 
 from __future__ import annotations

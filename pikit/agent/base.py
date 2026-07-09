@@ -3,7 +3,7 @@
 ``run()`` returns a :class:`Trace` rather than a bare string. The trace is
 the artifact a human reads to judge — manually — whether an injection
 succeeded: it shows every model turn, tool call, and tool result, and
-highlights when a *sink* fired or a step carried *poisoned* data. The
+highlights when a *sink* fired or a step carried *tainted* data. The
 library deliberately renders no verdict (no evaluator/scoring); it makes the
 signals easy to see and offers structured accessors so you can write your
 own one-line assertion.
@@ -28,7 +28,7 @@ class TraceStep:
     tool_name: Optional[str] = None
     args: Optional[dict] = None
     content: Optional[str] = None
-    poisoned: bool = False  #: tool_result whose data was the injected artifact
+    tainted: bool = False  #: tool_result whose data was the injected artifact
     is_sink: bool = False  #: tool_call to a sink tool (observable action)
 
 
@@ -48,9 +48,9 @@ class Trace:
         return [s for s in self.steps if s.kind == "tool_call" and s.is_sink]
 
     @property
-    def poisoned_steps(self) -> List[TraceStep]:
+    def tainted_steps(self) -> List[TraceStep]:
         """Steps whose data was the injected artifact."""
-        return [s for s in self.steps if s.poisoned]
+        return [s for s in self.steps if s.tainted]
 
     def __str__(self) -> str:
         lines = []
@@ -66,7 +66,7 @@ class Trace:
                 marker = "   <-- SINK FIRED" if s.is_sink else ""
                 lines.append(f">>> tool_call {s.tool_name}({_fmt_args(args)}){marker}")
             elif s.kind == "tool_result":
-                tag = " [poisoned]" if s.poisoned else ""
+                tag = " [tainted]" if s.tainted else ""
                 lines.append(f"<<< tool_result {s.tool_name}{tag}: {s.content}")
         return "\n".join(lines)
 

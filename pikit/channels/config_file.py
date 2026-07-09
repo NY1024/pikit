@@ -39,7 +39,7 @@ class ConfigFileChannel(Channel):
     def _comment_prefix(self) -> str:
         return "#"
 
-    def _poison_value(self, data: str, payload: str) -> str:
+    def _taint_value(self, data: str, payload: str) -> str:
         lines = data.splitlines()
         for i, line in enumerate(lines):
             stripped = line.strip()
@@ -78,11 +78,11 @@ class ConfigFileChannel(Channel):
             lines.append(f"extra: {payload}")
         return "\n".join(lines)
 
-    def _poison_comment(self, data: str, payload: str) -> str:
+    def _taint_comment(self, data: str, payload: str) -> str:
         one_line = " ".join(payload.splitlines())
         return f"{data}\n# {one_line}" if data else f"# {one_line}"
 
-    def _poison_new_key(self, data: str, payload: str) -> str:
+    def _taint_new_key(self, data: str, payload: str) -> str:
         one_line = " ".join(payload.splitlines())
         if self.fmt == "toml":
             return f'{data}\nextra_config = "{one_line}"' if data else f'extra_config = "{one_line}"'
@@ -90,9 +90,9 @@ class ConfigFileChannel(Channel):
             return f"{data}\nEXTRA_CONFIG={one_line}" if data else f"EXTRA_CONFIG={one_line}"
         return f"{data}\nextra_config: {one_line}" if data else f"extra_config: {one_line}"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         if self.method == "comment":
-            return self._poison_comment(data, payload)
+            return self._taint_comment(data, payload)
         if self.method == "new_key":
-            return self._poison_new_key(data, payload)
-        return self._poison_value(data, payload)
+            return self._taint_new_key(data, payload)
+        return self._taint_value(data, payload)

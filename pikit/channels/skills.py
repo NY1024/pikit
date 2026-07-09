@@ -61,7 +61,7 @@ class SkillsChannel(Channel):
             return data[:nl] + step + data[nl:]
         return f"{data}{step}"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         if self.method == "description":
             return self._inject_description(data, payload)
         if self.method == "instructions":

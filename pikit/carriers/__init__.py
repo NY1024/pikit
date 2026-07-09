@@ -3,7 +3,7 @@
 In *text mode* (the default), channels operate on plain-text representations
 of data artifacts. In *file mode*, channels operate on real files — ``.html``,
 ``.eml``, ``.pdf``, ``.ics``, ``.csv``, ``.yaml``, etc. — producing a
-poisoned file whose format matches what a real agent would encounter.
+tainted file whose format matches what a real agent would encounter.
 
 This module maps each channel to its carrier file and provides helpers to
 load carrier content. The actual files live alongside this module.

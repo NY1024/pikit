@@ -1,4 +1,4 @@
-# Ready-to-run: browser agent, indirect injection via a poisoned web page.
+# Ready-to-run: browser agent, indirect injection via a tainted web page.
 # The payload hides in an HTML comment (fetch_url); the sink is post_form.
 # Here the tool-result layer is defended with spotlighting — try defense="none"
 # to compare.

@@ -6,7 +6,7 @@ returns a human-readable :class:`Trace`. Three kinds ship:
 * ``chat`` — a plain assistant (no tools); direct injection via the user
   message.
 * ``tool`` — a general tool-calling agent; indirect injection via a
-  compromised tool's return value (the ``poison`` map).
+  compromised tool's return value (the ``taint`` map).
 * scenario agents — ``email`` / ``rag`` / ``browser`` — preconfigured with a
   realistic toolset and an observable *sink*.
 

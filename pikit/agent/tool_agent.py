@@ -22,7 +22,7 @@ class ToolAgent(Agent):
         See :class:`~pikit.agent.base.Agent`.
     tools:
         The tools exposed to the model.
-    poison:
+    taint:
         Map of ``tool_name -> artifact`` marking compromised tools whose
         return value is replaced by the injected artifact (indirect-injection
         delivery point). See :func:`~pikit.agent.loop.run_tool_loop`.
@@ -35,14 +35,14 @@ class ToolAgent(Agent):
         target: Target,
         *,
         tools: Optional[List[Tool]] = None,
-        poison: Optional[Dict[str, str]] = None,
+        taint: Optional[Dict[str, str]] = None,
         system: Optional[str] = None,
         defenses: Optional[DefenseHooks] = None,
         max_steps: int = 8,
     ) -> None:
         super().__init__(target, system=system, defenses=defenses)
         self.tools = tools or []
-        self.poison = poison or {}
+        self.taint = taint or {}
         self.max_steps = max_steps
 
     def run(self, user_message: str, **kwargs) -> Trace:
@@ -52,7 +52,7 @@ class ToolAgent(Agent):
             self.tools,
             system=self.system,
             hooks=self.hooks,
-            poison=self.poison,
+            taint=self.taint,
             max_steps=self.max_steps,
             **kwargs,
         )

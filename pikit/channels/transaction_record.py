@@ -39,7 +39,7 @@ class TransactionRecordChannel(Channel):
         # memo
         return f"REF: {payload}"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         hidden = self._hide(payload)
         # Append a new transaction entry containing the payload.
         lines = data.strip().splitlines()

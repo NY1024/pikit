@@ -30,7 +30,7 @@ class DocumentChannel(Channel):
             )
         self.method = method
 
-    def _poison(self, data: str, payload: str) -> str:
+    def _taint(self, data: str, payload: str) -> str:
         if self.method == "footnote":
             return f"{data}\n\n[1] {payload}"
         if self.method == "appended":
@@ -45,5 +45,5 @@ class DocumentChannel(Channel):
         mid = len(data) // 2
         return f"{data[:mid]} {payload} {data[mid:]}"
 
-    def poison(self, data: str, payload: str) -> str:
-        return self._poison(data, payload)
+    def taint(self, data: str, payload: str) -> str:
+        return self._taint(data, payload)

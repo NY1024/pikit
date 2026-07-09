@@ -44,7 +44,7 @@ class LogFileChannel(Channel):
         one_line = " ".join(payload.splitlines())
         return f"2024-01-15T10:30:00Z {tag} {one_line}"
 
-    def poison(self, data: str, payload: str) -> str:
+    def taint(self, data: str, payload: str) -> str:
         entry = self._make_entry(payload)
         if self.position == "middle":
             lines = data.splitlines()

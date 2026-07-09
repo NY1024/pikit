@@ -2,7 +2,7 @@
 
 Models a coding agent like Claude Code / Cursor / Aider that reads project
 files, loads skills, searches the codebase, and can execute commands and
-modify files. Poison points: ``read_code``, ``read_file``, ``load_skill``,
+modify files. Taint points: ``read_code``, ``read_file``, ``load_skill``,
 ``search_codebase``, ``search_files``. Sinks: ``run_command``,
 ``write_file``, ``delete_file``, ``move_file``, ``run_tests``,
 ``install_package``.
@@ -42,7 +42,7 @@ _DEFAULT_TASK = "Read the main source file and explain what it does."
 class CodingAgent(ToolAgent):
     """A coding agent with a rich tool pool.
 
-    Poison points: ``read_code`` / ``read_file`` / ``load_skill`` /
+    Taint points: ``read_code`` / ``read_file`` / ``load_skill`` /
     ``search_codebase`` / ``search_files``.
     Sinks: ``run_command`` / ``write_file`` / ``delete_file`` /
     ``move_file`` / ``run_tests`` / ``install_package``.
@@ -51,7 +51,7 @@ class CodingAgent(ToolAgent):
     ----------
     target:
         The model backend.
-    poison:
+    taint:
         Map of ``tool_name -> artifact``.
     tools:
         Override the default tool set. If ``None``, uses :data:`CODING_TOOLS`.
@@ -67,7 +67,7 @@ class CodingAgent(ToolAgent):
         self,
         target: Target,
         *,
-        poison: Optional[Dict[str, str]] = None,
+        taint: Optional[Dict[str, str]] = None,
         tools: Optional[List[Tool]] = None,
         system: Optional[str] = None,
         defenses: Optional[DefenseHooks] = None,
@@ -82,7 +82,7 @@ class CodingAgent(ToolAgent):
         super().__init__(
             target,
             tools=_tools,
-            poison=poison,
+            taint=taint,
             system=_system,
             defenses=defenses,
             max_steps=max_steps,

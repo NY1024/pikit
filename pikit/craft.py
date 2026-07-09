@@ -5,10 +5,10 @@ deals with one object:
 
 * **direct** — the worded payload is the *user message* sent to the agent.
 * **indirect** — the worded payload is hidden in a data artifact (via a
-  channel); that poisoned artifact is what a compromised tool returns.
+  channel); that tainted artifact is what a compromised tool returns.
 
 In both cases :attr:`CraftResult.delivery` is the single field the agent
-consumes — as the user message (direct) or as a ``poison`` map value
+consumes — as the user message (direct) or as a ``taint`` map value
 (indirect).
 """
 
@@ -32,7 +32,7 @@ class CraftResult:
         The worded attacker instruction (the attack's output).
     delivery:
         What actually gets injected — the user message (direct) or the
-        poisoned artifact (indirect).
+        tainted artifact (indirect).
     instruction, attack, channel:
         Reference metadata about how it was built.
     """
@@ -78,7 +78,7 @@ def craft(
     channel_kwargs:
         Constructor kwargs for the channel.
     data:
-        The clean artifact (page HTML, document, email body) to poison.
+        The clean artifact (page HTML, document, email body) to taint.
         Required for indirect injection in **text mode**. Ignored in
         **file mode** (use *carrier_path* instead).
     instruction:
@@ -98,8 +98,8 @@ def craft(
         ``None`` in file mode, the default carrier from ``pikit.carriers``
         is used.
     output_path:
-        Where to write the poisoned file in **file mode**. When ``None``,
-        the channel chooses a default (typically ``<carrier>.poisoned.<ext>``).
+        Where to write the tainted file in **file mode**. When ``None``,
+        the channel chooses a default (typically ``<carrier>.tainted.<ext>``).
 
     Returns
     -------
@@ -138,8 +138,8 @@ def craft(
         from .carriers import carrier_path as _default_carrier
 
         cpath = carrier_path if carrier_path is not None else _default_carrier(channel)
-        out = ch.poison_file(cpath, worded, output_path=output_path)
-        # Read the poisoned file content as the delivery artifact.
+        out = ch.taint_file(cpath, worded, output_path=output_path)
+        # Read the tainted file content as the delivery artifact.
         with open(out, "r", encoding="utf-8", errors="replace") as f:
             artifact = f.read()
         return CraftResult(
@@ -157,7 +157,7 @@ def craft(
         raise ValueError("indirect injection (channel set) requires `data`")
 
     # Indirect: the carrier hides only the payload (as in a real artifact).
-    artifact = ch.poison(data, worded)
+    artifact = ch.taint(data, worded)
     return CraftResult(
         mode="indirect",
         payload=worded,
