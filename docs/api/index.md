@@ -11,6 +11,9 @@ Auto-generated reference for pikit's public API, powered by mkdocstrings.
 | [Targets](targets.md) | `pikit.targets` — `Target`, `get_target`, data structures |
 | [Agent](agent.md) | `pikit.agent` — `Agent`, `Trace`, `DefenseHooks`, `Tool` |
 | [craft()](craft.md) | `pikit.craft` — `craft()`, `CraftResult` |
+| [Judges](judge.md) | `pikit.judges` — `Judge`, `RuleJudge`, `LLMJudge` |
+| [Matrix Runner](matrix.md) | `pikit.matrix` — `MatrixRunner`, `ExperimentConfig`, `ExperimentResult` |
+| [Datasets](datasets.md) | `pikit.datasets` — `list_datasets`, `load_dataset`, `run_dataset` |
 | [Registry](registry.md) | `pikit.registry` — `Registry` class |
 
 ## Quick lookup

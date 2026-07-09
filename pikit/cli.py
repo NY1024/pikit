@@ -265,6 +265,50 @@ def _cmd_matrix(args):
             print(f"  {status} {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}")
 
 
+# --- dataset (standard benchmark) ---------------------------------------
+
+def _cmd_dataset(args):
+    """List or run standard benchmark datasets."""
+    from . import datasets as ds_mod
+
+    if args.dataset_action == "list":
+        names = ds_mod.list_datasets()
+        for name in names:
+            ds = ds_mod.load_dataset(name)
+            print(f"  {name}  ({len(ds.cases)} cases)  — {ds.description}")
+        return
+
+    if args.dataset_action == "run":
+        name = args.name
+        results = ds_mod.run_dataset(
+            name,
+            target_spec=args.target,
+            judge_type=args.judge,
+            temperature=args.temperature,
+            repeats=args.repeats,
+            verbose=True,
+        )
+        if args.output:
+            if args.output.endswith(".csv"):
+                matrix_mod.save_csv(results, args.output)
+            else:
+                matrix_mod.save_json(results, args.output)
+            print(f"\nSaved {len(results)} results to {args.output}", file=sys.stderr)
+
+        # Summary.
+        individual = [r for r in results if "repeat_summary" not in r.signals]
+        successes = sum(1 for r in individual if r.success)
+        rate = successes / len(individual) * 100 if individual else 0
+        print(f"\n{'='*60}")
+        print(f"Dataset: {name}  Cases: {len(individual)}  Success: {successes}  Rate: {rate:.1f}%")
+        print(f"{'='*60}")
+        for r in individual:
+            status = "✓" if r.success else "✗"
+            # Extract case id from reason prefix.
+            case_id = r.reason.split("]")[0].lstrip("[") if r.reason.startswith("[") else "?"
+            print(f"  {status} {case_id}  {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}")
+
+
 # --- entry point --------------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:
@@ -306,6 +350,20 @@ def build_parser() -> argparse.ArgumentParser:
     p_matrix.add_argument("--repeats", type=int, default=None,
                            help="Number of times to run each combination (default 1).")
 
+    # dataset
+    p_dataset = sub.add_parser("dataset", help="Run standard benchmark datasets.")
+    p_dataset_sub = p_dataset.add_subparsers(dest="dataset_action", required=True)
+    p_dataset_sub.add_parser("list", help="List available datasets.")
+    p_dataset_run = p_dataset_sub.add_parser("run", help="Run a dataset benchmark.")
+    p_dataset_run.add_argument("name", help="Dataset name (e.g. direct_injection, indirect_injection).")
+    p_dataset_run.add_argument("--output", help="Save results to file (JSON or CSV).")
+    p_dataset_run.add_argument("--target", help="Override target spec (e.g. openai:gpt-4o-mini).")
+    p_dataset_run.add_argument("--judge", help="Override judge type (rule/llm/none).")
+    p_dataset_run.add_argument("--temperature", type=float, default=None,
+                               help="Sampling temperature (0.0=deterministic).")
+    p_dataset_run.add_argument("--repeats", type=int, default=None,
+                               help="Number of times to run each case (default 1).")
+
     return p
 
 
@@ -330,6 +388,8 @@ def main(argv: Optional[List[str]] = None) -> None:
         _cmd_run(args)
     elif args.command == "matrix":
         _cmd_matrix(args)
+    elif args.command == "dataset":
+        _cmd_dataset(args)
 
 
 if __name__ == "__main__":

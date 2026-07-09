@@ -75,6 +75,37 @@ pikit matrix --config experiment.toml --temperature 0.7 --repeats 5 --output res
 | `--temperature` | Sampling temperature (0.0=deterministic, 0.7-1.0=stochastic) |
 | `--repeats` | Run each combination N times (default 1) |
 
+## `pikit dataset`
+
+Run standard benchmark datasets for full-coverage evaluation. No API key
+needed with `--target mock`.
+
+```bash
+# list available datasets
+pikit dataset list
+
+# run a dataset with mock target
+pikit dataset run direct_injection --target mock
+
+# run with a real model and save results
+pikit dataset run indirect_injection --target openai:gpt-4o-mini --output results.json
+
+# statistical sampling
+pikit dataset run direct_injection --target openai:gpt-4o-mini --temperature 0.7 --repeats 5
+```
+
+| Flag | Description |
+|------|-------------|
+| `name` | Dataset name (direct_injection, indirect_injection) |
+| `--output` | Save results to JSON or CSV |
+| `--target` | Override target spec |
+| `--judge` | Override judge type (rule/llm/none) |
+| `--temperature` | Sampling temperature |
+| `--repeats` | Run each case N times |
+
+See [Datasets](datasets.md) for the full dataset specification and how to
+add custom datasets.
+
 ## Experiment config format
 
 See [`demos/experiment.example.toml`](https://github.com/NY1024/pikit/blob/main/demos/experiment.example.toml)

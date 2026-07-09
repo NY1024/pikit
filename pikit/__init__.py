@@ -36,6 +36,7 @@ from .craft import CraftResult, craft
 from .targets import Target, get_target
 from .judges import Judge, JudgeResult, RuleJudge, LLMJudge
 from .config import ExperimentConfig
+from . import datasets
 
 __all__ = [
     "attacks",
@@ -53,6 +54,7 @@ __all__ = [
     "RuleJudge",
     "LLMJudge",
     "ExperimentConfig",
+    "datasets",
 ]
 
 __version__ = "0.2.0"

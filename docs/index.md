@@ -30,8 +30,8 @@ uniform interface so you can:
 - :material-file-plus: **add a new method** by dropping in one file — no core
   changes.
 
-It is a *library of methods*, not a benchmark: it ships **no** evaluator,
-dataset, or leaderboard. You bring the task and the judgement.
+It is a *library of methods* plus a standard benchmark dataset collection: you
+can run individual experiments or full-coverage evaluations out of the box.
 
 ## Key features
 
@@ -46,6 +46,8 @@ dataset, or leaderboard. You bring the task and the judgement.
 - 🧩 **Registry-based** — contributing a method is one file + one decorator.
 - 📦 **Zero-dependency core** — model SDKs (OpenAI / Anthropic / HF) are
   optional extras, imported lazily.
+- 📊 **Standard benchmark datasets** — 40 test cases across direct and
+  indirect injection, runnable in one command for reproducible evaluation.
 
 ## How it fits together
 
@@ -75,6 +77,7 @@ prompt. They're orthogonal and compose freely:
 - :material-download: **[Install pikit](installation.md)** — get started in 30 seconds
 - :material-rocket-launch: **[Quick Start](quickstart.md)** — craft your first attack
 - :material-book-open-variant: **[Concepts](concepts.md)** — understand the design
+- :material-database: **[Datasets](datasets.md)** — run standard benchmarks
 - :material-flask: **[Demos & CLI](demos.md)** — run prebuilt scenarios against a real model
 
 </div>

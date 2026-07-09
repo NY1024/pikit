@@ -49,6 +49,7 @@ nav:
   - Quick Start: quickstart.md
   - Concepts: concepts.md
   - Terminology: terminology.md
+  - Datasets: datasets.md
   - Guides:
       - Overview: guide/index.md
       - Attacks: guide/attacks.md
@@ -76,6 +77,7 @@ nav:
       - craft(): api/craft.md
       - Judges: api/judge.md
       - Matrix Runner: api/matrix.md
+      - Datasets: api/datasets.md
       - Detection Defenses: api/detection.md
       - Registry: api/registry.md
   - Demos & CLI: demos.md

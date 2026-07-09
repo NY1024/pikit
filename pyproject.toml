@@ -43,3 +43,7 @@ include = ["pikit*"]
 
 [tool.setuptools.package-data]
 "pikit.carriers" = ["*.html", "*.md", "*.eml", "*.py", "*.json", "*.csv", "*.yaml", "*.log", "*.txt", "*.ics", "*.pdf"]
+
+# Include benchmark dataset TOML files at the project root
+[tool.setuptools.data-files]
+"datasets" = ["datasets/*.toml"]
