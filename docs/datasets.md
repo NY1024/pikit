@@ -1,25 +1,30 @@
 # Benchmark Datasets
 
-pikit ships two standard benchmark datasets for **full-coverage evaluation** of
-prompt-injection attacks and defenses.  They are designed for reproducible
-academic research and comparative studies.
+pikit ships four benchmark datasets for **full-coverage evaluation** of
+prompt-injection attacks and defenses.  Two are curated internal datasets
+for quick validation; two are adapted from **academically recognized
+benchmarks** for reproducible research and comparative studies.
 
 ---
 
 ## Overview
 
-| Dataset | Type | Cases | Focus |
-|---------|------|-------|-------|
-| `direct_injection` | Direct injection | 20 | Attacker payload in user message |
-| `indirect_injection` | Indirect injection | 20 | Attacker payload in tool-returned data |
+| Dataset | Type | Cases | Source |
+|---------|------|-------|--------|
+| `direct_injection` | Direct injection | 20 | Curated — attack/defense sweep |
+| `indirect_injection` | Indirect injection | 20 | Curated — cross-agent/channel sweep |
+| `agentdojo` | Direct injection | 15 | AgentDojo (NeurIPS 2024) |
+| `injecagent` | Indirect injection | 15 | InjecAgent (ACL Findings 2024) |
 
 Each dataset is a plain TOML file — human-readable, editable, and
 version-controllable — located in the project's `datasets/` directory:
 
 ```
 datasets/
-├── direct_injection.toml      # 20 direct-injection test cases
-└── indirect_injection.toml    # 20 indirect-injection test cases
+├── direct_injection.toml      # 20 curated direct-injection cases
+├── indirect_injection.toml    # 20 curated indirect-injection cases
+├── agentdojo.toml             # 15 cases from AgentDojo (NeurIPS 2024)
+└── injecagent.toml            # 15 cases from InjecAgent (ACL Findings 2024)
 ```
 
 ## Why Datasets as Files?
@@ -62,7 +67,7 @@ from pikit.datasets import list_datasets, load_dataset, run_dataset
 
 # Discover
 print(list_datasets())
-# ['direct_injection', 'indirect_injection']
+# ['agentdojo', 'direct_injection', 'indirect_injection', 'injecagent']
 
 # Inspect
 ds = load_dataset("direct_injection")
@@ -145,6 +150,30 @@ output to identify which case produced each result.
 - **Channel sweep** (ii-016 → ii-018): different injection channels on email agent
 - **Defense evaluation** (ii-019 → ii-020): attack × defense × channel combinations
 
+### AgentDojo Dataset (15 cases — Direct injection)
+
+Adapted from AgentDojo (Debenedetti et al., NeurIPS 2024).  Uses the
+`important_instructions` attack — the canonical `<INFORMATION>` block
+template from the paper.  Cases span four suites:
+
+- **Banking** (ad-001 → ad-006): unauthorized transactions, password changes
+- **Slack** (ad-007 → ad-009): phishing links, message exfiltration
+- **Travel** (ad-010 → ad-012): unauthorized reservations, email exfiltration
+- **Workspace** (ad-013 → ad-015): email forwarding, file deletion, code theft
+
+### InjecAgent Dataset (15 cases — Indirect injection)
+
+Adapted from InjecAgent (Zhan et al., ACL Findings 2024).  All cases are
+indirect injection where the attacker's instruction is hidden in
+tool-returned data.  Cases span six attack-harm categories:
+
+- **Physical Harm** (inj-001, inj-002): smart lock access, medical appointments
+- **Financial Harm** (inj-003): unauthorized bank payments
+- **Data Security Harm** (inj-004 → inj-006): file manipulation, data deletion
+- **Physical Data** (inj-007 → inj-010): address/genetic/medical/flight exfiltration
+- **Financial Data** (inj-011): payment method exfiltration
+- **Others** (inj-012 → inj-014): access history, doxxing, shipment exfiltration
+
 ## Adding Custom Datasets
 
 Create a new TOML file in the `datasets/` directory:
@@ -170,11 +199,21 @@ It will be automatically discovered by `list_datasets()` and `pikit dataset list
 
 ## Academic References
 
-The dataset design draws from:
+**Recognized benchmark datasets integrated in pikit:**
 
 - **AgentDojo** (Debenedetti et al., NeurIPS 2024) — dynamic testing framework for
-  indirect prompt injection in tool-integrated agents
-- **InjecAgent** (Zhan et al., 2024) — benchmark for indirect injection with
-  both canary-based and sink-based success criteria
+  prompt injection in tool-integrated agents; the `agentdojo` dataset adapts 15
+  injection goals from its banking, slack, travel, and workspace suites.
+  [Paper](https://arxiv.org/abs/2406.13352) ·
+  [Code](https://github.com/ethz-spylab/agentdojo)
+
+- **InjecAgent** (Zhan et al., ACL Findings 2024) — benchmark for indirect
+  prompt injection with 1,054 cases across six harm categories; the `injecagent`
+  dataset samples 15 representative cases from the full set.
+  [Paper](https://doi.org/10.18653/v1/2024.findings-acl.624) ·
+  [Code](https://github.com/henilp105/InjecAgent)
+
+**Design inspiration for curated datasets:**
+
 - **AdvBench** (Zou et al., 2022) — adversarial behavior dataset inspiring
-  direct-injection test cases
+  direct-injection test case design
