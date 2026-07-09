@@ -377,7 +377,7 @@ def main(argv: Optional[List[str]] = None) -> None:
         _cmd_show(args)
     elif args.command == "run":
         if args.config:
-            import tomllib
+            from pikit._compat import tomllib
             with open(args.config, "rb") as f:
                 toml_cfg = tomllib.load(f)
             for key, val in toml_cfg.items():

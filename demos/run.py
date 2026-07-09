@@ -23,9 +23,10 @@ Credentials come from the environment (.env) — never hardcode a key:
 import argparse
 import os
 import sys
-import tomllib
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from pikit._compat import tomllib  # noqa: E402
 
 from pikit import attacks, channels, craft, defenses, get_target  # noqa: E402
 from pikit.agent import DefenseHooks, get_agent  # noqa: E402

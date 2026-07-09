@@ -111,7 +111,7 @@ sink_args = { to = "attacker@evil.com" }
 ```
 
 Every `[[cases]]` field maps directly to an
-[`ExperimentConfig`](../api/matrix.md) field.  The `id` and `description`
+[`ExperimentConfig`](api/matrix.md) field.  The `id` and `description`
 fields are for reference and traceability only — they appear in result
 output to identify which case produced each result.
 

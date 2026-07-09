@@ -102,7 +102,7 @@ def list_datasets() -> List[str]:
     """
     names = []
     for path in _find_toml_files():
-        import tomllib
+        from pikit._compat import tomllib
         with open(path, "rb") as f:
             data = tomllib.load(f)
         meta = data.get("meta", {})
@@ -128,7 +128,7 @@ def load_dataset(name: str) -> Dataset:
     KeyError
         If no dataset with that name exists.
     """
-    import tomllib
+    from pikit._compat import tomllib
 
     for path in _find_toml_files():
         with open(path, "rb") as f:

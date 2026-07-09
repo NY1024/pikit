@@ -117,8 +117,8 @@ class ExperimentConfig:
             sink_args=judge.get("sink_args", matrix.get("sink_args", {})),
         )
     def from_toml(cls, path: str) -> "ExperimentConfig":
-        """Load from a TOML file (Python 3.11+ ``tomllib``)."""
-        import tomllib
+        """Load from a TOML file."""
+        from pikit._compat import tomllib
 
         with open(path, "rb") as f:
             data = tomllib.load(f)
