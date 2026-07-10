@@ -26,6 +26,8 @@ site/
 
 # Local test scripts (may contain secrets)
 test_e2e_llm.py
+test_live_api.py
+live_api_results.json
 
 # OS / editor
 .DS_Store
