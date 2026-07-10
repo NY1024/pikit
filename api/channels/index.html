@@ -1,0 +1,5462 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A composable toolbox of classic prompt-injection attacks, defenses, and indirect-injection channels for LLM/agent security research.">
+      
+      
+      
+        <link rel="canonical" href="https://NY1024.github.io/pikit/api/channels/">
+      
+      
+        <link rel="prev" href="../defenses/">
+      
+      
+        <link rel="next" href="../targets/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/logo.svg">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Channels - pikit — Prompt Injection Kit</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CJetBrains+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"JetBrains Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#channels" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="pikit — Prompt Injection Kit" class="md-header__button md-logo" aria-label="pikit — Prompt Injection Kit" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            pikit — Prompt Injection Kit
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Channels
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/NY1024/pikit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    NY1024/pikit
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../installation/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Installation
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../quickstart/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Quick Start
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../concepts/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Concepts
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../terminology/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Terminology
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../datasets/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Datasets
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../guide/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../cli/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/" class="md-tabs__link">
+          
+  
+  
+    
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+  
+    
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../demos/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Demos & CLI
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../extending/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Extending pikit
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../references/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  References
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../license/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  License
+
+      </a>
+    </li>
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="pikit — Prompt Injection Kit" class="md-nav__button md-logo" aria-label="pikit — Prompt Injection Kit" data-md-component="logo">
+      
+  <img src="../../assets/logo.svg" alt="logo">
+
+    </a>
+    pikit — Prompt Injection Kit
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/NY1024/pikit" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M173.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M252.8 8C114.1 8 8 113.3 8 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C436.2 457.8 504 362.9 504 252 504 113.3 391.5 8 252.8 8M105.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+  </div>
+  <div class="md-source__repository">
+    NY1024/pikit
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../installation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Installation
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../quickstart/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../concepts/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Concepts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../terminology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Terminology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../datasets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../guide/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Guides
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_7" id="__nav_7_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/attacks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/defenses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defenses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/channels/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/agents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/targets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Targets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/craft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    craft() API
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../guide/batch/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Batch Experiments
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cli/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_9" >
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../../tutorials/" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tutorials
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_9" id="__nav_9_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_9_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_9">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Tutorials
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/notebooks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Jupyter Notebooks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/direct_injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Direct Injection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/indirect_injection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Indirect Injection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/agent_testbed/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent Testbed
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/defending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defending an Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_10" checked>
+        
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_10" id="__nav_10_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_10_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_10">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../base/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Base Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../attacks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Attacks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../defenses/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Defenses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channels
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Channels
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels--references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="taint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="taint_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.extract_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.embed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        embed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.webpage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        webpage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="webpage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.webpage.WebpageChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebpageChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebpageChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.webpage.WebpageChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.document.DocumentChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DocumentChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DocumentChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.document.DocumentChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.markdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        markdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="markdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.markdown.MarkdownChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MarkdownChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MarkdownChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.markdown.MarkdownChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        code_comment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="code_comment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment.CodeCommentChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CodeCommentChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CodeCommentChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment.CodeCommentChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        skills
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="skills">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.skills.SkillsChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SkillsChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SkillsChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.skills.SkillsChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unicode_hidden
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="unicode_hidden">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnicodeHiddenChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UnicodeHiddenChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        structured_data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="structured_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructuredDataChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StructuredDataChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pdf_metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pdf_metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PDFMetadataChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PDFMetadataChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.log_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        log_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="log_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.log_file.LogFileChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LogFileChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LogFileChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.log_file.LogFileChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        email_headers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="email_headers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers.EmailHeadersChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EmailHeadersChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EmailHeadersChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers.EmailHeadersChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calendar_event
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="calendar_event">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarEventChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CalendarEventChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.config_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="config_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.config_file.ConfigFileChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConfigFileChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfigFileChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.config_file.ConfigFileChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        translation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="translation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.translation.TranslationChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TranslationChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TranslationChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.translation.TranslationChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        spreadsheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="spreadsheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpreadsheetChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SpreadsheetChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../targets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Targets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../agent/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Agent
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../craft/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    craft()
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../judge/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Judges
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../matrix/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Matrix Runner
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../datasets/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Datasets
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../detection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Detection Defenses
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../registry/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Registry
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../demos/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Demos & CLI
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../extending/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Extending pikit
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../references/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    References
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        channels
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="channels">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels--references" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        References
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Channel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Channel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="taint">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="taint_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.taint_file--returns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Returns
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.extract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.extract_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.Channel.embed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        embed
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.webpage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        webpage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="webpage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.webpage.WebpageChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        WebpageChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="WebpageChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.webpage.WebpageChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.document" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        document
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="document">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.document.DocumentChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DocumentChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="DocumentChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.document.DocumentChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.markdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        markdown
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="markdown">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.markdown.MarkdownChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MarkdownChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="MarkdownChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.markdown.MarkdownChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        code_comment
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="code_comment">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment.CodeCommentChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CodeCommentChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CodeCommentChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.code_comment.CodeCommentChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.skills" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        skills
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="skills">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.skills.SkillsChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SkillsChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SkillsChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.skills.SkillsChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unicode_hidden
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="unicode_hidden">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        UnicodeHiddenChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="UnicodeHiddenChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.unicode_hidden.decode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        decode
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        structured_data
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="structured_data">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        StructuredDataChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="StructuredDataChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.structured_data.StructuredDataChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pdf_metadata
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="pdf_metadata">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PDFMetadataChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PDFMetadataChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.pdf_metadata.PDFMetadataChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.log_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        log_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="log_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.log_file.LogFileChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        LogFileChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="LogFileChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.log_file.LogFileChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        email_headers
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="email_headers">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers.EmailHeadersChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        EmailHeadersChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="EmailHeadersChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.email_headers.EmailHeadersChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calendar_event
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="calendar_event">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CalendarEventChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="CalendarEventChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.calendar_event.CalendarEventChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.config_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config_file
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="config_file">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.config_file.ConfigFileChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ConfigFileChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="ConfigFileChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.config_file.ConfigFileChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.translation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        translation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="translation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.translation.TranslationChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TranslationChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TranslationChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.translation.TranslationChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        spreadsheet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="spreadsheet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SpreadsheetChannel
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="SpreadsheetChannel">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel--parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pikit.channels.spreadsheet.SpreadsheetChannel.taint_file" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        taint_file
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="channels">Channels<a class="headerlink" href="#channels" title="Permanent link">&para;</a></h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels</span>
+
+
+<a href="#pikit.channels" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Indirect prompt-injection channels.</p>
+<p>A <em>channel</em> hides an (optionally attack-worded) payload inside an external
+data artifact the model later reads — a web page, a retrieved document, an
+email — and returns the full prompt the target would receive. Channels are
+orthogonal to attacks and compose freely (<code>attack × channel</code>).</p>
+<p>Each channel subclasses :class:<code>pikit.base.Channel</code> and registers itself
+under a short key. Import this package to populate the registry, then use
+<code>channels.get(key)</code> / <code>channels.list()</code>.</p>
+<h4 id="pikit.channels--references">References<a class="headerlink" href="#pikit.channels--references" title="Permanent link">&para;</a></h4>
+<p>Indirect prompt injection was introduced by Greshake et al.,
+"Not what you've signed up for: Compromising Real-World LLM-Integrated
+Applications with Indirect Prompt Injection" (AISec 2023).</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.Channel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">Channel</span>
+
+
+<a href="#pikit.channels.Channel" class="headerlink" title="Permanent link">&para;</a></h3>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
+
+
+
+        <p>An <em>indirect</em> injection carrier.</p>
+<p>Where an :class:<code>Attack</code> controls how a payload is <em>worded</em>, a Channel
+controls <em>where and how</em> the payload is hidden — inside an external data
+artifact the model later reads (a web page, a retrieved document, an
+email). The two are orthogonal and compose freely: word a payload with an
+attack, then embed it with a channel.</p>
+<p>Subclasses implement :meth:<code>taint</code>, which returns the tainted data
+artifact itself (the web page / document / email). This is what an
+attacker actually controls and what an agent's compromised tool would
+return. The concrete :meth:<code>embed</code> is a convenience that prepends an
+instruction to the tainted artifact to form a full prompt.</p>
+<p>Two delivery modes are supported:</p>
+<ul>
+<li><strong>text mode</strong> (:meth:<code>taint</code>) — operates on a plain-text representation
+  of the artifact. This is the simulation default and requires no real
+  files.</li>
+<li><strong>file mode</strong> (:meth:<code>taint_file</code>) — operates on a <em>real file</em>
+  (<code>.html</code>, <code>.eml</code>, <code>.pdf</code>, <code>.ics</code>, …). The tainted output is a
+  file whose format matches what a real agent would encounter. For binary
+  formats (PDF, XLSX) subclasses may use helper libraries; the default
+  implementation reads the file as text and delegates to :meth:<code>taint</code>.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.Channel.taint" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint</span>
+
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
+  </span>
+
+<a href="#pikit.channels.Channel.taint" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Hide <code>payload</code> inside <code>data</code>, returning the tainted artifact.</p>
+<h6 id="pikit.channels.Channel.taint--parameters">Parameters<a class="headerlink" href="#pikit.channels.Channel.taint--parameters" title="Permanent link">&para;</a></h6>
+<p>data:
+    The clean external data (page HTML, document body, email text).
+payload:
+    The injected instruction to hide. May be the raw attacker task
+    or the output of an :class:<code>Attack</code> (e.g. <code>attack.inject("", task)</code>)
+    to combine wording with carrier.</p>
+<h6 id="pikit.channels.Channel.taint--returns">Returns<a class="headerlink" href="#pikit.channels.Channel.taint--returns" title="Permanent link">&para;</a></h6>
+<p>str
+    The tainted artifact — the data with the payload hidden inside,
+    <strong>not</strong> a full prompt. Feed this to an agent's compromised tool,
+    or use :meth:<code>embed</code> to turn it into a prompt.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.Channel.taint_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint_file</span>
+
+
+<a href="#pikit.channels.Channel.taint_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Hide <code>payload</code> inside a <em>real file</em>, returning the output path.</p>
+<p>Reads the carrier file at <em>path</em>, injects the payload, and writes
+the tainted file. For text-based formats (HTML, Markdown, YAML,
+CSV, Python, etc.) the default implementation reads the file as
+text, calls :meth:<code>taint</code>, and writes the result. Subclasses that
+target binary formats (PDF, XLSX) override this to use format-
+specific libraries.</p>
+<h6 id="pikit.channels.Channel.taint_file--parameters">Parameters<a class="headerlink" href="#pikit.channels.Channel.taint_file--parameters" title="Permanent link">&para;</a></h6>
+<p>path:
+    Path to the clean carrier file.
+payload:
+    The injected instruction to hide.
+output_path:
+    Where to write the tainted file. When <code>None</code>, writes to
+    <code>&lt;path&gt;.tainted.&lt;ext&gt;</code>.</p>
+<h6 id="pikit.channels.Channel.taint_file--returns">Returns<a class="headerlink" href="#pikit.channels.Channel.taint_file--returns" title="Permanent link">&para;</a></h6>
+<p>str
+    The path to the tainted file.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.Channel.extract" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">extract</span>
+
+
+<a href="#pikit.channels.Channel.extract" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">extract</span><span class="p">(</span><span class="n">tainted_data</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Extract the visible text a model would see from a tainted artifact.</p>
+<p>In text mode this is typically the identity (the artifact <em>is</em> text).
+Subclasses for structured formats may parse the artifact to produce
+the model-visible text. Useful for defenders and for verifying that
+a payload is present.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.Channel.extract_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">extract_file</span>
+
+
+<a href="#pikit.channels.Channel.extract_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">extract_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Read a tainted file and return the text a model would see.</p>
+<p>Default implementation reads the file as text and calls
+:meth:<code>extract</code>. Binary-format subclasses override to parse.</p>
+
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.Channel.embed" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">embed</span>
+
+
+<a href="#pikit.channels.Channel.embed" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">embed</span><span class="p">(</span><span class="n">instruction</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Taint <code>data</code> and prepend <code>instruction</code> to form a full prompt.</p>
+<p>Convenience for the non-agent case: returns <code>instruction</code> followed
+by the tainted artifact — the full prompt a target would receive.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.webpage" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.webpage</span>
+
+
+<a href="#pikit.channels.webpage" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Webpage channel: hide the payload inside HTML a model scrapes/reads.</p>
+<p>Models that summarize or answer questions over fetched web pages ingest the
+raw HTML, including parts a human browser never renders. This channel hides
+the payload in such a region so it is invisible on screen yet present in the
+text the model processes.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.webpage.WebpageChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">WebpageChannel</span>
+
+
+<a href="#pikit.channels.webpage.WebpageChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">WebpageChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;comment&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a non-rendered region of an HTML page.</p>
+<h5 id="pikit.channels.webpage.WebpageChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.webpage.WebpageChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"comment"</code> — inside an HTML comment <code>&lt;!-- payload --&gt;</code>.
+    * <code>"hidden_div"</code> — a <code>display:none</code> div.
+    * <code>"alt_attr"</code> — the <code>alt</code> text of an <code>&lt;img&gt;</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.document" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.document</span>
+
+
+<a href="#pikit.channels.document" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Document channel: hide the payload in a retrieved document or email body.</p>
+<p>Models in RAG pipelines and email assistants read document/message text
+verbatim. This channel plants the payload in a plausible location within
+that text — a footnote, mid-body, or appended trailer.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.document.DocumentChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">DocumentChannel</span>
+
+
+<a href="#pikit.channels.document.DocumentChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">DocumentChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;footnote&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in the body of a document or email.</p>
+<h5 id="pikit.channels.document.DocumentChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.document.DocumentChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"footnote"</code> — appended as a footnote-style note at the end.
+    * <code>"inline"</code> — inserted near the middle of the body.
+    * <code>"appended"</code> — plainly appended after the body (most naive).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.markdown" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.markdown</span>
+
+
+<a href="#pikit.channels.markdown" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Markdown channel: hide the payload in Markdown a model reads.</p>
+<p>Assistants that summarize or answer over Markdown (READMEs, wiki pages,
+issues, notes) ingest source that renders differently than it reads. This
+channel hides the payload where it is easy to miss on a rendered page.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.markdown.MarkdownChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">MarkdownChannel</span>
+
+
+<a href="#pikit.channels.markdown.MarkdownChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">MarkdownChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;comment&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a low-visibility part of a Markdown document.</p>
+<h5 id="pikit.channels.markdown.MarkdownChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.markdown.MarkdownChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"comment"</code> — an HTML comment <code>&lt;!-- payload --&gt;</code> (not rendered).
+    * <code>"link_title"</code> — the title attribute of an inline link.
+    * <code>"reference"</code> — a trailing reference-style link definition.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.code_comment" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.code_comment</span>
+
+
+<a href="#pikit.channels.code_comment" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Code-comment channel: hide the payload inside source-code comments.</p>
+<p>Coding assistants and code-review/analysis agents read source files whole,
+comments included. An instruction planted in a comment is easy for a human
+reviewer to skim past but is fully present in what the model processes.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.code_comment.CodeCommentChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">CodeCommentChannel</span>
+
+
+<a href="#pikit.channels.code_comment.CodeCommentChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">CodeCommentChannel</span><span class="p">(</span><span class="n">style</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;hash&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a code comment.</p>
+<h5 id="pikit.channels.code_comment.CodeCommentChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.code_comment.CodeCommentChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>style:
+    * <code>"hash"</code> — <code># payload</code> (Python, shell, Ruby, YAML).
+    * <code>"slashes"</code> — <code>// payload</code> (C, Java, JS, Go, Rust).
+    * <code>"block"</code> — <code>/* payload */</code> (C-family block comment).
+position:
+    <code>"end"</code> (default) appends the comment after the code; <code>"start"</code>
+    prepends it (e.g. a fake file-header directive).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.skills" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.skills</span>
+
+
+<a href="#pikit.channels.skills" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Skills channel: hide the payload inside an Agent Skill (<code>SKILL.md</code>).</p>
+<p>Agent Skills are Markdown files with a YAML frontmatter (<code>name</code> /
+<code>description</code>) plus a body of instructions. An agent reads the
+<code>description</code> to decide whether to load a skill, then follows the body.
+An attacker who can publish or edit a skill hides instructions in the
+<code>description</code> (executed the moment the agent considers the skill) or in
+the body (executed on load) — a topical indirect-injection vector as agents
+increasingly auto-discover and load third-party skills.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.skills.SkillsChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SkillsChannel</span>
+
+
+<a href="#pikit.channels.skills.SkillsChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">SkillsChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;description&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a SKILL.md skill definition.</p>
+<h5 id="pikit.channels.skills.SkillsChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.skills.SkillsChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"description"</code> — append the payload to the frontmatter
+      <code>description</code> (read during skill selection, before load).
+    * <code>"body"</code> — append the payload to the skill body.
+    * <code>"instructions"</code> — insert the payload disguised as a numbered
+      step within the body's instructions.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.unicode_hidden" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.unicode_hidden</span>
+
+
+<a href="#pikit.channels.unicode_hidden" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Unicode-hidden channel: encode the payload as invisible characters.</p>
+<p>The payload is rendered as characters that occupy no visible space, so the
+tainted data looks identical to the clean data to a human, yet the model
+still receives the hidden instruction in its token stream.</p>
+<p>Two schemes are provided, both losslessly decodable (see :func:<code>decode</code>):</p>
+<ul>
+<li><code>zero_width</code> — each payload byte becomes 8 zero-width characters
+  (ZWSP for 0, ZWNJ for 1).</li>
+<li><code>unicode_tags</code> — each ASCII char is mapped into the Unicode <em>Tags</em>
+  block (U+E0000+), which renders as nothing in most contexts.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.unicode_hidden.UnicodeHiddenChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">UnicodeHiddenChannel</span>
+
+
+<a href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">UnicodeHiddenChannel</span><span class="p">(</span><span class="n">scheme</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;zero_width&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload as invisible Unicode characters within the data.</p>
+<h5 id="pikit.channels.unicode_hidden.UnicodeHiddenChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.unicode_hidden.UnicodeHiddenChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>scheme:
+    <code>"zero_width"</code> (default) or <code>"unicode_tags"</code>.
+position:
+    Where to splice the hidden run: <code>"end"</code> (default), <code>"start"</code>,
+    or <code>"middle"</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="pikit.channels.unicode_hidden.decode" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">decode</span>
+
+
+<a href="#pikit.channels.unicode_hidden.decode" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">decode</span><span class="p">(</span><span class="n">text</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Recover a payload hidden by either scheme from <code>text</code>.</p>
+<p>Useful in tests and for defenders building detectors. Characters that
+are not part of a hidden payload are ignored.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.structured_data" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.structured_data</span>
+
+
+<a href="#pikit.channels.structured_data" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Structured-data channel: hide the payload inside JSON / CSV / TSV.</p>
+<p>Agents that query APIs, databases, or spreadsheets ingest structured
+responses. A payload planted in a field value, a column name, or a
+comment line blends in naturally and is processed verbatim by the model.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.structured_data.StructuredDataChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">StructuredDataChannel</span>
+
+
+<a href="#pikit.channels.structured_data.StructuredDataChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">StructuredDataChannel</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;json&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;field_value&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a JSON / CSV / TSV data artifact.</p>
+<h5 id="pikit.channels.structured_data.StructuredDataChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.structured_data.StructuredDataChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>fmt:
+    <code>"json"</code> (default), <code>"csv"</code>, or <code>"tsv"</code>.
+method:
+    * <code>"field_value"</code> — inside a data field value.
+    * <code>"field_name"</code> — as a new key / column header.
+    * <code>"comment"</code> — a comment-style line (CSV/TSV <code># payload</code>;
+      JSON <code>"_comment"</code> key).</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.structured_data.StructuredDataChannel.taint_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint_file</span>
+
+
+<a href="#pikit.channels.structured_data.StructuredDataChannel.taint_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Inject the payload into a real structured-data file.</p>
+<p>Detects the format from the file extension (<code>.json</code>, <code>.csv</code>,
+<code>.tsv</code>) and injects accordingly, writing a valid tainted file.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.pdf_metadata" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.pdf_metadata</span>
+
+
+<a href="#pikit.channels.pdf_metadata" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>PDF-metadata channel: hide the payload inside PDF metadata fields.</p>
+<p>When a model reads a PDF — via text extraction, a retrieval pipeline, or
+a summarisation tool — the document's metadata (Title, Author, Subject,
+Keywords) is often included in the text stream. A payload planted in a
+metadata field is invisible in the rendered page content yet present in
+what the model processes.</p>
+<p><strong>File mode</strong>: :meth:<code>taint_file</code> uses :mod:<code>pypdf</code> to inject the payload
+into a real PDF's <code>/Info</code> dictionary, producing a valid tainted <code>.pdf</code>.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.pdf_metadata.PDFMetadataChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">PDFMetadataChannel</span>
+
+
+<a href="#pikit.channels.pdf_metadata.PDFMetadataChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">PDFMetadataChannel</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a PDF metadata field.</p>
+<p>The channel works on a plain-text representation of PDF metadata
+(<code>key: value</code> lines, one per field). When the raw PDF bytes are not
+available — which is the common case in simulation — this text form
+is what the extraction pipeline would hand to the model.</p>
+<h5 id="pikit.channels.pdf_metadata.PDFMetadataChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.pdf_metadata.PDFMetadataChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>field:
+    The metadata field to inject into:
+    * <code>"title"</code> — the <code>Title</code> field.
+    * <code>"author"</code> — the <code>Author</code> field.
+    * <code>"subject"</code> — the <code>Subject</code> field.
+    * <code>"keywords"</code> — the <code>Keywords</code> field.
+    * <code>"custom"</code> — a custom <code>X-Comment</code> field.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.pdf_metadata.PDFMetadataChannel.taint_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint_file</span>
+
+
+<a href="#pikit.channels.pdf_metadata.PDFMetadataChannel.taint_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Inject the payload into a real PDF's metadata dictionary.</p>
+<p>Uses :mod:<code>pypdf</code> to read the PDF, overwrite the target metadata
+field with the payload, and write the tainted PDF.</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.log_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.log_file</span>
+
+
+<a href="#pikit.channels.log_file" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Log-file channel: hide the payload inside system / application logs.</p>
+<p>Debug and monitoring agents read log files to diagnose issues. A payload
+planted in a log entry — disguised as a warning, an error trace, or a
+system message — blends in with the noise and is processed verbatim by
+the model.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.log_file.LogFileChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">LogFileChannel</span>
+
+
+<a href="#pikit.channels.log_file.LogFileChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">LogFileChannel</span><span class="p">(</span><span class="n">level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span><span class="p">,</span> <span class="n">position</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;end&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload as a log entry.</p>
+<h5 id="pikit.channels.log_file.LogFileChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.log_file.LogFileChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>level:
+    The log level prefix for the fake entry:
+    * <code>"info"</code> — <code>[INFO] payload</code>
+    * <code>"warn"</code> — <code>[WARN] payload</code>
+    * <code>"error"</code> — <code>[ERROR] payload</code>
+    * <code>"debug"</code> — <code>[DEBUG] payload</code>
+position:
+    Where to splice the fake entry: <code>"end"</code> (default) or <code>"middle"</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.email_headers" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.email_headers</span>
+
+
+<a href="#pikit.channels.email_headers" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Email-header channel: hide the payload inside email header fields.</p>
+<p>The existing <code>document</code> channel hides payloads in the email <em>body</em>.
+This channel targets the <em>headers</em> — X-headers, Reply-To, Subject, and
+custom fields. Email assistants and triage agents that parse headers
+for routing, filtering, or display ingest them verbatim, making headers
+an effective indirect-injection surface distinct from the body.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.email_headers.EmailHeadersChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">EmailHeadersChannel</span>
+
+
+<a href="#pikit.channels.email_headers.EmailHeadersChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">EmailHeadersChannel</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;x_header&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in an email header field.</p>
+<p>Works on a plain-text email representation (headers followed by a
+blank line and the body), which is what an agent's email-parsing
+tool would produce after MIME decoding.</p>
+<h5 id="pikit.channels.email_headers.EmailHeadersChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.email_headers.EmailHeadersChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>field:
+    * <code>"x_header"</code> — a custom <code>X-Note</code> header (default).
+    * <code>"reply_to"</code> — the <code>Reply-To</code> header.
+    * <code>"subject"</code> — appended to the <code>Subject</code> header.
+    * <code>"custom"</code> — a fully custom <code>X-Instructions</code> header.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.calendar_event" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.calendar_event</span>
+
+
+<a href="#pikit.channels.calendar_event" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Calendar-event channel: hide the payload inside a calendar invite.</p>
+<p>Scheduling agents that read .ics files or calendar APIs process event
+metadata — title, description, location, attendee notes. A payload
+planted in one of these fields is ingested verbatim when the agent
+summarises, triages, or acts on the event.</p>
+<p><strong>File mode</strong>: :meth:<code>taint_file</code> operates on real <code>.ics</code> files using
+iCalendar standard field names (<code>SUMMARY</code>, <code>DESCRIPTION</code>, <code>LOCATION</code>,
+<code>NOTE</code>).</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.calendar_event.CalendarEventChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">CalendarEventChannel</span>
+
+
+<a href="#pikit.channels.calendar_event.CalendarEventChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">CalendarEventChannel</span><span class="p">(</span><span class="n">field</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;title&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a calendar event field.</p>
+<p>Works on a plain-text calendar event representation (field <code>key:
+value</code> lines), which is what an agent's calendar tool would return
+after parsing an .ics file or calling a calendar API.</p>
+<h5 id="pikit.channels.calendar_event.CalendarEventChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.calendar_event.CalendarEventChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>field:
+    * <code>"title"</code> — the event <code>Title</code> (default).
+    * <code>"description"</code> — the event <code>Description</code>.
+    * <code>"location"</code> — the event <code>Location</code>.
+    * <code>"attendee_note"</code> — an attendee <code>Note</code> field.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.calendar_event.CalendarEventChannel.taint_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint_file</span>
+
+
+<a href="#pikit.channels.calendar_event.CalendarEventChannel.taint_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Inject the payload into a real <code>.ics</code> calendar file.</p>
+<p>Uses iCalendar standard property names (<code>SUMMARY</code>, <code>DESCRIPTION</code>,
+<code>LOCATION</code>, <code>NOTE</code>).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.config_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.config_file</span>
+
+
+<a href="#pikit.channels.config_file" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Config-file channel: hide the payload inside configuration files.</p>
+<p>Agents that audit, review, or deploy applications read YAML, TOML, and
+.env configuration files. A payload planted in a config value or comment
+is ingested verbatim — and because config files are trusted by
+convention, the model may be especially susceptible.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.config_file.ConfigFileChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">ConfigFileChannel</span>
+
+
+<a href="#pikit.channels.config_file.ConfigFileChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">ConfigFileChannel</span><span class="p">(</span><span class="n">fmt</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;yaml&#39;</span><span class="p">,</span> <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;value&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a configuration file.</p>
+<h5 id="pikit.channels.config_file.ConfigFileChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.config_file.ConfigFileChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>fmt:
+    * <code>"yaml"</code> (default) — <code>key: value</code> lines.
+    * <code>"toml"</code> — <code>key = "value"</code> lines.
+    * <code>"env"</code> — <code>KEY=value</code> lines.
+method:
+    * <code>"value"</code> — appended to an existing config value.
+    * <code>"comment"</code> — a comment line (<code># payload</code>).
+    * <code>"new_key"</code> — a new config key whose value is the payload.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.translation" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.translation</span>
+
+
+<a href="#pikit.channels.translation" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Translation channel: hide the payload inside a translation tool's output.</p>
+<p>Translation agents read source text and produce translated output. When
+the source text is attacker-controlled (e.g. user-submitted content,
+scraped web text), a payload planted in the source survives into the
+translation output and is then processed by downstream agents that
+consume the translated text.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.translation.TranslationChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">TranslationChannel</span>
+
+
+<a href="#pikit.channels.translation.TranslationChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">TranslationChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;source&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a translation output.</p>
+<p>Works on a plain-text translation result representation (<code>Source:
+...</code> / <code>Translation: ...</code>), which is what a translation tool would
+return to the agent.</p>
+<h5 id="pikit.channels.translation.TranslationChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.translation.TranslationChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"source"</code> — the payload is in the source text (default).
+    * <code>"translation"</code> — the payload appears in the translated
+      output (as if the translator was tricked into passing it
+      through verbatim).
+    * <code>"note"</code> — a translator's note appended to the output.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-module">
+
+
+
+<h2 id="pikit.channels.spreadsheet" class="doc doc-heading">
+            <span class="doc doc-object-name doc-module-name">pikit.channels.spreadsheet</span>
+
+
+<a href="#pikit.channels.spreadsheet" class="headerlink" title="Permanent link">&para;</a></h2>
+
+    <div class="doc doc-contents first">
+
+        <p>Spreadsheet channel: hide the payload inside spreadsheet cell data.</p>
+<p>Agents that analyse spreadsheets (Excel, Google Sheets, CSV-as-sheet)
+read cell values, formulas, and comments. A payload planted in a cell
+value, a cell comment, or a sheet name blends in with legitimate data
+and is processed verbatim by the model.</p>
+<p><strong>File mode</strong>: :meth:<code>taint_file</code> operates on real <code>.csv</code> files.
+For <code>.xlsx</code> files, :mod:<code>openpyxl</code> is used to inject cell values and
+comments.</p>
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="pikit.channels.spreadsheet.SpreadsheetChannel" class="doc doc-heading">
+            <span class="doc doc-object-name doc-class-name">SpreadsheetChannel</span>
+
+
+<a href="#pikit.channels.spreadsheet.SpreadsheetChannel" class="headerlink" title="Permanent link">&para;</a></h3>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">SpreadsheetChannel</span><span class="p">(</span><span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;cell_value&#39;</span><span class="p">)</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="Channel (pikit.base.Channel)" href="../base/#pikit.base.Channel">Channel</a></code></p>
+
+
+
+        <p>Embed the payload in a spreadsheet cell representation.</p>
+<p>Works on a plain-text spreadsheet representation (<code>A1: value</code> lines,
+one per cell), which is what a spreadsheet-reading tool would return
+to the agent after converting a .xlsx / .gsheet to text.</p>
+<h5 id="pikit.channels.spreadsheet.SpreadsheetChannel--parameters">Parameters<a class="headerlink" href="#pikit.channels.spreadsheet.SpreadsheetChannel--parameters" title="Permanent link">&para;</a></h5>
+<p>method:
+    * <code>"cell_value"</code> — appended to an existing cell value (default).
+    * <code>"cell_comment"</code> — a cell comment (<code>A1 [comment]: payload</code>).
+    * <code>"sheet_name"</code> — the payload becomes a sheet tab name.</p>
+
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="pikit.channels.spreadsheet.SpreadsheetChannel.taint_file" class="doc doc-heading">
+            <span class="doc doc-object-name doc-function-name">taint_file</span>
+
+
+<a href="#pikit.channels.spreadsheet.SpreadsheetChannel.taint_file" class="headerlink" title="Permanent link">&para;</a></h4>
+<div class="language-python doc-signature highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="nf">taint_file</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">payload</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">output_path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span>
+</span></code></pre></div>
+
+    <div class="doc doc-contents ">
+
+        <p>Inject the payload into a real spreadsheet file.</p>
+<p>Supports <code>.csv</code> files (text-based) and <code>.xlsx</code> files (via
+:mod:<code>openpyxl</code>).</p>
+
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+  <script>var tabs=__md_get("__tabs");if(Array.isArray(tabs))e:for(var set of document.querySelectorAll(".tabbed-set")){var labels=set.querySelector(".tabbed-labels");for(var tab of tabs)for(var label of labels.getElementsByTagName("label"))if(label.innerText.trim()===tab){var input=document.getElementById(label.htmlFor);input.checked=!0;continue e}}</script>
+
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "navigation.top", "navigation.indexes", "search.suggest", "search.highlight", "content.code.copy", "content.code.annotate", "content.tabs.link", "toc.follow"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
