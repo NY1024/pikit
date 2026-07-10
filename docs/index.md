@@ -78,6 +78,7 @@ prompt. They're orthogonal and compose freely:
 - :material-rocket-launch: **[Quick Start](quickstart.md)** — craft your first attack
 - :material-book-open-variant: **[Concepts](concepts.md)** — understand the design
 - :material-database: **[Datasets](datasets.md)** — run standard benchmarks
-- :material-flask: **[Demos & CLI](demos.md)** — run prebuilt scenarios against a real model
+- :material-flask: **[Jupyter Notebooks](tutorials/notebooks.md)** — 6 interactive tutorials (no API key needed)
+- :material-console: **[Demos & CLI](demos.md)** — run prebuilt scenarios against a real model
 
 </div>

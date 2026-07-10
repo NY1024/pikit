@@ -62,6 +62,7 @@ nav:
   - CLI: cli.md
   - Tutorials:
       - Overview: tutorials/index.md
+      - Jupyter Notebooks: tutorials/notebooks.md
       - Direct Injection: tutorials/direct_injection.md
       - Indirect Injection: tutorials/indirect_injection.md
       - Agent Testbed: tutorials/agent_testbed.md

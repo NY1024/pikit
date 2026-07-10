@@ -32,6 +32,7 @@ Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https:/
 - [Quickstart](#quickstart)
 - [Concepts](#concepts)
 - [Method catalog](#method-catalog)
+- [Tutorials](#tutorials)
 - [Demos & CLI](#demos--cli)
 - [Configuring model access](#configuring-model-access)
 - [Extending pikit](#extending-pikit)
@@ -292,6 +293,25 @@ SDKs are imported lazily — the core package and `mock` need nothing installed.
 whether an attack works; to *see* one, always use a real model.
 
 </details>
+
+## Tutorials
+
+pikit ships **6 interactive Jupyter notebooks** in the [`tutorial/`](tutorial/) directory — no API key required (all use the offline `mock` target):
+
+| # | Notebook | Topic |
+|---|----------|-------|
+| 1 | [`01_getting_started`](tutorial/01_getting_started.ipynb) | Core concepts, `craft()` basics |
+| 2 | [`02_attacks`](tutorial/02_attacks.ipynb) | All 13 attack methods |
+| 3 | [`03_channels_indirect`](tutorial/03_channels_indirect.ipynb) | 16 indirect injection channels |
+| 4 | [`04_defenses`](tutorial/04_defenses.ipynb) | 9 prevention + 3 detection defenses |
+| 5 | [`05_agent_testbed`](tutorial/05_agent_testbed.ipynb) | Build agents, taint/sink, read traces |
+| 6 | [`06_judges_and_matrix`](tutorial/06_judges_and_matrix.ipynb) | RuleJudge, LLMJudge, MatrixRunner, datasets |
+
+```bash
+jupyter notebook tutorial/
+```
+
+See [`tutorial/README.md`](tutorial/README.md) for a learning-path guide.
 
 ## Demos & CLI
 
