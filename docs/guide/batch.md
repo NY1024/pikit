@@ -50,7 +50,7 @@ impractical. The optional [Judge](../api/judge.md) layer automates it.
 | Judge | How it works | API cost |
 |-------|-------------|----------|
 | `RuleJudge` | Heuristics: sink fired? canary in output? refusal detected? | Free (offline) |
-| `LLMJudge` | A second model reads the trace and renders a JSON verdict | Costs tokens |
+| `LLMJudge` | A second model reads the trace and renders a verdict via free-form analysis | Costs tokens |
 
 ```python
 from pikit.judges import RuleJudge
