@@ -1,6 +1,6 @@
 # 📚 Jupyter Notebook Tutorials
 
-pikit ships **6 interactive Jupyter notebooks** that walk you through every feature step by step.
+pikit ships **7 interactive Jupyter notebooks** that walk you through every feature step by step.
 
 > **No API key required** — all notebooks use the offline `mock` target.
 > Swap `mock` for `openai:`, `anthropic:`, or `hf:` to test against real models.
@@ -15,6 +15,7 @@ pikit ships **6 interactive Jupyter notebooks** that walk you through every feat
 | 4 | [Defenses](https://github.com/NY1024/pikit/blob/main/tutorial/04_defenses.ipynb) | 9 prevention + 3 detection defenses, DefenseHooks |
 | 5 | [Agent Testbed](https://github.com/NY1024/pikit/blob/main/tutorial/05_agent_testbed.ipynb) | Build agents, taint/sink, run attacks, read traces |
 | 6 | [Judges & Batch Experiments](https://github.com/NY1024/pikit/blob/main/tutorial/06_judges_and_matrix.ipynb) | RuleJudge, LLMJudge, MatrixRunner, datasets |
+| 7 | [Datasets](https://github.com/NY1024/pikit/blob/main/tutorial/07_datasets.ipynb) | Built-in benchmarks, custom TOML datasets, result analysis |
 
 ## Quick Start
 
@@ -33,9 +34,11 @@ Open `01_getting_started.ipynb` and follow along — each notebook is self-conta
 01 Getting Started → 02 Attacks → 03 Channels
                                           ↓
 06 Judges & Matrix ← 05 Agent Testbed ← 04 Defenses
+          ↓
+07 Datasets
 ```
 
-- **Beginners**: Go in order (1 → 6).
+- **Beginners**: Go in order (1 → 7).
 - **Researchers**: Skip to 5 (Agent Testbed) and 6 (Judges & Matrix).
 - **Defenders**: Focus on 4 (Defenses) and 5 (Agent Testbed).
 

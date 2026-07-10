@@ -15,6 +15,7 @@ Hands-on, step-by-step guides to using pikit for prompt-injection research.
 | 4 | [Defenses](04_defenses.ipynb) | 9 prevention + 3 detection defenses, DefenseHooks |
 | 5 | [Agent Testbed](05_agent_testbed.ipynb) | Build agents, taint/sink, run attacks, read traces |
 | 6 | [Judges & Batch Experiments](06_judges_and_matrix.ipynb) | RuleJudge, LLMJudge, MatrixRunner, datasets |
+| 7 | [Datasets](07_datasets.ipynb) | Built-in benchmarks, custom TOML datasets, result analysis |
 
 ## Quick Start
 
@@ -34,9 +35,11 @@ Open `01_getting_started.ipynb` and follow along.
 01 Getting Started → 02 Attacks → 03 Channels
                                           ↓
 06 Judges & Matrix ← 05 Agent Testbed ← 04 Defenses
+          ↓
+07 Datasets
 ```
 
-- **Beginners**: Go in order (1 → 6).
+- **Beginners**: Go in order (1 → 7).
 - **Researchers**: Skip to 5 (Agent Testbed) and 6 (Judges & Matrix).
 - **Defenders**: Focus on 4 (Defenses) and 5 (Agent Testbed).
 

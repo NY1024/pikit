@@ -296,7 +296,7 @@ whether an attack works; to *see* one, always use a real model.
 
 ## Tutorials
 
-pikit ships **6 interactive Jupyter notebooks** in the [`tutorial/`](tutorial/) directory — no API key required (all use the offline `mock` target):
+pikit ships **7 interactive Jupyter notebooks** in the [`tutorial/`](tutorial/) directory — no API key required (all use the offline `mock` target):
 
 | # | Notebook | Topic |
 |---|----------|-------|
@@ -306,6 +306,7 @@ pikit ships **6 interactive Jupyter notebooks** in the [`tutorial/`](tutorial/) 
 | 4 | [`04_defenses`](tutorial/04_defenses.ipynb) | 9 prevention + 3 detection defenses |
 | 5 | [`05_agent_testbed`](tutorial/05_agent_testbed.ipynb) | Build agents, taint/sink, read traces |
 | 6 | [`06_judges_and_matrix`](tutorial/06_judges_and_matrix.ipynb) | RuleJudge, LLMJudge, MatrixRunner, datasets |
+| 7 | [`07_datasets`](tutorial/07_datasets.ipynb) | Built-in benchmarks, custom TOML datasets, result analysis |
 
 ```bash
 jupyter notebook tutorial/
