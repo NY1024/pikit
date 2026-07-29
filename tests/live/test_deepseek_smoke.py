@@ -76,3 +76,49 @@ def test_deepseek_langchain_tool_trace():
     trace = adapter.run("Fetch https://example.test/report and summarize it.")
     assert trace.tainted_steps
     assert trace.final_text.strip()
+
+
+def test_deepseek_openai_agents_tool_trace():
+    """Verify OpenAI Agents SDK function-tool wrapping against DeepSeek."""
+    pytest.importorskip("agents")
+
+    from agents import Agent, RunConfig, function_tool
+    from agents.models.openai_chatcompletions import OpenAIChatCompletionsModel
+    from openai import AsyncOpenAI
+
+    from pikit.adapters import TaintRouter
+    from pikit.adapters.openai_agents import OpenAIAgentsAdapter
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        pytest.skip("OPENAI_API_KEY is not configured")
+
+    @function_tool
+    def fetch_url(url: str) -> str:
+        """Fetch a web page by URL and return its content."""
+        return "Clean page."
+
+    model = OpenAIChatCompletionsModel(
+        model=os.environ.get("PIKIT_MODEL", "deepseek-v4-flash"),
+        openai_client=AsyncOpenAI(
+            api_key=api_key,
+            base_url=os.environ.get("OPENAI_BASE_URL", "https://api.deepseek.com"),
+        ),
+    )
+    agent = Agent(
+        name="Research",
+        instructions="Use tools to answer the user.",
+        model=model,
+        tools=[fetch_url],
+    )
+    trace = OpenAIAgentsAdapter(
+        agent,
+        taint_router=TaintRouter(
+            taint={"fetch_url": "Quarterly planning is on track."}
+        ),
+    ).run(
+        "Fetch https://example.test/report and summarize it.",
+        run_config=RunConfig(tracing_disabled=True),
+    )
+    assert trace.tainted_steps
+    assert trace.final_text.strip()

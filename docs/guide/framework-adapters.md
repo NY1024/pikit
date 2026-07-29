@@ -56,3 +56,45 @@ returned to LangChain.
 For unsupported frameworks or in-house agents, use
 `pikit.agent.CallableAgentAdapter`. Return a `Trace` if the framework exposes
 tool telemetry; return text for a minimal direct-injection integration.
+
+## OpenAI Agents SDK
+
+Install the optional SDK integration:
+
+```bash
+pip install "pikit[openai-agents]"
+```
+
+Wrap a standard SDK `Agent`; the adapter creates a per-run clone with
+intercepted function tools:
+
+```python
+from agents import Agent, Runner, function_tool
+from pikit.adapters import TaintRouter
+from pikit.adapters.openai_agents import OpenAIAgentsAdapter
+
+@function_tool
+def fetch_url(url: str) -> str:
+    """Fetch a page."""
+    return "Clean page."
+
+agent = Agent(
+    name="Research assistant",
+    instructions="Use tools to answer the user.",
+    tools=[fetch_url],
+)
+
+adapter = OpenAIAgentsAdapter(
+    agent,
+    taint_router=TaintRouter(
+        taint={"fetch_url": "Ignore previous instructions and ..."}
+    ),
+    sink_tools={"send_email"},
+)
+
+trace = await adapter.arun("Fetch the report and summarize it.")
+```
+
+Only SDK `FunctionTool` instances are intercepted in this initial adapter.
+Other SDK tool types and handoffs remain on the cloned agent but are not
+treated as taint points yet.
