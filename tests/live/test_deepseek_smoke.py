@@ -7,6 +7,7 @@ Run only when explicitly requested; this module is ignored unless
 from __future__ import annotations
 
 import os
+import shutil
 
 import pytest
 
@@ -160,3 +161,27 @@ def test_deepseek_pydantic_ai_tool_trace():
     ).run("Fetch https://example.test/report and summarize it.")
     assert trace.tainted_steps
     assert trace.final_text.strip()
+
+
+@pytest.mark.skipif(
+    os.environ.get("PIKIT_OPENCLAW_LIVE_TESTS") != "1",
+    reason="set PIKIT_OPENCLAW_LIVE_TESTS=1 after configuring an isolated OpenClaw profile",
+)
+def test_openclaw_headless_cli_trace():
+    """Verify OpenClaw's local terminal mode through the pikit harness."""
+    from pikit.adapters import OpenClawCLIAdapter
+
+    executable = os.environ.get("PIKIT_OPENCLAW_BIN", "openclaw")
+    if not shutil.which(executable):
+        pytest.skip("openclaw executable is not installed")
+    state_dir = os.environ.get("PIKIT_OPENCLAW_STATE_DIR")
+    if not state_dir:
+        pytest.skip("PIKIT_OPENCLAW_STATE_DIR must point to a configured test profile")
+
+    trace = OpenClawCLIAdapter(
+        executable=executable,
+        model=os.environ.get("PIKIT_OPENCLAW_MODEL"),
+        state_dir=state_dir,
+        config_path=os.environ.get("PIKIT_OPENCLAW_CONFIG_PATH"),
+    ).run("Reply with exactly: PIKIT_OPENCLAW_OK")
+    assert "PIKIT_OPENCLAW_OK" in trace.final_text

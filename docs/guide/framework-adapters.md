@@ -95,6 +95,53 @@ adapter = OpenAIAgentsAdapter(
 trace = await adapter.arun("Fetch the report and summarize it.")
 ```
 
+## OpenClaw and Hermes terminal harnesses
+
+OpenClaw and Hermes can both be used directly from a terminal; a messaging
+channel and Docker are not required for one-turn tests. pikit provides
+headless CLI harnesses for this mode:
+
+```python
+from pikit.adapters import OpenClawCLIAdapter, HermesCLIAdapter
+
+openclaw = OpenClawCLIAdapter(
+    model="your-provider/your-model",
+    # Runs: openclaw agent --local --json ...
+)
+trace = openclaw.run("Summarize the supplied report.")
+
+hermes = HermesCLIAdapter(
+    model="your-provider/your-model",
+    toolsets=["none"],
+    # --safe-mode is enabled by default and an isolated HERMES_HOME is used.
+)
+trace = hermes.run("Summarize the supplied report.")
+```
+
+These adapters deliberately do **not** add delivery/channel flags and do not
+enable Docker. `HermesCLIAdapter` defaults to `--safe-mode`, which disables
+customizations, skills, plugins, and MCP servers; it also creates a temporary
+`HERMES_HOME` so normal experiments cannot persist session memory or alter a
+user's normal Hermes profile.
+
+For indirect-injection research, use an isolated runtime profile with a
+purpose-built fixture tool/plugin that returns pikit-crafted artifacts and
+records attempted sinks. Do not expose shell, browser, file mutation, or real
+messaging tools by default.
+
+For a real OpenClaw test, first create an **isolated** state directory with
+OpenClaw's non-interactive onboarding/configuration and a restricted tool
+policy. Then run its opt-in smoke test:
+
+```bash
+PIKIT_LIVE_TESTS=1 \
+PIKIT_OPENCLAW_LIVE_TESTS=1 \
+PIKIT_OPENCLAW_STATE_DIR=/path/to/isolate/openclaw-state \
+PIKIT_OPENCLAW_CONFIG_PATH=/path/to/isolate/openclaw-state/openclaw.json \
+PIKIT_OPENCLAW_MODEL=your-provider/your-model \
+pytest -q tests/live/test_deepseek_smoke.py -k openclaw
+```
+
 Only SDK `FunctionTool` instances are intercepted in this initial adapter.
 Other SDK tool types and handoffs remain on the cloned agent but are not
 treated as taint points yet.

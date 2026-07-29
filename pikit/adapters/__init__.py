@@ -7,6 +7,7 @@ framework is needed.  The core package remains dependency-free.
 from ..agent.adapters import AgentCallable, AgentRunResult, CallableAgentAdapter
 from .recorder import TraceRecorder
 from .taint import TaintRouter, ToolTaintRule
+from .runtime_cli import HermesCLIAdapter, OpenClawCLIAdapter, RuntimeCLIAdapter
 
 __all__ = [
     "AgentCallable",
@@ -15,4 +16,7 @@ __all__ = [
     "TraceRecorder",
     "TaintRouter",
     "ToolTaintRule",
+    "RuntimeCLIAdapter",
+    "OpenClawCLIAdapter",
+    "HermesCLIAdapter",
 ]
