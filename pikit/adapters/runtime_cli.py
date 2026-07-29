@@ -72,32 +72,84 @@ class RuntimeCLIAdapter:
         env = os.environ.copy()
         env.update(self.env)
         env.update({str(k): str(v) for k, v in kwargs.pop("env", {}).items()})
-
-        completed = subprocess.run(
-            self.build_command(message),
-            capture_output=True,
-            text=True,
-            encoding="utf-8",
-            errors="replace",
-            timeout=kwargs.pop("timeout", self.timeout),
-            env=env,
-            check=False,
-            **kwargs,
-        )
-        if completed.returncode != 0:
-            detail = completed.stderr.strip() or completed.stdout.strip()
-            raise RuntimeError(
-                f"{self.name} exited with status {completed.returncode}: {detail}"
+        fixture_trace_path = env.get("PIKIT_FIXTURE_TRACE_PATH")
+        temporary_fixture_trace = None
+        if not fixture_trace_path and env.get("PIKIT_FIXTURE_DOCUMENT") is not None:
+            handle = tempfile.NamedTemporaryFile(
+                prefix="pikit-fixture-", suffix=".jsonl", delete=False
             )
+            handle.close()
+            fixture_trace_path = handle.name
+            temporary_fixture_trace = handle.name
+            env["PIKIT_FIXTURE_TRACE_PATH"] = fixture_trace_path
 
-        final_text = self.parse_output(completed.stdout)
-        trace = Trace()
-        if system:
-            trace.add(TraceStep("system", text=system))
-        trace.add(TraceStep("user", text=message))
-        trace.add(TraceStep("model", text=final_text))
-        trace.final_text = final_text
-        return trace
+        try:
+            completed = subprocess.run(
+                self.build_command(message),
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=kwargs.pop("timeout", self.timeout),
+                env=env,
+                check=False,
+                **kwargs,
+            )
+            if completed.returncode != 0:
+                detail = completed.stderr.strip() or completed.stdout.strip()
+                raise RuntimeError(
+                    f"{self.name} exited with status {completed.returncode}: {detail}"
+                )
+
+            final_text = self.parse_output(completed.stdout)
+            trace = Trace()
+            if system:
+                trace.add(TraceStep("system", text=system))
+            trace.add(TraceStep("user", text=message))
+            self._append_fixture_events(trace, fixture_trace_path)
+            trace.add(TraceStep("model", text=final_text))
+            trace.final_text = final_text
+            return trace
+        finally:
+            if temporary_fixture_trace:
+                try:
+                    os.unlink(temporary_fixture_trace)
+                except FileNotFoundError:
+                    pass
+
+    @staticmethod
+    def _append_fixture_events(trace: Trace, path: Optional[str]) -> None:
+        """Map safe fixture-plugin JSONL evidence into pikit's standard trace."""
+        if not path or not os.path.exists(path):
+            return
+        with open(path, "r", encoding="utf-8") as f:
+            for line in f:
+                try:
+                    event = json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+                event_type = event.get("type")
+                tool = str(event.get("tool", "fixture"))
+                args = event.get("args")
+                if event_type == "tool_result":
+                    trace.add(TraceStep(
+                        "tool_call",
+                        tool_name=tool,
+                        args=args if isinstance(args, dict) else {},
+                    ))
+                    trace.add(TraceStep(
+                        "tool_result",
+                        tool_name=tool,
+                        content=str(event.get("content", "")),
+                        tainted=bool(event.get("tainted", False)),
+                    ))
+                elif event_type == "sink_call":
+                    trace.add(TraceStep(
+                        "tool_call",
+                        tool_name=tool,
+                        args=args if isinstance(args, dict) else {},
+                        is_sink=True,
+                    ))
 
 
 class OpenClawCLIAdapter(RuntimeCLIAdapter):
@@ -146,9 +198,8 @@ class OpenClawCLIAdapter(RuntimeCLIAdapter):
         return command
 
     def parse_output(self, stdout: str) -> str:
-        try:
-            payload = json.loads(stdout)
-        except json.JSONDecodeError:
+        payload = _parse_json_payload(stdout)
+        if payload is None:
             return super().parse_output(stdout)
         return _extract_text(payload) or super().parse_output(stdout)
 
@@ -230,7 +281,7 @@ def _extract_text(value: Any) -> str:
     if isinstance(value, str):
         return value
     if isinstance(value, dict):
-        for key in ("text", "output", "response", "content", "message"):
+        for key in ("text", "output", "response", "content", "message", "payloads"):
             text = _extract_text(value.get(key))
             if text:
                 return text
@@ -241,6 +292,21 @@ def _extract_text(value: Any) -> str:
     if isinstance(value, list):
         return "\n".join(filter(None, (_extract_text(item) for item in value)))
     return ""
+
+
+def _parse_json_payload(text: str) -> Any:
+    """Find the first JSON value in noisy runtime stdout."""
+    decoder = json.JSONDecoder()
+    for index, char in enumerate(text):
+        if char not in "[{":
+            continue
+        try:
+            value, _ = decoder.raw_decode(text[index:])
+            if isinstance(value, (dict, list)):
+                return value
+        except json.JSONDecodeError:
+            continue
+    return None
 
 
 __all__ = [

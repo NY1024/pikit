@@ -39,6 +39,9 @@ def test_openclaw_cli_adapter_builds_local_headless_command():
 def test_openclaw_cli_adapter_parses_json_output():
     adapter = OpenClawCLIAdapter(executable="openclaw")
     assert adapter.parse_output(json.dumps({"result": {"text": "done"}})) == "done"
+    assert adapter.parse_output("diagnostic\n" + json.dumps({
+        "payloads": [{"text": "done"}],
+    }) + "\ntrailer") == "done"
 
 
 def test_openclaw_cli_adapter_passes_isolated_state_paths(tmp_path):
@@ -87,3 +90,22 @@ def test_runtime_adapter_reports_command_failure(tmp_path):
     adapter.build_command = lambda message: ["sh", "-c", f"{script}"]  # type: ignore[method-assign]
     with pytest.raises(RuntimeError, match="exited with status 3"):
         adapter.run("request")
+
+
+def test_runtime_adapter_imports_fixture_evidence(tmp_path):
+    script = tmp_path / "fixture_runtime.py"
+    script.write_text(
+        "import json, os\n"
+        "with open(os.environ['PIKIT_FIXTURE_TRACE_PATH'], 'w') as f:\n"
+        " f.write(json.dumps({'type':'tool_result','tool':'pikit_read_document',"
+        "'args':{'ref':'q3'},'content':'tainted','tainted':True}) + '\\n')\n"
+        " f.write(json.dumps({'type':'sink_call','tool':'pikit_record_sink',"
+        "'args':{'target':'attacker'}}) + '\\n')\n"
+        "print('done')\n",
+        encoding="utf-8",
+    )
+    adapter = HermesCLIAdapter(executable=sys.executable, safe_mode=False)
+    adapter.build_command = lambda message: [sys.executable, str(script)]  # type: ignore[method-assign]
+    trace = adapter.run("request", env={"PIKIT_FIXTURE_DOCUMENT": "tainted"})
+    assert trace.tainted_steps[0].tool_name == "pikit_read_document"
+    assert trace.sink_calls[0].args == {"target": "attacker"}

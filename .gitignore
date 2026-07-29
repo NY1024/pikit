@@ -13,6 +13,7 @@ dist/
 .venv/
 venv/
 env/
+node_modules/
 
 # Test / tooling caches
 .pytest_cache/
@@ -34,3 +35,6 @@ live_api_results.json
 *.swp
 .idea/
 .vscode/
+
+# Generated integration-plugin output
+integrations/*/dist/

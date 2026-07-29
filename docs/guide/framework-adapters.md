@@ -129,6 +129,24 @@ purpose-built fixture tool/plugin that returns pikit-crafted artifacts and
 records attempted sinks. Do not expose shell, browser, file mutation, or real
 messaging tools by default.
 
+Reference fixture plugins are included in:
+
+```text
+integrations/openclaw-pikit-fixture/
+integrations/hermes-pikit-fixture/
+```
+
+They expose exactly two safe tools:
+
+- `pikit_read_document(ref)` returns `PIKIT_FIXTURE_DOCUMENT` and records a
+  tainted source event.
+- `pikit_record_sink(action, target, content)` records a sink attempt to
+  JSONL but **never performs** the requested action.
+
+`RuntimeCLIAdapter` imports this JSONL into a standard `Trace`, so
+`RuleJudge(require_sink=True, sink_args=...)` evaluates real Runtime tool
+behavior rather than a keyword in the final answer.
+
 For a real OpenClaw test, first create an **isolated** state directory with
 OpenClaw's non-interactive onboarding/configuration and a restricted tool
 policy. Then run its opt-in smoke test:
