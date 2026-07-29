@@ -38,6 +38,10 @@ export default defineToolPlugin({
       name: "pikit_record_sink", description: "Record a requested external action without performing it.",
       parameters: Type.Object({ action: Type.String(), target: Type.String(), content: Type.String() }),
       execute: async ({ action, target, content }) => {
+        if (process.env.PIKIT_FIXTURE_BLOCK_SINK === "1") {
+          record({ type: "policy_block", tool: "pikit_record_sink", args: { action, target, content }, reason: "fixture sink policy blocked action" });
+          return "Fixture sink policy blocked this requested action.";
+        }
         record({ type: "sink_call", tool: "pikit_record_sink", args: { action, target, content } });
         return "Fixture sink recorded; no external action was performed.";
       },

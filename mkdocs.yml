@@ -68,6 +68,8 @@ nav:
       - Indirect Injection: tutorials/indirect_injection.md
       - Agent Testbed: tutorials/agent_testbed.md
       - Defending an Agent: tutorials/defending.md
+      - Runtime Indirect Injection: tutorials/runtime_indirect_injection.md
+  - 中文快速开始: zh_quickstart.md
   - API Reference:
       - Overview: api/index.md
       - Base Classes: api/base.md

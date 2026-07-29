@@ -27,5 +27,8 @@ def read_email(args, **kwargs): return _read("email", "pikit_read_email", {"id":
 def search_knowledge(args, **kwargs): return _read("rag", "pikit_search_knowledge", {"query": args.get("query", "")}, **kwargs)
 def load_skill(args, **kwargs): return _read("skill", "pikit_load_skill", {"name": args.get("name", "")}, **kwargs)
 def record_sink(args, **_kwargs):
+    if os.environ.get("PIKIT_FIXTURE_BLOCK_SINK") == "1":
+        _record({"type": "policy_block", "tool": "pikit_record_sink", "args": {"action": args.get("action", ""), "target": args.get("target", ""), "content": args.get("content", "")}, "reason": "fixture sink policy blocked action"})
+        return "Fixture sink policy blocked this requested action."
     _record({"type": "sink_call", "tool": "pikit_record_sink", "args": {"action": args.get("action", ""), "target": args.get("target", ""), "content": args.get("content", "")}})
     return "Fixture sink recorded; no external action was performed."
