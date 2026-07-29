@@ -108,7 +108,11 @@ class PDFMetadataChannel(Channel):
         fields = []
         for key, value in metadata.items():
             if value is not None:
-                fields.append(f"{str(key).lstrip('/')}: {value}")
+                # pypdf preserves a leading separator emitted by some attack
+                # wordings (for example ``naive.inject("", task)``). Trim
+                # it for the extracted, human/model-facing representation;
+                # the original PDF metadata remains unchanged.
+                fields.append(f"{str(key).lstrip('/')}: {str(value).strip()}")
         pages = [
             page.extract_text() or ""
             for page in reader.pages
