@@ -28,9 +28,12 @@ from __future__ import annotations
 
 import json
 import os
+import platform
+import random
 import sys
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
+from importlib import metadata
 from typing import Any, Dict, List, Optional
 
 from . import attacks, channels, craft, defenses
@@ -88,7 +91,7 @@ _SAMPLE_MAP = {
     "pdf_metadata": SAMPLE_PDF_METADATA,
     "log": SAMPLE_LOG,
     "email_full": SAMPLE_EMAIL_FULL,
-    "calendar": SAMPLE_CALENDAR_EVENT,
+    "calendar_event": SAMPLE_CALENDAR_EVENT,
     "config": SAMPLE_CONFIG,
     "translation": SAMPLE_TRANSLATION,
     "spreadsheet": SAMPLE_SPREADSHEET,
@@ -148,6 +151,14 @@ class ExperimentResult:
     repeat_index: int = 0
     success_count: int = 0
     total_runs: int = 1
+    run_id: str = ""
+    case_id: str = ""
+    seed: Optional[int] = None
+    generation_config: Dict[str, Any] = field(default_factory=dict)
+    method_specs: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    evidence: List[Dict[str, Any]] = field(default_factory=list)
+    trace_data: Dict[str, Any] = field(default_factory=dict)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -177,6 +188,7 @@ class MatrixRunner:
     def __init__(self, config: ExperimentConfig, *, verbose: bool = False) -> None:
         self.config = config
         self.verbose = verbose
+        self._run_counter = 0
 
     def _resolve_wildcards(self) -> None:
         """Expand ``"*"`` in the config to all registered keys."""
@@ -196,7 +208,7 @@ class MatrixRunner:
             return None
         if self.config.judge_type == "llm":
             return LLMJudge(
-                get_target(self.config.target_spec),
+                get_target(self.config.target_spec, **self.config.target_options),
                 sink_args=self.config.sink_args or None,
                 canary=self.config.canary,
                 require_sink=self.config.require_sink,
@@ -243,7 +255,7 @@ class MatrixRunner:
             )
 
         # Build target.
-        tgt = get_target(self.config.target_spec)
+        tgt = get_target(self.config.target_spec, **self.config.target_options)
 
         # Craft the injection.
         if is_direct:
@@ -305,6 +317,16 @@ class MatrixRunner:
             confidence = "n/a"
             reason = "no judge"
             signals = []
+            evidence = []
+
+        if judge:
+            evidence = verdict.evidence
+
+        self._run_counter += 1
+        try:
+            pikit_version = metadata.version("pikit")
+        except metadata.PackageNotFoundError:  # pragma: no cover - source checkout fallback
+            from . import __version__ as pikit_version
 
         return ExperimentResult(
             attack=attack_key,
@@ -321,6 +343,22 @@ class MatrixRunner:
             sink_fired=len(trace.sink_calls) > 0,
             trace=str(trace),
             timestamp=datetime.now().isoformat(),
+            run_id=f"run-{self._run_counter:06d}",
+            seed=self.config.seed,
+            generation_config={"temperature": self.config.temperature},
+            method_specs={
+                "attack": {"name": attack_key, "kwargs": {}},
+                "defense": {"name": defense_key, "kwargs": {}},
+                "channel": {"name": channel or "", "kwargs": {}},
+            },
+            evidence=evidence,
+            trace_data=trace.to_dict(),
+            metadata={
+                "schema_version": "pikit.experiment-result.v1",
+                "pikit_version": pikit_version,
+                "python_version": platform.python_version(),
+                "target_options": dict(self.config.target_options),
+            },
         )
 
     def run(self) -> List[ExperimentResult]:
@@ -364,6 +402,8 @@ class MatrixRunner:
                         n_reps = max(1, self.config.repeats)
 
                         for rep in range(n_reps):
+                            if self.config.seed is not None:
+                                random.seed(int(self.config.seed) + rep)
                             count += 1
                             if self.verbose:
                                 rep_str = f" (rep {rep+1}/{n_reps})" if n_reps > 1 else ""
@@ -417,6 +457,15 @@ class MatrixRunner:
                                 success_count=success_count,
                                 total_runs=n_reps,
                                 timestamp=datetime.now().isoformat(),
+                                run_id=f"summary-{self._run_counter:06d}",
+                                seed=self.config.seed,
+                                generation_config={"temperature": self.config.temperature},
+                                method_specs={
+                                    "attack": {"name": attack_key, "kwargs": {}},
+                                    "defense": {"name": defense_key, "kwargs": {}},
+                                    "channel": {"name": channel_key_actual, "kwargs": {}},
+                                },
+                                metadata={"schema_version": "pikit.experiment-result.v1"},
                             )
                             results.append(summary)
 
@@ -450,6 +499,13 @@ def save_csv(results: List[ExperimentResult], path: str) -> None:
             writer.writerow({k: row.get(k, "") for k in fieldnames})
 
 
+def save_jsonl(results: List[ExperimentResult], path: str) -> None:
+    """Save one full structured experiment result per JSONL line."""
+    with open(path, "w", encoding="utf-8") as f:
+        for result in results:
+            f.write(json.dumps(result.to_dict(), ensure_ascii=False) + "\n")
+
+
 def run(config: ExperimentConfig, *, verbose: bool = False) -> List[ExperimentResult]:
     """Convenience: create a runner and execute it."""
     return MatrixRunner(config, verbose=verbose).run()
@@ -460,5 +516,6 @@ __all__ = [
     "ExperimentResult",
     "save_json",
     "save_csv",
+    "save_jsonl",
     "run",
 ]

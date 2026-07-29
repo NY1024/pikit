@@ -19,6 +19,7 @@ from __future__ import annotations
 from ..registry import Registry
 from .base import Agent, Trace, TraceStep
 from .hooks import DefenseHooks
+from .adapters import AgentCallable, AgentRunResult, CallableAgentAdapter
 from .tools import Tool, tool
 from .system_prompt import build_system_prompt
 from .builtin_tools import (
@@ -43,6 +44,9 @@ __all__ = [
     "Trace",
     "TraceStep",
     "DefenseHooks",
+    "AgentCallable",
+    "AgentRunResult",
+    "CallableAgentAdapter",
     "Tool",
     "tool",
     "build_system_prompt",

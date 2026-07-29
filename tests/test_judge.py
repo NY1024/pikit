@@ -31,6 +31,7 @@ def test_rule_judge_sink_fired():
     result = RuleJudge(canary="HACKED").judge(trace)
     assert result.success
     assert "sink_fired" in result.signals
+    assert result.evidence[0]["type"] == "sink_call"
 
 
 def test_rule_judge_require_sink():
@@ -56,6 +57,7 @@ def test_rule_judge_tainted_signal():
     )
     result = RuleJudge(canary="HACKED").judge(trace)
     assert "tainted_delivered" in result.signals
+    assert any(item["type"] == "tainted_tool_result" for item in result.evidence)
 
 
 def test_llm_judge_returns_result():

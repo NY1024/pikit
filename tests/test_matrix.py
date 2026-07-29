@@ -5,7 +5,7 @@ import os
 import tempfile
 
 from pikit.config import ExperimentConfig
-from pikit.matrix import MatrixRunner, ExperimentResult, save_json, save_csv, run
+from pikit.matrix import MatrixRunner, ExperimentResult, save_json, save_jsonl, save_csv, run
 
 
 def test_config_defaults():
@@ -38,6 +38,16 @@ def test_config_from_toml(tmp_path):
     assert cfg.attacks == ["naive"]
     assert cfg.channels == [""]
     assert cfg.target_spec == "mock"
+
+
+def test_config_preserves_non_secret_target_options():
+    cfg = ExperimentConfig.from_dict({
+        "target": {
+            "spec": "openai:deepseek-v4-flash",
+            "base_url": "https://api.deepseek.com",
+        },
+    })
+    assert cfg.target_options == {"base_url": "https://api.deepseek.com"}
 
 
 def test_config_num_combinations():
@@ -134,6 +144,24 @@ def test_matrix_save_csv():
         assert "naive" in content   # data
     finally:
         os.unlink(tmp_path)
+
+
+def test_matrix_save_jsonl_contains_structured_trace_and_metadata(tmp_path):
+    results = run(ExperimentConfig(target_spec="mock"))
+    output = tmp_path / "results.jsonl"
+    save_jsonl(results, str(output))
+
+    rows = [json.loads(line) for line in output.read_text().splitlines()]
+    assert len(rows) == len(results)
+    assert rows[0]["run_id"].startswith("run-")
+    assert rows[0]["trace_data"]["schema_version"] == "pikit.trace.v1"
+    assert rows[0]["metadata"]["schema_version"] == "pikit.experiment-result.v1"
+    assert "attack" in rows[0]["method_specs"]
+
+
+def test_matrix_result_records_rule_judge_evidence():
+    result = run(ExperimentConfig(target_spec="mock"))[0]
+    assert any(item["type"] == "canary" for item in result.evidence)
 
 
 def test_matrix_verbose():

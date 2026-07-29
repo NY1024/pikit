@@ -12,8 +12,8 @@ own one-line assertion.
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import dataclass, field
-from typing import List, Optional
+from dataclasses import asdict, dataclass, field
+from typing import Any, Dict, List, Optional
 
 from ..targets import Target
 from .hooks import DefenseHooks
@@ -31,6 +31,10 @@ class TraceStep:
     tainted: bool = False  #: tool_result whose data was the injected artifact
     is_sink: bool = False  #: tool_call to a sink tool (observable action)
 
+    def to_dict(self) -> Dict[str, Any]:
+        """Return a JSON-serializable representation of this trace step."""
+        return asdict(self)
+
 
 @dataclass
 class Trace:
@@ -41,6 +45,14 @@ class Trace:
 
     def add(self, step: TraceStep) -> None:
         self.steps.append(step)
+
+    def to_dict(self) -> Dict[str, Any]:
+        """Return the structured trace used in JSON/JSONL experiment output."""
+        return {
+            "schema_version": "pikit.trace.v1",
+            "final_text": self.final_text,
+            "steps": [step.to_dict() for step in self.steps],
+        }
 
     @property
     def sink_calls(self) -> List[TraceStep]:

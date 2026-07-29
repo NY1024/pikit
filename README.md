@@ -52,8 +52,9 @@ uniform interface so you can:
 - **drive a real agent** and watch whether an injection actually lands, and
 - **add a new method** by dropping in one file — no core changes.
 
-It is a *library of methods*, not a benchmark: it ships **no** evaluator,
-dataset, or leaderboard. You bring the task and the judgement.
+It is a *toolbox*, not a prescriptive leaderboard: it includes reference
+datasets and optional judges for repeatable experiments, while leaving the
+threat model and success criteria under the researcher's control.
 
 ## Key features
 

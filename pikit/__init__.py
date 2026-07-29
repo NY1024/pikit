@@ -7,8 +7,10 @@ be combined with any defense; a channel hides an (optionally attack-worded)
 payload inside external data for indirect injection. Model backends sit
 behind a uniform ``Target`` interface.
 
-This package intentionally ships **no** evaluator / dataset / benchmark —
-it is a toolbox of methods, not a leaderboard.
+The package includes optional judges and reference datasets for repeatable
+experiments. It remains a toolbox rather than a prescriptive leaderboard:
+researchers choose the threat model and success criteria appropriate to their
+agent.
 
 Quick start
 -----------
@@ -57,4 +59,5 @@ __all__ = [
     "datasets",
 ]
 
-__version__ = "0.2.0"
+# Keep this in sync with the distribution version in ``pyproject.toml``.
+__version__ = "0.4.0"

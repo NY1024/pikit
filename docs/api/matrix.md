@@ -10,4 +10,6 @@
 
 ::: pikit.matrix.save_csv
 
+::: pikit.matrix.save_jsonl
+
 ::: pikit.matrix.run

@@ -50,3 +50,8 @@ include = ["pikit*"]
 # Include benchmark dataset TOML files at the project root
 [tool.setuptools.data-files]
 "datasets" = ["datasets/*.toml"]
+
+[tool.pytest.ini_options]
+markers = [
+    "live: opt-in tests that call a real model provider",
+]

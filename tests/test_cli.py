@@ -38,3 +38,16 @@ def test_cli_show_channels():
     code, stdout, _ = _run_cli("show", "channels")
     assert code == 0
     assert "webpage" in stdout
+
+
+def test_cli_run_supports_offline_mock_target():
+    code, stdout, stderr = _run_cli(
+        "run",
+        "--target", "mock",
+        "--agent", "chat",
+        "--attack", "naive",
+        "--task", "Reply with exactly: CLI_OK",
+    )
+    assert code == 0, stderr
+    assert "target=mock" in stdout
+    assert "CLI_OK" in stdout

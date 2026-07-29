@@ -138,9 +138,12 @@ def load_dataset(name: str) -> Dataset:
         if ds_name == name:
             cases = []
             for raw in data.get("cases", []):
-                case_id = raw.pop("id", f"case-{len(cases)+1:03d}")
-                case_desc = raw.pop("description", "")
-                cfg = ExperimentConfig.from_dict(raw)
+                # Never mutate parsed TOML data in place: callers may load a
+                # dataset repeatedly in the same process.
+                case_data = dict(raw)
+                case_id = case_data.pop("id", f"case-{len(cases)+1:03d}")
+                case_desc = case_data.pop("description", "")
+                cfg = ExperimentConfig.from_dict(case_data)
                 cases.append(DatasetCase(id=case_id, description=case_desc, config=cfg))
             return Dataset(
                 name=ds_name,
@@ -214,7 +217,8 @@ def run_dataset(
         results = runner.run()
         # Tag each result with the case id for traceability.
         for r in results:
-            r.reason = f"[{case.id}] {r.reason}"
+            r.case_id = case.id
+            r.metadata["case_description"] = case.description
         all_results.extend(results)
 
     return all_results

@@ -24,12 +24,16 @@ pikit show channels    # see where each channel hides the payload
 
 ## `pikit run`
 
-Run a single attack combination against a real model. Requires
-`OPENAI_API_KEY` (and usually `OPENAI_BASE_URL`).
+Run a single attack combination against any configured target. `mock` works
+offline; OpenAI-compatible endpoints require `OPENAI_API_KEY` and usually
+`OPENAI_BASE_URL`.
 
 ```bash
 pikit run --agent chat --attack context_ignoring --defense spotlighting
 pikit run --agent browser --attack combined --channel webpage --defense sandwich
+pikit run --target mock --agent chat --attack naive
+pikit run --target openai:deepseek-v4-flash --base-url https://api.deepseek.com \
+  --agent chat --attack context_ignoring
 ```
 
 Options:
@@ -43,13 +47,15 @@ Options:
 | `--task` | Attacker's injected instruction |
 | `--user-message` | Normal user request |
 | `--data-sample` | Sample to taint (webpage/email/document/code/skill) |
-| `--model` | Model id override |
+| `--target` | Target spec: `mock`, `openai:<model>`, `anthropic:<model>`, or `hf:<model>` |
+| `--base-url` | OpenAI-compatible endpoint override |
+| `--model` | Deprecated shortcut for an OpenAI-compatible model id |
 | `--config` | TOML config file |
 
 ## `pikit matrix`
 
 Run a batch experiment from a TOML config file. Outputs results to JSON or
-CSV and prints a summary.
+CSV, JSONL, or JSON and prints a summary.
 
 ```bash
 # basic run
@@ -58,6 +64,7 @@ pikit matrix --config experiment.toml
 # save results
 pikit matrix --config experiment.toml --output results.json
 pikit matrix --config experiment.toml --output results.csv
+pikit matrix --config experiment.toml --output results.jsonl
 
 # override target or judge
 pikit matrix --config experiment.toml --target openai:gpt-4o-mini --judge llm
@@ -114,6 +121,7 @@ for a complete annotated example.
 ```toml
 [target]
 spec = "mock"  # or "openai:gpt-4o-mini"
+# base_url = "https://api.deepseek.com"
 
 [matrix]
 attacks  = ["naive", "context_ignoring"]

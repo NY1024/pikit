@@ -8,6 +8,8 @@
 
 ::: pikit.agent.hooks
 
+::: pikit.agent.adapters
+
 ::: pikit.agent.tools
 
 ::: pikit.agent.system_prompt

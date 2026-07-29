@@ -83,6 +83,11 @@ class ExperimentConfig:
         Map of ``sink_arg_name -> expected_value`` for the rule judge to
         verify that sink calls match attacker intent (e.g.
         ``{"to": "attacker@evil.com"}``).
+    target_options:
+        Provider-specific non-secret options forwarded to :func:`get_target`,
+        such as ``{"base_url": "https://api.deepseek.com"}``.
+    seed:
+        Optional experiment seed recorded in every result for reproducibility.
     """
 
     attacks: List[str] = field(default_factory=lambda: ["naive"])
@@ -101,6 +106,8 @@ class ExperimentConfig:
     temperature: float = 0.0
     repeats: int = 1
     sink_args: Dict[str, str] = field(default_factory=dict)
+    target_options: Dict[str, Any] = field(default_factory=dict)
+    seed: Any = None
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ExperimentConfig":
@@ -112,6 +119,11 @@ class ExperimentConfig:
         matrix = d.get("matrix", d)
         judge = d.get("judge", {})
         target = d.get("target", {})
+
+        target_options = {
+            key: value for key, value in target.items() if key != "spec"
+        }
+        target_options.update(matrix.get("target_options", {}))
 
         return cls(
             attacks=_as_list(matrix.get("attacks"), ["naive"]),
@@ -130,6 +142,8 @@ class ExperimentConfig:
             temperature=matrix.get("temperature", 0.0),
             repeats=matrix.get("repeats", 1),
             sink_args=judge.get("sink_args", matrix.get("sink_args", {})),
+            target_options=target_options,
+            seed=matrix.get("seed"),
         )
 
     @classmethod

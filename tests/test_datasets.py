@@ -65,7 +65,7 @@ def test_run_direct_dataset_mock():
     assert len(results) >= 20
     for r in results:
         assert r.attack  # should be populated
-        assert r.reason.startswith("[di-")  # tagged with case id
+        assert r.case_id.startswith("di-")
 
 
 def test_run_indirect_dataset_mock():
@@ -73,7 +73,7 @@ def test_run_indirect_dataset_mock():
     results = run_dataset("indirect_injection", target_spec="mock")
     assert len(results) >= 20
     for r in results:
-        assert r.reason.startswith("[ii-")
+        assert r.case_id.startswith("ii-")
 
 
 def test_run_dataset_with_overrides():
