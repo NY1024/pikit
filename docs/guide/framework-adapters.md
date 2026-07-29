@@ -111,8 +111,8 @@ openclaw = OpenClawCLIAdapter(
 trace = openclaw.run("Summarize the supplied report.")
 
 hermes = HermesCLIAdapter(
-    model="your-provider/your-model",
-    toolsets=["none"],
+    provider="your-provider",
+    model="your-model",
     # --safe-mode is enabled by default and an isolated HERMES_HOME is used.
 )
 trace = hermes.run("Summarize the supplied report.")
@@ -140,6 +140,16 @@ PIKIT_OPENCLAW_STATE_DIR=/path/to/isolate/openclaw-state \
 PIKIT_OPENCLAW_CONFIG_PATH=/path/to/isolate/openclaw-state/openclaw.json \
 PIKIT_OPENCLAW_MODEL=your-provider/your-model \
 pytest -q tests/live/test_deepseek_smoke.py -k openclaw
+```
+
+Hermes can be smoke-tested directly with its one-shot terminal mode:
+
+```bash
+PIKIT_LIVE_TESTS=1 \
+PIKIT_HERMES_LIVE_TESTS=1 \
+DEEPSEEK_API_KEY=... \
+PIKIT_HERMES_MODEL=deepseek-v4-flash \
+pytest -q tests/live/test_deepseek_smoke.py -k hermes
 ```
 
 Only SDK `FunctionTool` instances are intercepted in this initial adapter.

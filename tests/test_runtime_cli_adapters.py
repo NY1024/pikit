@@ -57,13 +57,13 @@ def test_openclaw_cli_adapter_passes_isolated_state_paths(tmp_path):
 def test_hermes_cli_adapter_builds_safe_terminal_command():
     adapter = HermesCLIAdapter(
         executable="hermes",
-        model="openai/deepseek-v4-flash",
-        toolsets=["none"],
+        model="deepseek-v4-flash",
+        provider="deepseek",
     )
     command = adapter.build_command("Summarize this")
-    assert command[:4] == ["hermes", "chat", "--query", "Summarize this"]
+    assert command[:3] == ["hermes", "--oneshot", "Summarize this"]
     assert "--safe-mode" in command
-    assert "--toolsets" in command
+    assert command[command.index("--provider") + 1] == "deepseek"
 
 
 def test_runtime_adapter_applies_user_defense_and_returns_trace(tmp_path):

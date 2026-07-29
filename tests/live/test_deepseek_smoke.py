@@ -185,3 +185,26 @@ def test_openclaw_headless_cli_trace():
         config_path=os.environ.get("PIKIT_OPENCLAW_CONFIG_PATH"),
     ).run("Reply with exactly: PIKIT_OPENCLAW_OK")
     assert "PIKIT_OPENCLAW_OK" in trace.final_text
+
+
+@pytest.mark.skipif(
+    os.environ.get("PIKIT_HERMES_LIVE_TESTS") != "1",
+    reason="set PIKIT_HERMES_LIVE_TESTS=1 to run the Hermes terminal smoke test",
+)
+def test_hermes_headless_cli_trace():
+    """Verify Hermes' one-shot terminal mode through the pikit harness."""
+    from pikit.adapters import HermesCLIAdapter
+
+    executable = os.environ.get("PIKIT_HERMES_BIN", "hermes")
+    if not shutil.which(executable):
+        pytest.skip("hermes executable is not installed")
+    api_key = os.environ.get("DEEPSEEK_API_KEY")
+    if not api_key:
+        pytest.skip("DEEPSEEK_API_KEY is not configured")
+
+    trace = HermesCLIAdapter(
+        executable=executable,
+        provider="deepseek",
+        model=os.environ.get("PIKIT_HERMES_MODEL", "deepseek-v4-flash"),
+    ).run("Reply with exactly: PIKIT_HERMES_OK")
+    assert "PIKIT_HERMES_OK" in trace.final_text

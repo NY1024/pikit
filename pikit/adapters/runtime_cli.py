@@ -170,7 +170,7 @@ class OpenClawCLIAdapter(RuntimeCLIAdapter):
 class HermesCLIAdapter(RuntimeCLIAdapter):
     """Run one non-interactive Hermes CLI turn without messaging channels.
 
-    ``hermes chat --query`` works directly in a terminal. By default the
+    ``hermes --oneshot`` works directly in a terminal. By default the
     adapter adds ``--safe-mode`` to disable user customizations, skills,
     plugins, and MCP servers. Set ``safe_mode=False`` only with a dedicated
     isolated Hermes profile and an explicit tool policy.
@@ -183,6 +183,7 @@ class HermesCLIAdapter(RuntimeCLIAdapter):
         executable: str = "hermes",
         *,
         model: Optional[str] = None,
+        provider: Optional[str] = None,
         toolsets: Optional[Iterable[str]] = None,
         safe_mode: bool = True,
         hermes_home: Optional[str] = None,
@@ -190,16 +191,19 @@ class HermesCLIAdapter(RuntimeCLIAdapter):
     ) -> None:
         super().__init__(executable, **kwargs)
         self.model = model
+        self.provider = provider
         self.toolsets = list(toolsets or [])
         self.safe_mode = safe_mode
         self.hermes_home = hermes_home
 
     def build_command(self, user_message: str) -> list:
-        command = [self.executable, "chat", "--query", user_message]
+        command = [self.executable, "--oneshot", user_message]
         if self.safe_mode:
             command.append("--safe-mode")
         if self.model:
             command.extend(["--model", self.model])
+        if self.provider:
+            command.extend(["--provider", self.provider])
         if self.toolsets:
             command.extend(["--toolsets", ",".join(self.toolsets)])
         return command
