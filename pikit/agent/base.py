@@ -30,6 +30,7 @@ class TraceStep:
     content: Optional[str] = None
     tainted: bool = False  #: tool_result whose data was the injected artifact
     is_sink: bool = False  #: tool_call to a sink tool (observable action)
+    decision: Optional[str] = None  #: runtime policy decision, if available
 
     def to_dict(self) -> Dict[str, Any]:
         """Return a JSON-serializable representation of this trace step."""
@@ -79,7 +80,8 @@ class Trace:
                 lines.append(f">>> tool_call {s.tool_name}({_fmt_args(args)}){marker}")
             elif s.kind == "tool_result":
                 tag = " [tainted]" if s.tainted else ""
-                lines.append(f"<<< tool_result {s.tool_name}{tag}: {s.content}")
+                decision = f" [{s.decision}]" if s.decision else ""
+                lines.append(f"<<< tool_result {s.tool_name}{tag}{decision}: {s.content}")
         return "\n".join(lines)
 
 

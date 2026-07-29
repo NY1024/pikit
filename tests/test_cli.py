@@ -2,6 +2,7 @@
 
 import subprocess
 import sys
+import json
 
 
 def _run_cli(*args):
@@ -51,3 +52,28 @@ def test_cli_run_supports_offline_mock_target():
     assert code == 0, stderr
     assert "target=mock" in stdout
     assert "CLI_OK" in stdout
+
+
+def test_cli_runtime_init_and_doctor(tmp_path):
+    profile = tmp_path / "hermes"
+    code, stdout, stderr = _run_cli("runtime", "init", "hermes", str(profile), "--json")
+    assert code == 0, stderr
+    assert json.loads(stdout)["runtime"] == "hermes"
+    code, stdout, stderr = _run_cli("runtime", "doctor", "hermes", str(profile), "--json")
+    assert code == 0, stderr
+    assert json.loads(stdout)["fixture_plugin_present"] is True
+
+
+def test_cli_report_jsonl(tmp_path):
+    results = tmp_path / "results.jsonl"
+    results.write_text(
+        json.dumps({
+            "agent": "chat", "attack": "naive", "channel": "",
+            "defense": "none", "success": True, "signals": ["canary_terse"],
+            "trace": ">>> model: HACKED",
+        }) + "\n",
+        encoding="utf-8",
+    )
+    code, stdout, stderr = _run_cli("report", str(results))
+    assert code == 0, stderr
+    assert "Success rate" in stdout

@@ -317,6 +317,39 @@ def _cmd_dataset(args):
             print(f"  {status} {case_id}  {r.attack} × {r.defense} × {r.channel or '(direct)'} × {r.agent}")
 
 
+def _cmd_runtime(args):
+    """Initialize or diagnose an isolated external runtime profile."""
+    from . import runtime as runtime_mod
+
+    if args.runtime_action == "init":
+        result = runtime_mod.init(args.runtime, args.directory)
+    else:
+        result = runtime_mod.doctor(
+            args.runtime,
+            executable=args.executable,
+            home=args.directory,
+        )
+    if args.json:
+        print(json.dumps(result, indent=2, ensure_ascii=False))
+    else:
+        for key, value in result.items():
+            print(f"{key}: {value}")
+
+
+def _cmd_report(args):
+    """Render a Markdown or HTML summary from JSON/JSONL experiment results."""
+    from . import report
+
+    rows = report.load(args.input)
+    content = report.html_report(rows) if args.format == "html" else report.markdown(rows)
+    if args.output:
+        with open(args.output, "w", encoding="utf-8") as f:
+            f.write(content)
+        print(f"Saved report to {args.output}", file=sys.stderr)
+    else:
+        print(content, end="")
+
+
 # --- entry point --------------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:
@@ -363,6 +396,25 @@ def build_parser() -> argparse.ArgumentParser:
     p_matrix.add_argument("--repeats", type=int, default=None,
                            help="Number of times to run each combination (default 1).")
 
+    # runtime
+    p_runtime = sub.add_parser("runtime", help="Initialize or diagnose external runtime fixtures.")
+    p_runtime_sub = p_runtime.add_subparsers(dest="runtime_action", required=True)
+    for action, help_text in [
+        ("init", "Create an isolated fixture profile without credentials."),
+        ("doctor", "Check runtime executable, profile, and fixture readiness."),
+    ]:
+        item = p_runtime_sub.add_parser(action, help=help_text)
+        item.add_argument("runtime", choices=["openclaw", "hermes"])
+        item.add_argument("directory", help="Isolated runtime profile directory.")
+        item.add_argument("--executable", help="Runtime executable override (doctor only).")
+        item.add_argument("--json", action="store_true", help="Print structured JSON.")
+
+    # report
+    p_report = sub.add_parser("report", help="Summarize JSON or JSONL experiment results.")
+    p_report.add_argument("input", help="Results JSON or JSONL file.")
+    p_report.add_argument("--format", choices=["markdown", "html"], default="markdown")
+    p_report.add_argument("--output", help="Write report to this path instead of stdout.")
+
     # dataset
     p_dataset = sub.add_parser("dataset", help="Run standard benchmark datasets.")
     p_dataset_sub = p_dataset.add_subparsers(dest="dataset_action", required=True)
@@ -403,6 +455,10 @@ def main(argv: Optional[List[str]] = None) -> None:
         _cmd_matrix(args)
     elif args.command == "dataset":
         _cmd_dataset(args)
+    elif args.command == "runtime":
+        _cmd_runtime(args)
+    elif args.command == "report":
+        _cmd_report(args)
 
 
 if __name__ == "__main__":

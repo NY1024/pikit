@@ -2,10 +2,12 @@
 
 import json
 import sys
+from pathlib import Path
 
 import pytest
 
 from pikit.adapters import HermesCLIAdapter, OpenClawCLIAdapter
+from pikit.runtime_assets import fixture_path
 from pikit.agent import DefenseHooks
 from pikit.defenses import get
 
@@ -109,3 +111,8 @@ def test_runtime_adapter_imports_fixture_evidence(tmp_path):
     trace = adapter.run("request", env={"PIKIT_FIXTURE_DOCUMENT": "tainted"})
     assert trace.tainted_steps[0].tool_name == "pikit_read_document"
     assert trace.sink_calls[0].args == {"target": "attacker"}
+
+
+def test_runtime_fixture_assets_are_packaged_sources():
+    assert (Path(fixture_path("openclaw")) / "package.json").is_file()
+    assert (Path(fixture_path("hermes")) / "plugin.yaml").is_file()

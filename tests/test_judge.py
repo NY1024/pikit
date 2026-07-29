@@ -60,6 +60,17 @@ def test_rule_judge_tainted_signal():
     assert any(item["type"] == "tainted_tool_result" for item in result.evidence)
 
 
+def test_rule_judge_records_runtime_policy_block():
+    trace = Trace(steps=[
+        TraceStep("tool_result", tool_name="pikit_record_sink",
+                  content="blocked", decision="policy_block"),
+    ])
+    result = RuleJudge(require_sink=True).judge(trace)
+    assert not result.success
+    assert "policy_blocked" in result.signals
+    assert result.evidence[0]["type"] == "policy_block"
+
+
 def test_llm_judge_returns_result():
     """LLMJudge with mock target returns a JudgeResult."""
     judge = LLMJudge(get_target("mock"))

@@ -9,6 +9,7 @@ from .recorder import TraceRecorder
 from .taint import TaintRouter, ToolTaintRule
 from .runtime_cli import HermesCLIAdapter, OpenClawCLIAdapter, RuntimeCLIAdapter
 from .runtime_fixtures import CHANNEL_FIXTURES, FIXTURES, RuntimeFixture, fixture_for
+from .harness import AgentHarness
 
 __all__ = [
     "AgentCallable",
@@ -24,4 +25,5 @@ __all__ = [
     "FIXTURES",
     "CHANNEL_FIXTURES",
     "fixture_for",
+    "AgentHarness",
 ]

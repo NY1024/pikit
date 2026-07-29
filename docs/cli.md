@@ -113,6 +113,28 @@ pikit dataset run direct_injection --target openai:gpt-4o-mini --temperature 0.7
 See [Datasets](datasets.md) for the full dataset specification and how to
 add custom datasets.
 
+## `pikit runtime`
+
+Create and check isolated OpenClaw or Hermes fixture profiles. The command
+does not write API keys or enable real side-effecting tools.
+
+```bash
+pikit runtime init openclaw ./runtime/openclaw
+pikit runtime doctor openclaw ./runtime/openclaw --json
+
+pikit runtime init hermes ./runtime/hermes
+pikit runtime doctor hermes ./runtime/hermes
+```
+
+## `pikit report`
+
+Render a concise result summary from JSON or JSONL output:
+
+```bash
+pikit report results.jsonl
+pikit report results.jsonl --format html --output report.html
+```
+
 ## Experiment config format
 
 See [`demos/experiment.example.toml`](https://github.com/NY1024/pikit/blob/main/demos/experiment.example.toml)

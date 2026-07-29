@@ -29,3 +29,19 @@ jobs:
 
       - name: Verify CLI entry point
         run: pikit list
+
+  fixture-assets:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Build and validate OpenClaw fixture
+        working-directory: pikit/runtime_assets/openclaw_fixture
+        run: |
+          npm install
+          npm run plugin:build
+          npm run plugin:validate
+      - name: Compile Hermes fixture
+        run: python3 -m py_compile pikit/runtime_assets/hermes_fixture/*.py

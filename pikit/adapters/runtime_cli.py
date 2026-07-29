@@ -17,9 +17,10 @@ from typing import Any, Dict, Iterable, Optional
 
 from ..agent.base import Trace, TraceStep
 from ..agent.hooks import DefenseHooks
+from .harness import AgentHarness
 
 
-class RuntimeCLIAdapter:
+class RuntimeCLIAdapter(AgentHarness):
     """Base class for a one-shot, headless agent-runtime command.
 
     Subclasses implement :meth:`build_command`. The process receives a
@@ -154,6 +155,13 @@ class RuntimeCLIAdapter:
                         tool_name=tool,
                         args=args if isinstance(args, dict) else {},
                         is_sink=True,
+                    ))
+                elif event_type in {"policy_block", "approval_requested", "tool_error"}:
+                    trace.add(TraceStep(
+                        "tool_result",
+                        tool_name=tool,
+                        content=str(event.get("reason", event_type)),
+                        decision=event_type,
                     ))
 
 
