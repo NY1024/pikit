@@ -5,6 +5,28 @@ All notable changes to pikit will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [0.5.0] - 2026-07-29
+
+### Added
+
+- **External Agent Harnesses** — adapters for LangChain, OpenAI Agents SDK,
+  PydanticAI, OpenClaw, and Hermes.
+- **Runtime indirect-injection matrix** — OpenClaw/Hermes fixture sources for
+  documents, webpages, email, RAG, and skills; safe simulated sink capture.
+- **Runtime tooling** — `pikit runtime init`, `doctor`, and
+  `install-fixture` for isolated external-runtime profiles.
+- **Structured experiment reports** — `pikit report` renders Markdown or
+  self-contained HTML from JSON/JSONL results.
+- **Outcome metadata** — results distinguish attack success, model
+  compliance, runtime policy blocks, and structured judge evidence.
+- Bundled runtime fixture source assets under `pikit.runtime_assets`.
+
+### Changed
+
+- Matrix execution now resolves runtime harnesses through a registry.
+- Runtime file-mode experiments feed channel-extracted model-visible text to
+  safe fixture tools.
+
 ## [0.4.0] - 2026-07-08
 
 ### Added

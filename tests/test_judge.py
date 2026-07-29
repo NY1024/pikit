@@ -69,6 +69,9 @@ def test_rule_judge_records_runtime_policy_block():
     assert not result.success
     assert "policy_blocked" in result.signals
     assert result.evidence[0]["type"] == "policy_block"
+    assert result.outcome == "policy_blocked"
+    assert result.model_complied is True
+    assert result.runtime_blocked is True
 
 
 def test_llm_judge_returns_result():

@@ -23,7 +23,7 @@ freely:
 | **Attack** | How is the payload *worded*? | 9 | `context_ignoring`, `combined`, `obfuscation` |
 | **Channel** | Where is it *hidden*? (indirect) | 6 | `webpage`, `skills`, `unicode_hidden` |
 | **Defense** | How do we *harden* the prompt? | 6 | `spotlighting`, `delimiters`, `sandwich` |
-| **Target / Agent** | What *receives* it? | 4 backends / 6 agents | `openai:gpt-4o`, `browser`, `coding` |
+| **Target / Agent** | What *receives* it? | model backends, built-in scenarios, and external harnesses | `openai:…`, `browser`, `openclaw`, `hermes` |
 
 **The key insight**: these are orthogonal. Any attack can be paired with any
 channel, any defense can be applied to any agent, and the combinatorial space

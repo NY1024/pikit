@@ -60,4 +60,4 @@ __all__ = [
 ]
 
 # Keep this in sync with the distribution version in ``pyproject.toml``.
-__version__ = "0.4.0"
+__version__ = "0.5.0"

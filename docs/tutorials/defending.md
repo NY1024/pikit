@@ -134,6 +134,7 @@ python demos/run.py --agent browser --attack context_ignoring --channel webpage 
   injection — just slotted into different hook points.
 - The `tool_result` hook is the key defense position for indirect injection.
 - You can stack defenses at multiple points simultaneously.
-- pikit provides no evaluator — compare defenses by reading traces and
-  counting sink calls yourself.
+- pikit provides optional RuleJudge/LLMJudge and reports, but researchers
+  should still validate that the configured success criterion fits their
+  threat model.
 - Use the CLI `--defense` and `--defense-point` flags for quick experiments.

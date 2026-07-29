@@ -115,6 +115,7 @@ class ExperimentConfig:
     runtime: str = ""
     runtime_options: Dict[str, Any] = field(default_factory=dict)
     fixture: str = ""
+    harness: Any = None
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ExperimentConfig":

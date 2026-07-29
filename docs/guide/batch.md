@@ -35,8 +35,8 @@ Use `"*"` to expand to all registered methods:
 
 ```python
 cfg = ExperimentConfig(
-    attacks=["*"],         # all 9 attacks
-    defenses=["*"],        # "none" + all 6 prevention defenses
+    attacks=["*"],         # all registered attacks
+    defenses=["*"],        # "none" + all registered prevention defenses
     agents=["*"],          # all agents
     target_spec="mock",
 )

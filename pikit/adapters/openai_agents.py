@@ -15,8 +15,10 @@ from ..agent.base import Trace
 from ..agent.hooks import DefenseHooks
 from .recorder import TraceRecorder
 from .taint import TaintRouter
+from .harness import register_harness
 
 
+@register_harness("openai_agents")
 class OpenAIAgentsAdapter:
     """Run an OpenAI Agents SDK agent with taintable function tools.
 

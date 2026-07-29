@@ -132,8 +132,8 @@ messaging tools by default.
 Reference fixture plugins are included in:
 
 ```text
-integrations/openclaw-pikit-fixture/
-integrations/hermes-pikit-fixture/
+pikit.runtime_assets/openclaw_fixture/
+pikit.runtime_assets/hermes_fixture/
 ```
 
 They expose exactly two safe tools:

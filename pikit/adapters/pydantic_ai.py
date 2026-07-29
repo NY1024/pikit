@@ -15,8 +15,10 @@ from ..agent.base import Trace
 from ..agent.hooks import DefenseHooks
 from .recorder import TraceRecorder
 from .taint import TaintRouter
+from .harness import register_harness
 
 
+@register_harness("pydantic_ai")
 class PydanticAIAdapter:
     """Run a PydanticAI ``Agent`` with taintable function tools.
 

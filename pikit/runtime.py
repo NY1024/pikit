@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import os
 import shutil
+import subprocess
 from pathlib import Path
 from typing import Any, Dict
 
@@ -28,9 +29,14 @@ def doctor(runtime: str, *, executable: str | None = None, home: str | None = No
     if runtime == "openclaw":
         state = Path(home) if home else None
         report["config_present"] = bool(state and (state / "openclaw.json").is_file())
+        report["fixture_built"] = bool(state and (state / "pikit-openclaw-fixture" / "dist" / "index.js").is_file())
+        report["fixture_tools_expected"] = [
+            "pikit_read_document", "pikit_fetch_url", "pikit_read_email",
+            "pikit_search_knowledge", "pikit_load_skill", "pikit_record_sink",
+        ]
         report["fixture_hint"] = (
-            "Run `npm install && npm run plugin:build` in the fixture directory, "
-            "then install/link it in this isolated OpenClaw state."
+            "Run `pikit runtime install-fixture openclaw <profile>` to build "
+            "and link the fixture plugin."
         )
     else:
         state = Path(home) if home else None
@@ -46,6 +52,39 @@ def doctor(runtime: str, *, executable: str | None = None, home: str | None = No
         report["executable_found"] and report["fixture_present"] and report["config_present"]
     )
     return report
+
+
+def install_fixture(runtime: str, directory: str, *, executable: str | None = None) -> Dict[str, str]:
+    """Build/install a fixture plugin into an isolated runtime profile."""
+    runtime = runtime.lower()
+    root = Path(directory).expanduser().resolve()
+    if runtime == "hermes":
+        init("hermes", str(root))
+        return {
+            "runtime": "hermes",
+            "profile": str(root),
+            "fixture": str(root / "plugins" / "pikit_fixture"),
+            "status": "ready (plugin copied and enabled in config.yaml)",
+        }
+    if runtime != "openclaw":
+        raise ValueError("runtime must be 'openclaw' or 'hermes'")
+    init("openclaw", str(root))
+    executable = executable or "openclaw"
+    fixture = root / "pikit-openclaw-fixture"
+    subprocess.run(["npm", "install"], cwd=fixture, check=True)
+    subprocess.run(["npm", "run", "plugin:build"], cwd=fixture, check=True)
+    env = os.environ.copy()
+    env["OPENCLAW_STATE_DIR"] = str(root)
+    env["OPENCLAW_CONFIG_PATH"] = str(root / "openclaw.json")
+    subprocess.run([executable, "plugins", "install", str(fixture), "--link"], env=env, check=True)
+    subprocess.run([executable, "plugins", "enable", "pikit-fixture"], env=env, check=True)
+    subprocess.run([executable, "plugins", "registry", "--refresh"], env=env, check=True)
+    return {
+        "runtime": "openclaw",
+        "profile": str(root),
+        "fixture": str(fixture),
+        "status": "built, linked, enabled, and registry refreshed",
+    }
 
 
 def init(runtime: str, directory: str) -> Dict[str, str]:
@@ -106,4 +145,4 @@ def init(runtime: str, directory: str) -> Dict[str, str]:
     raise ValueError("runtime must be 'openclaw' or 'hermes'")
 
 
-__all__ = ["doctor", "init"]
+__all__ = ["doctor", "init", "install_fixture"]

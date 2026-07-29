@@ -17,7 +17,7 @@ from typing import Any, Dict, Iterable, Optional
 
 from ..agent.base import Trace, TraceStep
 from ..agent.hooks import DefenseHooks
-from .harness import AgentHarness
+from .harness import AgentHarness, register_harness
 
 
 class RuntimeCLIAdapter(AgentHarness):
@@ -165,6 +165,7 @@ class RuntimeCLIAdapter(AgentHarness):
                     ))
 
 
+@register_harness("openclaw")
 class OpenClawCLIAdapter(RuntimeCLIAdapter):
     """Run one local, headless OpenClaw agent turn through its CLI.
 
@@ -231,6 +232,7 @@ class OpenClawCLIAdapter(RuntimeCLIAdapter):
         return super().run(user_message, env=env, **kwargs)
 
 
+@register_harness("hermes")
 class HermesCLIAdapter(RuntimeCLIAdapter):
     """Run one non-interactive Hermes CLI turn without messaging channels.
 

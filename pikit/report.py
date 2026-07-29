@@ -24,6 +24,7 @@ def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
     total = len(items)
     successes = sum(bool(r.get("success")) for r in items)
     signals = Counter(signal for r in items for signal in r.get("signals", []))
+    outcomes = Counter(r.get("outcome", "not_reached") for r in items)
     by_dimension = defaultdict(lambda: {"total": 0, "success": 0})
     for row in items:
         key = " × ".join([
@@ -37,6 +38,7 @@ def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
         "successes": successes,
         "success_rate": successes / total if total else 0.0,
         "signals": dict(signals),
+        "outcomes": dict(outcomes),
         "combinations": dict(by_dimension),
     }
 
@@ -53,6 +55,8 @@ def markdown(rows: Iterable[Dict[str, Any]]) -> str:
         "| Signal | Count |", "|---|---:|",
     ]
     lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["signals"].items()))
+    lines.extend(["", "## Outcomes", "", "| Outcome | Count |", "|---|---:|"])
+    lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["outcomes"].items()))
     lines.extend(["", "## Combinations", "", "| Runtime / Agent × Attack × Channel × Defense | Success |", "|---|---:|"])
     for key, stats in sorted(summary["combinations"].items()):
         lines.append(f"| {key} | {stats['success']}/{stats['total']} |")

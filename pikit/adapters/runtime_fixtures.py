@@ -80,6 +80,14 @@ CHANNEL_FIXTURES: Dict[str, str] = {
     "skills": "skill",
 }
 
+NATIVE_CHANNEL_FIXTURES = {
+    "document": {"document"},
+    "webpage": {"webpage"},
+    "email": {"email_headers"},
+    "rag": {"structured_data"},
+    "skill": {"skills"},
+}
+
 
 def fixture_for(channel: str, override: str = "") -> RuntimeFixture:
     """Resolve a fixture by explicit key or by pikit channel."""
@@ -92,4 +100,17 @@ def fixture_for(channel: str, override: str = "") -> RuntimeFixture:
         ) from exc
 
 
-__all__ = ["RuntimeFixture", "FIXTURES", "CHANNEL_FIXTURES", "fixture_for"]
+def mapping_kind(channel: str, fixture: RuntimeFixture) -> str:
+    """Return ``native`` when a fixture directly models the chosen channel.
+
+    ``fallback`` indicates a safe approximation (for example calendar content
+    delivered through the email-like fixture) and is recorded in results so
+    researchers do not over-interpret carrier fidelity.
+    """
+    return "native" if channel in NATIVE_CHANNEL_FIXTURES.get(fixture.key, set()) else "fallback"
+
+
+__all__ = [
+    "RuntimeFixture", "FIXTURES", "CHANNEL_FIXTURES", "NATIVE_CHANNEL_FIXTURES",
+    "fixture_for", "mapping_kind",
+]

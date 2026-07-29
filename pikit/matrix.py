@@ -38,8 +38,7 @@ from typing import Any, Dict, List, Optional
 
 from . import attacks, channels, craft, defenses
 from .agent import DefenseHooks, get_agent
-from .adapters import fixture_for
-from .adapters.runtime_cli import HermesCLIAdapter, OpenClawCLIAdapter
+from .adapters import AgentHarness, TaintRouter, fixture_for, get_harness, mapping_kind
 from .agent.samples import (
     SAMPLE_CODE,
     SAMPLE_DOCUMENT,
@@ -161,6 +160,9 @@ class ExperimentResult:
     evidence: List[Dict[str, Any]] = field(default_factory=list)
     trace_data: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
+    outcome: str = "not_reached"
+    model_complied: Optional[bool] = None
+    runtime_blocked: bool = False
 
     def to_dict(self) -> Dict[str, Any]:
         return asdict(self)
@@ -318,12 +320,18 @@ class MatrixRunner:
             confidence = verdict.confidence
             reason = verdict.reason
             signals = verdict.signals
+            outcome = verdict.outcome
+            model_complied = verdict.model_complied
+            runtime_blocked = verdict.runtime_blocked
         else:
             success = False
             confidence = "n/a"
             reason = "no judge"
             signals = []
             evidence = []
+            outcome = "not_judged"
+            model_complied = None
+            runtime_blocked = False
 
         if judge:
             evidence = verdict.evidence
@@ -365,6 +373,9 @@ class MatrixRunner:
                 "python_version": platform.python_version(),
                 "target_options": dict(self.config.target_options),
             },
+            outcome=outcome,
+            model_complied=model_complied,
+            runtime_blocked=runtime_blocked,
         )
 
     def _run_runtime_one(
@@ -376,24 +387,41 @@ class MatrixRunner:
     ) -> ExperimentResult:
         """Run one indirect experiment through an external CLI runtime."""
         runtime = self.config.runtime.lower()
-        if runtime not in {"openclaw", "hermes"}:
-            raise ValueError("runtime must be 'openclaw' or 'hermes'")
+        if runtime not in {"openclaw", "hermes", "langchain", "openai_agents", "pydantic_ai"}:
+            raise ValueError(f"unknown runtime harness {runtime!r}")
         channel = channel_key or "document"
         fixture = fixture_for(channel, self.config.fixture)
         data = self._get_data(self.config.data_sample, fixture.data_sample)
-        res = craft(self.config.task, attack=attack_key, channel=channel, data=data)
+        if self.config.carrier_mode == "file":
+            res = craft(self.config.task, attack=attack_key, channel=channel, mode="file")
+        else:
+            res = craft(self.config.task, attack=attack_key, channel=channel, data=data)
         hooks = self._build_hooks(defense_key, is_direct=False)
         delivery = hooks.on_tool_result(res.delivery, fixture.tool_name)
         options = dict(self.config.runtime_options)
-        if runtime == "openclaw":
-            adapter = OpenClawCLIAdapter(**options)
+        if runtime in {"openclaw", "hermes"}:
+            adapter: AgentHarness = get_harness(runtime)(**options)
+            run_kwargs = {"fixture_payloads": {fixture.key: delivery}}
         else:
-            adapter = HermesCLIAdapter(**options)
+            # Framework adapters are constructed programmatically because
+            # their agent factories/tools are Python objects, not TOML data.
+            adapter = self.config.harness
+            if adapter is None:
+                raise ValueError(
+                    f"runtime {runtime!r} requires ExperimentConfig.harness "
+                    "to hold a configured adapter instance"
+                )
+            taint_tool = options.pop("taint_tool", "")
+            if not taint_tool:
+                raise ValueError(
+                    "framework runtime experiments require "
+                    "runtime_options={'taint_tool': '<tool name>'}"
+                )
+            adapter.taint_router = TaintRouter(taint={taint_tool: delivery})
+            adapter.hooks = hooks
+            run_kwargs = {}
         user_message = self.config.user_message or fixture.user_message
-        trace = adapter.run(
-            user_message,
-            fixture_payloads={fixture.key: delivery},
-        )
+        trace = adapter.run(user_message, **run_kwargs)
         judge = self._make_judge()
         if judge:
             verdict = judge.judge(trace, task=self.config.task, original_task=user_message)
@@ -401,10 +429,14 @@ class MatrixRunner:
                 verdict.success, verdict.confidence, verdict.reason,
                 verdict.signals, verdict.evidence,
             )
+            outcome = verdict.outcome
+            model_complied = verdict.model_complied
+            runtime_blocked = verdict.runtime_blocked
         else:
             success, confidence, reason, signals, evidence = (
                 False, "n/a", "no judge", [], [],
             )
+            outcome, model_complied, runtime_blocked = "not_judged", None, False
         self._run_counter += 1
         return ExperimentResult(
             attack=attack_key, defense=defense_key, channel=channel,
@@ -426,7 +458,11 @@ class MatrixRunner:
                 "runtime": runtime,
                 "runtime_options": options,
                 "fixture": fixture.key,
+                "fixture_mapping": mapping_kind(channel, fixture),
             },
+            outcome=outcome,
+            model_complied=model_complied,
+            runtime_blocked=runtime_blocked,
         )
 
     def run(self) -> List[ExperimentResult]:

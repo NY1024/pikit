@@ -13,8 +13,10 @@ from ..agent.base import Trace
 from ..agent.hooks import DefenseHooks
 from .recorder import TraceRecorder
 from .taint import TaintRouter
+from .harness import register_harness
 
 
+@register_harness("langchain")
 class LangChainAdapter:
     """Run a LangChain Runnable with taintable tools and a pikit trace.
 

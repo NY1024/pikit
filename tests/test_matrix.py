@@ -217,6 +217,42 @@ def test_matrix_runtime_harness_crafts_and_injects_fixture_payload(tmp_path):
     assert "<data>" in result.trace_data["steps"][2]["content"]
 
 
+def test_matrix_framework_harness_receives_tainted_delivery():
+    from pikit.adapters import TaintRouter
+    from pikit.agent.base import Trace, TraceStep
+
+    class FrameworkHarness:
+        name = "langchain"
+
+        def __init__(self):
+            self.taint_router = TaintRouter()
+            self.hooks = None
+
+        def run(self, message):
+            payload = self.taint_router.resolve("fetch_url", {})
+            return Trace(
+                steps=[TraceStep("tool_result", tool_name="fetch_url",
+                                 content=payload, tainted=True)],
+                final_text="refused",
+            )
+
+    harness = FrameworkHarness()
+    cfg = ExperimentConfig(
+        attacks=["naive"],
+        defenses=["delimiters"],
+        channels=["webpage"],
+        agents=["chat"],
+        runtime="langchain",
+        runtime_options={"taint_tool": "fetch_url"},
+        harness=harness,
+        target_spec="mock",
+        judge_type="none",
+    )
+    result = run(cfg)[0]
+    assert result.agent == "langchain"
+    assert "<data>" in result.trace_data["steps"][0]["content"]
+
+
 def test_matrix_verbose():
     cfg = ExperimentConfig(target_spec="mock")
     runner = MatrixRunner(cfg, verbose=True)

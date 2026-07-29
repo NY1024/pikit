@@ -9,7 +9,7 @@ Safe test-only tools:
 Install by copying this directory into an isolated profile:
 
 ```bash
-cp -R integrations/hermes-pikit-fixture \
+cp -R pikit/runtime_assets/hermes_fixture \
   "$HERMES_HOME/plugins/pikit_fixture"
 ```
 

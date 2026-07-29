@@ -30,12 +30,14 @@ uniform interface so you can:
 - :material-file-plus: **add a new method** by dropping in one file — no core
   changes.
 
-It is a *library of methods* plus a standard benchmark dataset collection: you
-can run individual experiments or full-coverage evaluations out of the box.
+It is a *toolbox*, not a prescriptive leaderboard: it includes reference
+datasets and optional judges while leaving the threat model and success
+criteria under the researcher's control.
 
 ## Key features
 
-- 🎯 **9 attacks × 6 defenses × 6 channels × 6 agents**, all mix-and-match.
+- 🎯 **12 attacks × 9 defenses × 14 channels**, plus built-in scenarios and
+  external Runtime Harnesses.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, or an Agent Skill).
