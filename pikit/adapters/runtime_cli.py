@@ -72,9 +72,14 @@ class RuntimeCLIAdapter:
         env = os.environ.copy()
         env.update(self.env)
         env.update({str(k): str(v) for k, v in kwargs.pop("env", {}).items()})
+        fixture_payloads = kwargs.pop("fixture_payloads", None)
+        if fixture_payloads is not None:
+            env["PIKIT_FIXTURE_PAYLOADS"] = json.dumps(fixture_payloads)
         fixture_trace_path = env.get("PIKIT_FIXTURE_TRACE_PATH")
         temporary_fixture_trace = None
-        if not fixture_trace_path and env.get("PIKIT_FIXTURE_DOCUMENT") is not None:
+        if not fixture_trace_path and (
+            env.get("PIKIT_FIXTURE_DOCUMENT") is not None or fixture_payloads is not None
+        ):
             handle = tempfile.NamedTemporaryFile(
                 prefix="pikit-fixture-", suffix=".jsonl", delete=False
             )

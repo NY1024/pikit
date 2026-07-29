@@ -38,6 +38,8 @@ from typing import Any, Dict, List, Optional
 
 from . import attacks, channels, craft, defenses
 from .agent import DefenseHooks, get_agent
+from .adapters import fixture_for
+from .adapters.runtime_cli import HermesCLIAdapter, OpenClawCLIAdapter
 from .agent.samples import (
     SAMPLE_CODE,
     SAMPLE_DOCUMENT,
@@ -238,6 +240,10 @@ class MatrixRunner:
         agent_key: str,
     ) -> ExperimentResult:
         """Run a single combination and return its result."""
+        if self.config.runtime:
+            return self._run_runtime_one(
+                attack_key, defense_key, channel_key, agent_key
+            )
         # An empty channel means "use the scenario's default carrier" for
         # tool agents. Only the no-tools chat agent is a direct target.
         is_direct = agent_key == "chat"
@@ -361,6 +367,68 @@ class MatrixRunner:
             },
         )
 
+    def _run_runtime_one(
+        self,
+        attack_key: str,
+        defense_key: str,
+        channel_key: str,
+        agent_key: str,
+    ) -> ExperimentResult:
+        """Run one indirect experiment through an external CLI runtime."""
+        runtime = self.config.runtime.lower()
+        if runtime not in {"openclaw", "hermes"}:
+            raise ValueError("runtime must be 'openclaw' or 'hermes'")
+        channel = channel_key or "document"
+        fixture = fixture_for(channel, self.config.fixture)
+        data = self._get_data(self.config.data_sample, fixture.data_sample)
+        res = craft(self.config.task, attack=attack_key, channel=channel, data=data)
+        hooks = self._build_hooks(defense_key, is_direct=False)
+        delivery = hooks.on_tool_result(res.delivery, fixture.tool_name)
+        options = dict(self.config.runtime_options)
+        if runtime == "openclaw":
+            adapter = OpenClawCLIAdapter(**options)
+        else:
+            adapter = HermesCLIAdapter(**options)
+        user_message = self.config.user_message or fixture.user_message
+        trace = adapter.run(
+            user_message,
+            fixture_payloads={fixture.key: delivery},
+        )
+        judge = self._make_judge()
+        if judge:
+            verdict = judge.judge(trace, task=self.config.task, original_task=user_message)
+            success, confidence, reason, signals, evidence = (
+                verdict.success, verdict.confidence, verdict.reason,
+                verdict.signals, verdict.evidence,
+            )
+        else:
+            success, confidence, reason, signals, evidence = (
+                False, "n/a", "no judge", [], [],
+            )
+        self._run_counter += 1
+        return ExperimentResult(
+            attack=attack_key, defense=defense_key, channel=channel,
+            agent=runtime, target=self.config.target_spec, task=self.config.task,
+            success=success, confidence=confidence, reason=reason, signals=signals,
+            final_text=trace.final_text, sink_fired=bool(trace.sink_calls),
+            trace=str(trace), timestamp=datetime.now().isoformat(),
+            run_id=f"run-{self._run_counter:06d}", seed=self.config.seed,
+            generation_config={"runtime": runtime},
+            method_specs={
+                "attack": {"name": attack_key, "kwargs": {}},
+                "defense": {"name": defense_key, "kwargs": {}},
+                "channel": {"name": channel, "kwargs": {}},
+                "fixture": {"name": fixture.key, "tool": fixture.tool_name},
+            },
+            evidence=evidence, trace_data=trace.to_dict(),
+            metadata={
+                "schema_version": "pikit.experiment-result.v1",
+                "runtime": runtime,
+                "runtime_options": options,
+                "fixture": fixture.key,
+            },
+        )
+
     def run(self) -> List[ExperimentResult]:
         """Run all combinations in the matrix.
 
@@ -389,7 +457,7 @@ class MatrixRunner:
                 for defense_key in self.config.defenses:
                     for channel_key in self.config.channels:
                         # chat agent only does direct; skip channels for it.
-                        if agent_key == "chat" and channel_key:
+                        if not self.config.runtime and agent_key == "chat" and channel_key:
                             continue
                         # non-chat agent with empty channel = use default.
                         if agent_key != "chat" and not channel_key:

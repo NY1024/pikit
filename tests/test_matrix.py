@@ -71,6 +71,17 @@ def test_config_num_combinations_skips_unsupported_chat_channels():
     assert cfg.num_combinations() == 3
 
 
+def test_runtime_config_counts_channels_for_chat_placeholder():
+    cfg = ExperimentConfig(
+        attacks=["naive"],
+        defenses=["none"],
+        agents=["chat"],
+        channels=["webpage", "email"],
+        runtime="openclaw",
+    )
+    assert cfg.num_combinations() == 2
+
+
 def test_matrix_run_basic():
     """Run a minimal matrix with mock target."""
     cfg = ExperimentConfig(
@@ -162,6 +173,48 @@ def test_matrix_save_jsonl_contains_structured_trace_and_metadata(tmp_path):
 def test_matrix_result_records_rule_judge_evidence():
     result = run(ExperimentConfig(target_spec="mock"))[0]
     assert any(item["type"] == "canary" for item in result.evidence)
+
+
+def test_matrix_runtime_harness_crafts_and_injects_fixture_payload(tmp_path):
+    script = tmp_path / "runtime.py"
+    script.write_text(
+        "import json, os\n"
+        "payload = json.loads(os.environ['PIKIT_FIXTURE_PAYLOADS'])['document']\n"
+        "with open(os.environ['PIKIT_FIXTURE_TRACE_PATH'], 'w') as f:\n"
+        " f.write(json.dumps({'type':'tool_result','tool':'pikit_read_document',"
+        "'args':{'ref':'artifact'},'content':payload,'tainted':True}) + '\\n')\n"
+        "print('runtime summary')\n",
+        encoding="utf-8",
+    )
+    cfg = ExperimentConfig(
+        attacks=["context_ignoring"],
+        defenses=["delimiters"],
+        channels=["document"],
+        agents=["chat"],
+        target_spec="mock",
+        judge_type="none",
+        runtime="hermes",
+        runtime_options={
+            "executable": "python3",
+            "safe_mode": False,
+        },
+    )
+    # Use the runtime adapter's public command override seam via a tiny
+    # executable shim instead of invoking an installed Hermes runtime.
+    import sys
+    cfg.runtime_options["executable"] = sys.executable
+    from pikit.adapters.runtime_cli import HermesCLIAdapter
+    original = HermesCLIAdapter.build_command
+    HermesCLIAdapter.build_command = lambda self, message: [sys.executable, str(script)]
+    try:
+        result = run(cfg)[0]
+    finally:
+        HermesCLIAdapter.build_command = original
+    assert result.agent == "hermes"
+    assert result.channel == "document"
+    assert result.trace_data["steps"][2]["tainted"] is True
+    assert "Ignore all previous instructions" in result.trace_data["steps"][2]["content"]
+    assert "<data>" in result.trace_data["steps"][2]["content"]
 
 
 def test_matrix_verbose():

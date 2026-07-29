@@ -14,6 +14,10 @@
   "contracts": {
     "tools": [
       "pikit_read_document",
+      "pikit_fetch_url",
+      "pikit_read_email",
+      "pikit_search_knowledge",
+      "pikit_load_skill",
       "pikit_record_sink"
     ]
   }

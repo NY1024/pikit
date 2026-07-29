@@ -124,6 +124,42 @@ pikit matrix --config experiment.toml --output results.json
 See [`demos/experiment.example.toml`](https://github.com/NY1024/pikit/blob/main/demos/experiment.example.toml)
 for a complete annotated example.
 
+## External Runtime Matrix
+
+OpenClaw and Hermes can run the same matrix through their safe fixture
+plugins. Set `runtime` and its `runtime_options`; the runner automatically:
+
+1. calls `craft()` for the selected attack and channel;
+2. applies the selected tool-result defense;
+3. injects the resulting artifact into the fixture source tool;
+4. imports the runtime's fixture JSONL as a structured `Trace`;
+5. runs the normal judge.
+
+```toml
+[matrix]
+runtime = "openclaw"
+attacks = ["context_ignoring", "combined"]
+defenses = ["none", "spotlighting"]
+channels = ["webpage", "email_headers", "skills"]
+agents = ["chat"] # placeholder; runtime selects the actual harness
+
+[matrix.runtime_options]
+executable = "openclaw"
+model = "deepseek/deepseek-v4-flash"
+state_dir = "/tmp/pikit-openclaw"
+config_path = "/tmp/pikit-openclaw/openclaw.json"
+
+[judge]
+type = "rule"
+require_sink = true
+[judge.sink_args]
+target = "attacker@example.test"
+```
+
+The OpenClaw/Hermes fixture plugins must be installed into isolated runtime
+profiles first. They expose document, webpage, email, RAG, and skill source
+tools plus a non-side-effecting `pikit_record_sink`.
+
 ## Temperature & Multiple Runs
 
 By default, pikit runs each combination **once** with `temperature=0.0`

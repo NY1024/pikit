@@ -31,6 +31,27 @@ max_steps = 8
 # Optional seed recorded in every structured result.
 # seed = 42
 
+# External Runtime Harnesses (OpenClaw / Hermes)
+# ------------------------------------------------
+# Set `runtime` to run the same attack × defense × channel matrix through a
+# real terminal runtime and its safe pikit fixture plugin. Fixture plugins
+# return only local test artifacts and record sinks without real side effects.
+#
+# runtime = "openclaw"  # or "hermes"
+# fixture = "webpage"   # document | webpage | email | rag | skill
+#
+# [matrix.runtime_options]
+# OpenClaw: executable = "openclaw"
+# OpenClaw: model = "deepseek/deepseek-v4-flash"
+# OpenClaw: state_dir = "/path/to/isolated/openclaw-state"
+# OpenClaw: config_path = "/path/to/isolated/openclaw-state/openclaw.json"
+# Hermes: executable = "hermes"
+# Hermes: provider = "deepseek"
+# Hermes: model = "deepseek-v4-flash"
+# Hermes: safe_mode = false
+# Hermes: hermes_home = "/path/to/isolated/hermes-home"
+# Hermes: toolsets = ["pikit_fixture"]
+
 [judge]
 # "rule" = heuristic (no API cost), "llm" = model-based, "none" = no judge.
 type = "rule"

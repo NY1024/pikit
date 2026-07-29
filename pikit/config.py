@@ -88,6 +88,10 @@ class ExperimentConfig:
         such as ``{"base_url": "https://api.deepseek.com"}``.
     seed:
         Optional experiment seed recorded in every result for reproducibility.
+    runtime:
+        Optional external runtime selector: ``"openclaw"`` or ``"hermes"``.
+        When set, MatrixRunner uses the safe fixture harness rather than an
+        in-process pikit agent.
     """
 
     attacks: List[str] = field(default_factory=lambda: ["naive"])
@@ -108,6 +112,9 @@ class ExperimentConfig:
     sink_args: Dict[str, str] = field(default_factory=dict)
     target_options: Dict[str, Any] = field(default_factory=dict)
     seed: Any = None
+    runtime: str = ""
+    runtime_options: Dict[str, Any] = field(default_factory=dict)
+    fixture: str = ""
 
     @classmethod
     def from_dict(cls, d: Dict[str, Any]) -> "ExperimentConfig":
@@ -144,6 +151,9 @@ class ExperimentConfig:
             sink_args=judge.get("sink_args", matrix.get("sink_args", {})),
             target_options=target_options,
             seed=matrix.get("seed"),
+            runtime=matrix.get("runtime", d.get("runtime", "")),
+            runtime_options=matrix.get("runtime_options", d.get("runtime_options", {})),
+            fixture=matrix.get("fixture", d.get("fixture", "")),
         )
 
     @classmethod
@@ -164,7 +174,9 @@ class ExperimentConfig:
         """
         per_agent_channels = 0
         for agent in self.agents:
-            if agent == "chat":
+            if self.runtime:
+                per_agent_channels += max(len(self.channels), 1)
+            elif agent == "chat":
                 per_agent_channels += sum(1 for channel in self.channels if not channel)
             else:
                 per_agent_channels += max(len(self.channels), 1)
