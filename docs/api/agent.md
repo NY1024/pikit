@@ -10,6 +10,8 @@
 
 ::: pikit.agent.adapters
 
+::: pikit.adapters
+
 ::: pikit.agent.tools
 
 ::: pikit.agent.system_prompt
