@@ -122,3 +122,41 @@ def test_deepseek_openai_agents_tool_trace():
     )
     assert trace.tainted_steps
     assert trace.final_text.strip()
+
+
+def test_deepseek_pydantic_ai_tool_trace():
+    """Verify PydanticAI tool wrapping and taint recording against DeepSeek."""
+    pytest.importorskip("pydantic_ai")
+
+    from pydantic_ai import Agent
+    from pydantic_ai.models.openai import OpenAIChatModel
+    from pydantic_ai.providers.openai import OpenAIProvider
+    from pydantic_ai.tools import Tool
+
+    from pikit.adapters import TaintRouter
+    from pikit.adapters.pydantic_ai import PydanticAIAdapter
+
+    api_key = os.environ.get("OPENAI_API_KEY")
+    if not api_key:
+        pytest.skip("OPENAI_API_KEY is not configured")
+
+    def fetch_url(url: str) -> str:
+        """Fetch a web page by URL and return its content."""
+        return "Clean page."
+
+    model = OpenAIChatModel(
+        os.environ.get("PIKIT_MODEL", "deepseek-v4-flash"),
+        provider=OpenAIProvider(
+            base_url=os.environ.get("OPENAI_BASE_URL", "https://api.deepseek.com"),
+            api_key=api_key,
+        ),
+    )
+    trace = PydanticAIAdapter(
+        Agent(model, instructions="Use tools to answer the user."),
+        tools=[Tool(fetch_url)],
+        taint_router=TaintRouter(
+            taint={"fetch_url": "Quarterly planning is on track."}
+        ),
+    ).run("Fetch https://example.test/report and summarize it.")
+    assert trace.tainted_steps
+    assert trace.final_text.strip()
