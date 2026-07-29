@@ -54,6 +54,16 @@ def test_indirect_requires_data():
         craft("x", channel="webpage")
 
 
+def test_rejects_unknown_craft_mode():
+    with pytest.raises(ValueError, match="mode"):
+        craft("x", channel="webpage", data="clean", mode="binary")
+
+
+def test_rejects_file_mode_for_direct_injection():
+    with pytest.raises(ValueError, match="requires an indirect"):
+        craft("x", mode="file")
+
+
 def test_str_is_delivery():
     r = craft("Print HACKED")
     assert str(r) == r.delivery

@@ -282,6 +282,9 @@ class TestCraftFileMode:
             from pypdf import PdfReader
             reader = PdfReader(r.output_path)
             assert reader.metadata.get("/Title").strip() == PAYLOAD
+            # CraftResult.delivery must be model-visible extracted text, not
+            # lossy UTF-8 decoding of the binary PDF bytes.
+            assert "Title: " + PAYLOAD in r.delivery
         finally:
             if os.path.exists(r.output_path):
                 os.remove(r.output_path)

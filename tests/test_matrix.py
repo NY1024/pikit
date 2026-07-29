@@ -27,6 +27,19 @@ def test_config_from_dict():
     assert cfg.target_spec == "mock"
 
 
+def test_config_from_toml(tmp_path):
+    config_path = tmp_path / "experiment.toml"
+    config_path.write_text(
+        '[matrix]\nattacks = "naive"\nchannels = ""\n\n'
+        '[target]\nspec = "mock"\n',
+        encoding="utf-8",
+    )
+    cfg = ExperimentConfig.from_toml(str(config_path))
+    assert cfg.attacks == ["naive"]
+    assert cfg.channels == [""]
+    assert cfg.target_spec == "mock"
+
+
 def test_config_num_combinations():
     cfg = ExperimentConfig(
         attacks=["a", "b"],
@@ -35,6 +48,17 @@ def test_config_num_combinations():
         channels=[""],
     )
     assert cfg.num_combinations() == 4
+
+
+def test_config_num_combinations_skips_unsupported_chat_channels():
+    cfg = ExperimentConfig(
+        attacks=["naive"],
+        defenses=["none"],
+        agents=["chat", "browser"],
+        channels=["", "webpage"],
+    )
+    # chat × direct + browser × (default + explicit webpage)
+    assert cfg.num_combinations() == 3
 
 
 def test_matrix_run_basic():
@@ -65,6 +89,20 @@ def test_matrix_run_multiple():
     )
     results = run(cfg)
     assert len(results) == 4
+
+
+def test_matrix_non_chat_empty_channel_uses_default_indirect_delivery():
+    cfg = ExperimentConfig(
+        attacks=["naive"],
+        defenses=["none"],
+        agents=["browser"],
+        channels=[""],
+        target_spec="mock",
+        judge_type="none",
+    )
+    result = run(cfg)[0]
+    assert result.channel == "webpage"
+    assert "error:" not in result.reason
 
 
 def test_matrix_save_json():

@@ -94,3 +94,23 @@ class PDFMetadataChannel(Channel):
         with open(output_path, "wb") as f:
             writer.write(f)
         return output_path
+
+    def extract_file(self, path: str) -> str:
+        """Return page text plus metadata as a model-facing PDF reader might.
+
+        PDF files are binary, so the base text-file implementation cannot
+        reliably expose an injected ``/Info`` value to the agent testbed.
+        """
+        from pypdf import PdfReader
+
+        reader = PdfReader(path)
+        metadata = reader.metadata or {}
+        fields = []
+        for key, value in metadata.items():
+            if value is not None:
+                fields.append(f"{str(key).lstrip('/')}: {value}")
+        pages = [
+            page.extract_text() or ""
+            for page in reader.pages
+        ]
+        return "\n".join(fields + pages)

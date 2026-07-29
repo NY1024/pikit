@@ -117,14 +117,20 @@ def craft(
     ...       data="<html><body>hi</body></html>").mode
     'indirect'
     """
+    if mode not in {"text", "file"}:
+        raise ValueError("mode must be 'text' or 'file'")
+
     if channel is None:
+        if mode != "text":
+            raise ValueError("file mode requires an indirect injection channel")
         # Direct: prepend the benign request when given, so `delivery` is the
         # realistic message the agent receives.
         base = instruction or ""
-        worded = attacks.get(attack)(**(attack_kwargs or {})).inject(base, task)
+        attack_method = attacks.get(attack)(**(attack_kwargs or {}))
+        worded = attack_method.inject(base, task)
         return CraftResult(
             mode="direct",
-            payload=attacks.get(attack)(**(attack_kwargs or {})).inject("", task),
+            payload=attack_method.inject("", task),
             delivery=worded,
             instruction=instruction,
             attack=attack,
@@ -139,9 +145,11 @@ def craft(
 
         cpath = carrier_path if carrier_path is not None else _default_carrier(channel)
         out = ch.taint_file(cpath, worded, output_path=output_path)
-        # Read the tainted file content as the delivery artifact.
-        with open(out, "r", encoding="utf-8", errors="replace") as f:
-            artifact = f.read()
+        # Let the channel parse binary carriers before presenting their
+        # model-visible text.  Reading a PDF/XLSX as UTF-8 would otherwise
+        # discard precisely the metadata/cell content this mode is meant to
+        # exercise.
+        artifact = ch.extract_file(out)
         return CraftResult(
             mode="indirect",
             payload=worded,
