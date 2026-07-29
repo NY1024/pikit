@@ -38,6 +38,7 @@ from .craft import CraftResult, craft
 from .targets import Target, get_target
 from .judges import Judge, JudgeResult, RuleJudge, LLMJudge
 from .config import ExperimentConfig
+from .outcomes import Outcome
 from . import datasets
 
 __all__ = [
@@ -56,6 +57,7 @@ __all__ = [
     "RuleJudge",
     "LLMJudge",
     "ExperimentConfig",
+    "Outcome",
     "datasets",
 ]
 

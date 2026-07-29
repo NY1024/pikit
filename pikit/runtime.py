@@ -38,6 +38,28 @@ def doctor(runtime: str, *, executable: str | None = None, home: str | None = No
             "Run `pikit runtime install-fixture openclaw <profile>` to build "
             "and link the fixture plugin."
         )
+        report["fixture_loaded"] = False
+        report["fixture_tools_visible"] = []
+        if report["executable_found"] and report["config_present"]:
+            env = os.environ.copy()
+            env["OPENCLAW_STATE_DIR"] = str(state)
+            env["OPENCLAW_CONFIG_PATH"] = str(state / "openclaw.json")
+            probe = subprocess.run(
+                [executable, "plugins", "inspect", "pikit-fixture", "--runtime", "--json"],
+                env=env, capture_output=True, text=True, check=False,
+            )
+            if probe.returncode == 0:
+                try:
+                    payload = json.loads(probe.stdout)
+                    report["fixture_loaded"] = payload.get("plugin", {}).get("status") == "loaded"
+                    report["fixture_tools_visible"] = [
+                        name for item in payload.get("tools", [])
+                        for name in item.get("names", [])
+                    ]
+                except json.JSONDecodeError:
+                    report["runtime_probe_error"] = "OpenClaw returned invalid plugin JSON"
+            else:
+                report["runtime_probe_error"] = probe.stderr.strip() or probe.stdout.strip()
     else:
         state = Path(home) if home else None
         report["config_present"] = bool(state and (state / "config.yaml").is_file())
@@ -51,6 +73,11 @@ def doctor(runtime: str, *, executable: str | None = None, home: str | None = No
     report["ready"] = bool(
         report["executable_found"] and report["fixture_present"] and report["config_present"]
     )
+    if runtime == "openclaw":
+        report["ready"] = bool(
+            report["ready"] and report["fixture_loaded"]
+            and set(report["fixture_tools_expected"]).issubset(report["fixture_tools_visible"])
+        )
     return report
 
 

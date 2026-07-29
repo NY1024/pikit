@@ -63,6 +63,7 @@ from .agent.samples import (
 )
 from .config import ExperimentConfig
 from .judges import Judge, LLMJudge, RuleJudge
+from .outcomes import Outcome
 from .targets import get_target
 
 # Agent → default taint tool / channel / sample / user message.
@@ -160,7 +161,7 @@ class ExperimentResult:
     evidence: List[Dict[str, Any]] = field(default_factory=list)
     trace_data: Dict[str, Any] = field(default_factory=dict)
     metadata: Dict[str, Any] = field(default_factory=dict)
-    outcome: str = "not_reached"
+    outcome: Outcome = Outcome.NOT_REACHED
     model_complied: Optional[bool] = None
     runtime_blocked: bool = False
 
@@ -207,6 +208,19 @@ class MatrixRunner:
         if "*" in self.config.channels:
             self.config.channels = channels.list()
 
+    def _specs(self, kind: str) -> List[Dict[str, Any]]:
+        """Resolve legacy key lists or structured method specifications."""
+        specs = getattr(self.config, f"{kind}_specs")
+        if specs:
+            return [
+                {"name": item["name"], "kwargs": dict(item.get("kwargs", {}))}
+                for item in specs
+            ]
+        return [
+            {"name": name, "kwargs": {}}
+            for name in getattr(self.config, f"{kind}s")
+        ]
+
     def _make_judge(self) -> Optional[Judge]:
         if self.config.judge_type == "none":
             return None
@@ -223,11 +237,16 @@ class MatrixRunner:
             sink_args=self.config.sink_args or None,
         )
 
-    def _build_hooks(self, defense_key: str, is_direct: bool) -> DefenseHooks:
+    def _build_hooks(
+        self,
+        defense_key: str,
+        is_direct: bool,
+        defense_kwargs: Optional[Dict[str, Any]] = None,
+    ) -> DefenseHooks:
         if defense_key == "none" or not defense_key:
             return DefenseHooks()
         point = "user" if is_direct else "tool_result"
-        dfn = defenses.get(defense_key)()
+        dfn = defenses.get(defense_key)(**(defense_kwargs or {}))
         return DefenseHooks(**{point: dfn})
 
     def _get_data(self, sample_key: str, default_key: str) -> str:
@@ -240,11 +259,17 @@ class MatrixRunner:
         defense_key: str,
         channel_key: str,
         agent_key: str,
+        *,
+        attack_kwargs: Optional[Dict[str, Any]] = None,
+        defense_kwargs: Optional[Dict[str, Any]] = None,
+        channel_kwargs: Optional[Dict[str, Any]] = None,
     ) -> ExperimentResult:
         """Run a single combination and return its result."""
         if self.config.runtime:
             return self._run_runtime_one(
-                attack_key, defense_key, channel_key, agent_key
+                attack_key, defense_key, channel_key, agent_key,
+                attack_kwargs=attack_kwargs, defense_kwargs=defense_kwargs,
+                channel_kwargs=channel_kwargs,
             )
         # An empty channel means "use the scenario's default carrier" for
         # tool agents. Only the no-tools chat agent is a direct target.
@@ -271,9 +296,10 @@ class MatrixRunner:
             res = craft(
                 self.config.task,
                 attack=attack_key,
+                attack_kwargs=attack_kwargs,
                 instruction=user_message,
             )
-            hooks = self._build_hooks(defense_key, is_direct=True)
+            hooks = self._build_hooks(defense_key, is_direct=True, defense_kwargs=defense_kwargs)
             agent = get_agent(agent_key)(tgt, defenses=hooks)
             run_input = res.delivery
         else:
@@ -282,18 +308,20 @@ class MatrixRunner:
             if craft_mode == "file":
                 res = craft(
                     self.config.task,
-                    attack=attack_key,
+                    attack=attack_key, attack_kwargs=attack_kwargs,
                     channel=channel,
+                    channel_kwargs=channel_kwargs,
                     mode="file",
                 )
             else:
                 res = craft(
                     self.config.task,
-                    attack=attack_key,
+                    attack=attack_key, attack_kwargs=attack_kwargs,
                     channel=channel,
+                    channel_kwargs=channel_kwargs,
                     data=data,
                 )
-            hooks = self._build_hooks(defense_key, is_direct=False)
+            hooks = self._build_hooks(defense_key, is_direct=False, defense_kwargs=defense_kwargs)
             taint_map = {taint_tool: res.delivery} if taint_tool else {}
             agent = get_agent(agent_key)(
                 tgt,
@@ -361,9 +389,9 @@ class MatrixRunner:
             seed=self.config.seed,
             generation_config={"temperature": self.config.temperature},
             method_specs={
-                "attack": {"name": attack_key, "kwargs": {}},
-                "defense": {"name": defense_key, "kwargs": {}},
-                "channel": {"name": channel or "", "kwargs": {}},
+                "attack": {"name": attack_key, "kwargs": attack_kwargs or {}},
+                "defense": {"name": defense_key, "kwargs": defense_kwargs or {}},
+                "channel": {"name": channel or "", "kwargs": channel_kwargs or {}},
             },
             evidence=evidence,
             trace_data=trace.to_dict(),
@@ -384,6 +412,10 @@ class MatrixRunner:
         defense_key: str,
         channel_key: str,
         agent_key: str,
+        *,
+        attack_kwargs: Optional[Dict[str, Any]] = None,
+        defense_kwargs: Optional[Dict[str, Any]] = None,
+        channel_kwargs: Optional[Dict[str, Any]] = None,
     ) -> ExperimentResult:
         """Run one indirect experiment through an external CLI runtime."""
         runtime = self.config.runtime.lower()
@@ -393,10 +425,12 @@ class MatrixRunner:
         fixture = fixture_for(channel, self.config.fixture)
         data = self._get_data(self.config.data_sample, fixture.data_sample)
         if self.config.carrier_mode == "file":
-            res = craft(self.config.task, attack=attack_key, channel=channel, mode="file")
+            res = craft(self.config.task, attack=attack_key, attack_kwargs=attack_kwargs,
+                        channel=channel, channel_kwargs=channel_kwargs, mode="file")
         else:
-            res = craft(self.config.task, attack=attack_key, channel=channel, data=data)
-        hooks = self._build_hooks(defense_key, is_direct=False)
+            res = craft(self.config.task, attack=attack_key, attack_kwargs=attack_kwargs,
+                        channel=channel, channel_kwargs=channel_kwargs, data=data)
+        hooks = self._build_hooks(defense_key, is_direct=False, defense_kwargs=defense_kwargs)
         delivery = hooks.on_tool_result(res.delivery, fixture.tool_name)
         options = dict(self.config.runtime_options)
         if runtime in {"openclaw", "hermes"}:
@@ -447,9 +481,9 @@ class MatrixRunner:
             run_id=f"run-{self._run_counter:06d}", seed=self.config.seed,
             generation_config={"runtime": runtime},
             method_specs={
-                "attack": {"name": attack_key, "kwargs": {}},
-                "defense": {"name": defense_key, "kwargs": {}},
-                "channel": {"name": channel, "kwargs": {}},
+                "attack": {"name": attack_key, "kwargs": attack_kwargs or {}},
+                "defense": {"name": defense_key, "kwargs": defense_kwargs or {}},
+                "channel": {"name": channel, "kwargs": channel_kwargs or {}},
                 "fixture": {"name": fixture.key, "tool": fixture.tool_name},
             },
             evidence=evidence, trace_data=trace.to_dict(),
@@ -489,9 +523,12 @@ class MatrixRunner:
         count = 0
 
         for agent_key in self.config.agents:
-            for attack_key in self.config.attacks:
-                for defense_key in self.config.defenses:
-                    for channel_key in self.config.channels:
+            for attack_spec in self._specs("attack"):
+                for defense_spec in self._specs("defense"):
+                    for channel_spec in self._specs("channel"):
+                        attack_key, attack_kwargs = attack_spec["name"], attack_spec["kwargs"]
+                        defense_key, defense_kwargs = defense_spec["name"], defense_spec["kwargs"]
+                        channel_key, channel_kwargs = channel_spec["name"], channel_spec["kwargs"]
                         # chat agent only does direct; skip channels for it.
                         if not self.config.runtime and agent_key == "chat" and channel_key:
                             continue
@@ -523,6 +560,9 @@ class MatrixRunner:
                                     defense_key,
                                     channel_key_actual,
                                     agent_key,
+                                    attack_kwargs=attack_kwargs,
+                                    defense_kwargs=defense_kwargs,
+                                    channel_kwargs=channel_kwargs,
                                 )
                                 result.repeat_index = rep
                                 result.total_runs = n_reps

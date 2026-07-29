@@ -253,6 +253,20 @@ def test_matrix_framework_harness_receives_tainted_delivery():
     assert "<data>" in result.trace_data["steps"][0]["content"]
 
 
+def test_matrix_structured_method_specs_preserve_kwargs():
+    cfg = ExperimentConfig(
+        attack_specs=[{"name": "obfuscation", "kwargs": {"scheme": "base64"}}],
+        defense_specs=[{"name": "spotlighting", "kwargs": {"mode": "encoding"}}],
+        channel_specs=[{"name": "webpage", "kwargs": {"method": "comment"}}],
+        agents=["browser"],
+        target_spec="mock",
+    )
+    result = run(cfg)[0]
+    assert result.method_specs["attack"]["kwargs"] == {"scheme": "base64"}
+    assert result.method_specs["defense"]["kwargs"] == {"mode": "encoding"}
+    assert result.method_specs["channel"]["kwargs"] == {"method": "comment"}
+
+
 def test_matrix_verbose():
     cfg = ExperimentConfig(target_spec="mock")
     runner = MatrixRunner(cfg, verbose=True)
