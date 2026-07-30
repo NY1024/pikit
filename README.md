@@ -58,7 +58,7 @@ threat model and success criteria under the researcher's control.
 
 ## Key features
 
-- 🎯 **12 attacks × 9 defenses × 14 channels × 6 agents**, all mix-and-match.
+- 🎯 **13 attacks × 9 defenses × 16 channels × 12 built-in agents**, all mix-and-match.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, Agent Skill, structured data, PDF metadata, log files, email

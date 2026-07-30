@@ -36,5 +36,5 @@ live_api_results.json
 .idea/
 .vscode/
 
-# Generated integration-plugin output
-integrations/*/dist/
+# Generated runtime-fixture output
+pikit/runtime_assets/*/dist/

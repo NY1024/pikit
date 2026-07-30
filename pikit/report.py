@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import html
 import json
+from dataclasses import asdict, is_dataclass
 from collections import Counter, defaultdict
 from pathlib import Path
 from typing import Any, Dict, Iterable, List
@@ -20,11 +21,23 @@ def load(path: str) -> List[Dict[str, Any]]:
 
 def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
     """Compute compact outcome and coverage statistics."""
-    items = [r for r in rows if "repeat_summary" not in r.get("signals", [])]
+    normalized = [
+        asdict(row) if is_dataclass(row) else row
+        for row in rows
+    ]
+    items = [r for r in normalized if "repeat_summary" not in r.get("signals", [])]
     total = len(items)
     successes = sum(bool(r.get("success")) for r in items)
     signals = Counter(signal for r in items for signal in r.get("signals", []))
-    outcomes = Counter(r.get("outcome", "not_reached") for r in items)
+    outcomes = Counter(
+        getattr(r.get("outcome", "not_reached"), "value", r.get("outcome", "not_reached"))
+        for r in items
+    )
+    model_complied = sum(r.get("model_complied") is True for r in items)
+    runtime_blocked = sum(bool(r.get("runtime_blocked")) for r in items)
+    fixture_mappings = Counter(
+        r.get("metadata", {}).get("fixture_mapping", "n/a") for r in items
+    )
     by_dimension = defaultdict(lambda: {"total": 0, "success": 0})
     for row in items:
         key = " × ".join([
@@ -39,6 +52,9 @@ def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
         "success_rate": successes / total if total else 0.0,
         "signals": dict(signals),
         "outcomes": dict(outcomes),
+        "model_complied": model_complied,
+        "runtime_blocked": runtime_blocked,
+        "fixture_mappings": dict(fixture_mappings),
         "combinations": dict(by_dimension),
     }
 
@@ -51,12 +67,16 @@ def markdown(rows: Iterable[Dict[str, Any]]) -> str:
         f"- Runs: **{summary['total']}**",
         f"- Successes: **{summary['successes']}**",
         f"- Success rate: **{summary['success_rate']:.1%}**", "",
+        f"- Model complied: **{summary['model_complied']}**",
+        f"- Runtime blocked: **{summary['runtime_blocked']}**", "",
         "## Signals", "",
         "| Signal | Count |", "|---|---:|",
     ]
     lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["signals"].items()))
     lines.extend(["", "## Outcomes", "", "| Outcome | Count |", "|---|---:|"])
     lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["outcomes"].items()))
+    lines.extend(["", "## Fixture fidelity", "", "| Mapping | Count |", "|---|---:|"])
+    lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["fixture_mappings"].items()))
     lines.extend(["", "## Combinations", "", "| Runtime / Agent × Attack × Channel × Defense | Success |", "|---|---:|"])
     for key, stats in sorted(summary["combinations"].items()):
         lines.append(f"| {key} | {stats['success']}/{stats['total']} |")
@@ -65,7 +85,7 @@ def markdown(rows: Iterable[Dict[str, Any]]) -> str:
 
 def html_report(rows: Iterable[Dict[str, Any]]) -> str:
     """Render a small self-contained HTML report with expandable traces."""
-    rows = list(rows)
+    rows = [asdict(row) if is_dataclass(row) else row for row in rows]
     body = markdown(rows)
     details = []
     for row in rows:

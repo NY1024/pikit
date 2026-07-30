@@ -413,8 +413,8 @@ def build_parser() -> argparse.ArgumentParser:
     p_run.add_argument("--base-url",
                        help="OpenAI-compatible endpoint override (e.g. https://api.deepseek.com).")
     p_run.add_argument("--config", help="TOML config file (single-run style).")
-    p_run.add_argument("--runtime", choices=["openclaw", "hermes", "langchain", "openai_agents", "pydantic_ai"],
-                       help="Run through a registered external harness.")
+    p_run.add_argument("--runtime", choices=["openclaw", "hermes"],
+                       help="Run through a CLI-configurable external runtime harness.")
     p_run.add_argument("--runtime-options", help="JSON object passed to the harness constructor.")
     p_run.add_argument("--fixture", choices=["document", "webpage", "email", "rag", "skill"],
                        help="Fixture source override for runtime indirect injection.")

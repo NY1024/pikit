@@ -79,9 +79,6 @@ def test_cli_report_jsonl(tmp_path):
     assert "Success rate" in stdout
 
 
-def test_cli_runtime_single_run_with_mock_harness_error_is_clear():
-    code, _, stderr = _run_cli(
-        "run", "--runtime", "langchain", "--runtime-options",
-        '{"taint_tool":"fetch_url"}',
-    )
-    assert code == 0
+def test_cli_runtime_rejects_python_only_harnesses():
+    code, _, _ = _run_cli("run", "--runtime", "langchain")
+    assert code != 0

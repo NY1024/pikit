@@ -357,7 +357,7 @@ class MatrixRunner:
             reason = "no judge"
             signals = []
             evidence = []
-            outcome = "not_judged"
+            outcome = Outcome.NOT_JUDGED
             model_complied = None
             runtime_blocked = False
 
@@ -470,7 +470,7 @@ class MatrixRunner:
             success, confidence, reason, signals, evidence = (
                 False, "n/a", "no judge", [], [],
             )
-            outcome, model_complied, runtime_blocked = "not_judged", None, False
+            outcome, model_complied, runtime_blocked = Outcome.NOT_JUDGED, None, False
         self._run_counter += 1
         return ExperimentResult(
             attack=attack_key, defense=defense_key, channel=channel,
@@ -581,6 +581,12 @@ class MatrixRunner:
                                     reason=f"error: {exc}",
                                     repeat_index=rep,
                                     total_runs=n_reps,
+                                    outcome=Outcome.RUNTIME_ERROR,
+                                    method_specs={
+                                        "attack": {"name": attack_key, "kwargs": attack_kwargs},
+                                        "defense": {"name": defense_key, "kwargs": defense_kwargs},
+                                        "channel": {"name": channel_key_actual, "kwargs": channel_kwargs},
+                                    },
                                 )
                             results.append(result)
                             last_result = result
@@ -605,9 +611,9 @@ class MatrixRunner:
                                 seed=self.config.seed,
                                 generation_config={"temperature": self.config.temperature},
                                 method_specs={
-                                    "attack": {"name": attack_key, "kwargs": {}},
-                                    "defense": {"name": defense_key, "kwargs": {}},
-                                    "channel": {"name": channel_key_actual, "kwargs": {}},
+                                    "attack": {"name": attack_key, "kwargs": attack_kwargs},
+                                    "defense": {"name": defense_key, "kwargs": defense_kwargs},
+                                    "channel": {"name": channel_key_actual, "kwargs": channel_kwargs},
                                 },
                                 metadata={"schema_version": "pikit.experiment-result.v1"},
                             )
@@ -633,6 +639,7 @@ def save_csv(results: List[ExperimentResult], path: str) -> None:
         "success", "confidence", "sink_fired", "reason", "signals",
         "final_text", "timestamp",
         "repeat_index", "success_count", "total_runs",
+        "outcome", "model_complied", "runtime_blocked",
     ]
     with open(path, "w", newline="", encoding="utf-8") as f:
         writer = csv.DictWriter(f, fieldnames=fieldnames)

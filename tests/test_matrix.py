@@ -153,6 +153,7 @@ def test_matrix_save_csv():
             content = f.read()
         assert "attack" in content  # header
         assert "naive" in content   # data
+        assert "outcome" in content
     finally:
         os.unlink(tmp_path)
 

@@ -51,7 +51,7 @@ def short(text: str, limit: int = 300) -> str:
 def looks_obeyed(reply: str, canary: str = "HACKED") -> bool:
     """Rough eyeball hint for whether the model complied with the injection.
 
-    NOT a scorer — pikit ships no evaluator, and a keyword check cannot tell
+    NOT a scorer — pikit has optional judges, but a keyword check cannot tell
     "obeyed" from "quoted the canary while refusing or analyzing it". We only
     flag when the reply is *dominated* by the canary (short reply that is
     essentially just the canary), which is the clearest compliance signal.

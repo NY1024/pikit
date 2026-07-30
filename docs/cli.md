@@ -52,6 +52,11 @@ Options:
 | `--model` | Deprecated shortcut for an OpenAI-compatible model id |
 | `--config` | TOML config file |
 
+`--runtime` currently accepts the CLI-configurable Runtime Harnesses
+`openclaw` and `hermes`. LangChain, OpenAI Agents SDK, and PydanticAI require
+a configured Python adapter instance and are demonstrated in
+`demos/framework_adapters/`.
+
 ## `pikit matrix`
 
 Run a batch experiment from a TOML config file. Outputs results to JSON or

@@ -196,6 +196,11 @@ carrier, extracts its model-visible text, then supplies that text through a
 safe fixture source tool. It does not yet ask the runtime's native file tool
 to open the carrier directly.
 
+Only OpenClaw and Hermes are directly constructible through `pikit run
+--runtime ...`. LangChain, OpenAI Agents SDK, and PydanticAI need Python
+objects such as tools and agent factories, so use `ExperimentConfig.harness`
+or one of the executable examples in `demos/framework_adapters/`.
+
 ## PydanticAI
 
 Install the optional integration:

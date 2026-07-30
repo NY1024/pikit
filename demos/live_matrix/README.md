@@ -48,7 +48,8 @@ python demos/live_matrix/run_all.py
 
 - Attack/defense/channel scripts print `-> injection obeyed? YES/no` based on
   whether the reply contains the canary string (`HACKED`). This is a rough
-  eyeball signal, **not** a scorer — pikit ships no evaluator.
+  eyeball signal, **not** a scorer — use pikit's optional judges for batch
+  experiments, but validate that their criteria fit your threat model.
 - Agent scripts print a full `Trace`; look for `[tainted]` (artifact
   delivered) and `SINK FIRED` (observable malicious action), then
   `-> sink fired: ...`.

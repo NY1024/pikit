@@ -36,8 +36,8 @@ criteria under the researcher's control.
 
 ## Key features
 
-- 🎯 **12 attacks × 9 defenses × 14 channels**, plus built-in scenarios and
-  external Runtime Harnesses.
+- 🎯 **13 attacks × 9 defenses × 16 channels × 12 built-in agents**, plus
+  external Runtime Harnesses and framework adapters.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, or an Agent Skill).
