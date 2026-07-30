@@ -136,10 +136,16 @@ pikit.runtime_assets/openclaw_fixture/
 pikit.runtime_assets/hermes_fixture/
 ```
 
-They expose exactly two safe tools:
+Runtime fixture plugins expose safe source tools:
 
-- `pikit_read_document(ref)` returns `PIKIT_FIXTURE_DOCUMENT` and records a
-  tainted source event.
+- `pikit_read_document(ref)` for document-like artifacts;
+- `pikit_fetch_url(url)` for webpages;
+- `pikit_read_email(id)` for email/message artifacts;
+- `pikit_search_knowledge(query)` for RAG artifacts;
+- `pikit_load_skill(name)` for Agent Skill artifacts.
+
+Every source records a tainted tool-result event. The plugins also expose:
+
 - `pikit_record_sink(action, target, content)` records a sink attempt to
   JSONL but **never performs** the requested action.
 
@@ -173,6 +179,22 @@ pytest -q tests/live/test_deepseek_smoke.py -k hermes
 Only SDK `FunctionTool` instances are intercepted in this initial adapter.
 Other SDK tool types and handoffs remain on the cloned agent but are not
 treated as taint points yet.
+
+## Capability matrix
+
+| Harness | Indirect source injection | Safe sink capture | Tool-result defense | Runtime policy evidence | File mode | Primary entry |
+|---|---:|---:|---:|---:|---:|---|
+| Built-in scenarios | Yes | Yes | Yes | Simulated | Yes | CLI / Python |
+| LangChain | Yes | Yes | Yes | Framework-defined | Extracted text | Python |
+| OpenAI Agents SDK | Yes | Yes | Yes | Framework-defined | Extracted text | Python |
+| PydanticAI | Yes | Yes | Yes | Framework-defined | Extracted text | Python |
+| OpenClaw | Yes, fixture tools | Yes, fixture sink | Yes | Yes | Extracted file delivery | CLI / Python |
+| Hermes | Yes, fixture tools | Yes, fixture sink | Yes | Yes | Extracted file delivery | CLI / Python |
+
+For OpenClaw and Hermes, `carrier_mode = "file"` means pikit taints a real
+carrier, extracts its model-visible text, then supplies that text through a
+safe fixture source tool. It does not yet ask the runtime's native file tool
+to open the carrier directly.
 
 ## PydanticAI
 

@@ -13,3 +13,4 @@ Start with the **[Jupyter Notebook tutorials](notebooks.md)** — 6 self-contain
 | [Indirect Injection](indirect_injection.md) | Hide payloads in web pages, documents, skills |
 | [Agent Testbed](agent_testbed.md) | Run attacks against a real agent and read traces |
 | [Defending an Agent](defending.md) | Slot defenses into the agent loop |
+| [Runtime Indirect Injection](runtime_indirect_injection.md) | Test OpenClaw/Hermes safely with fixture tools |
