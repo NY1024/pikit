@@ -70,6 +70,7 @@ nav:
       - Defending an Agent: tutorials/defending.md
       - Runtime Indirect Injection: tutorials/runtime_indirect_injection.md
   - 中文快速开始: zh_quickstart.md
+  - 中文 Runtime 间接注入: zh_runtime_indirect_injection.md
   - API Reference:
       - Overview: api/index.md
       - Base Classes: api/base.md
