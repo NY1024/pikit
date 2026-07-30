@@ -2,7 +2,7 @@
 
 # 🧪 pikit — Prompt Injection Kit
 
-**A composable toolbox of classic prompt-injection *attacks*, *defenses*, and indirect-injection *channels* — plus a minimal agent testbed to watch them play out against a real model.**
+**A composable prompt-injection research toolkit: attacks, defenses, indirect-injection channels, built-in agent scenarios, and integrations for real Agent frameworks and runtimes.**
 
 Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https://github.com/cleverhans-lab/cleverhans), but for prompt injection.
 
@@ -30,6 +30,8 @@ Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https:/
 - [How it fits together](#how-it-fits-together)
 - [Install](#install)
 - [Quickstart](#quickstart)
+- [Agent integrations](#agent-integrations)
+- [Runtime indirect-injection quickstart](#runtime-indirect-injection-quickstart)
 - [Concepts](#concepts)
 - [Method catalog](#method-catalog)
 - [Tutorials](#tutorials)
@@ -70,6 +72,15 @@ threat model and success criteria under the researcher's control.
 - 🤖 **Agent testbed** — a zero-dependency function-calling loop with
   preconfigured scenarios (email / RAG / browser / coding / IM / calendar /
   finance / travel / social / file manager) and a real tool-calling backend.
+- 🔌 **Framework integrations** — test LangChain, OpenAI Agents SDK, and
+  PydanticAI agents through the same trace and judging model.
+- 🖥️ **Runtime integrations** — run controlled indirect-injection experiments
+  against OpenClaw and Hermes from the terminal, without Docker or messaging
+  channels. Runtime test plugins provide controlled content-reading tools and
+  a simulated action tool that records attempted actions without performing
+  them.
+- 📊 **Experiment workflow** — matrix runs, JSON/JSONL/CSV export, optional
+  judges, and Markdown/HTML reports.
 - 🛡️ **Defenses as pluggable hooks** at three points of an agent's data flow.
 - 🧩 **Registry-based** — contributing a method is one file + one decorator.
 - 📦 **Zero-dependency core** — model SDKs (OpenAI / Anthropic / HF) are
@@ -83,10 +94,10 @@ prompt. They're orthogonal and compose freely:
 
 ```
                  ┌──────────── craft() ────────────┐
-   task  ──▶  attack (wording)  ──▶  channel (carrier, indirect only)
+   task  ──▶  attack (wording)  ──▶  channel (untrusted content)
                                           │
                                           ▼
-              defense (optional hook) ──▶ target / agent  ──▶  trace you read
+              defense (optional hook) ─▶ agent / runtime ─▶ trace / judge / report
 ```
 
 | dimension | question it answers | examples |
@@ -94,7 +105,7 @@ prompt. They're orthogonal and compose freely:
 | **attack** | how is the payload *worded*? | `context_ignoring`, `combined`, `payload_splitting` |
 | **channel** | where is it *hidden*? (indirect) | `webpage`, `skills`, `structured_data`, `log_file`, `email_headers` |
 | **defense** | how do we *harden* the prompt? | `spotlighting`, `delimiters`, `sandwich` |
-| **target/agent** | what *receives* it? | `openai:…`, `email`, `browser`, `coding` |
+| **agent/runtime** | what *receives* it? | built-in `browser`, LangChain, OpenClaw, Hermes |
 
 ## Install
 
@@ -106,6 +117,9 @@ pip install -e .                 # core: attacks + defenses + channels (zero dep
 pip install -e ".[openai]"       # + OpenAI / OpenAI-compatible (vLLM, Ollama, DashScope)
 pip install -e ".[anthropic]"    # + Anthropic Claude
 pip install -e ".[hf]"           # + local HuggingFace transformers
+pip install -e ".[langchain]"    # + LangChain adapter examples
+pip install -e ".[openai-agents]" # + OpenAI Agents SDK adapter examples
+pip install -e ".[pydantic-ai]"  # + PydanticAI adapter examples
 pip install -e ".[all,dev]"      # everything + pytest
 ```
 
@@ -158,6 +172,48 @@ trace = agent.run("Summarize the page at http://site")
 print(trace)   # read it: did the model call post_form with the attacker's URL, or ignore it?
 ```
 
+## Agent integrations
+
+pikit supports both its built-in testbed and external Agent systems:
+
+| Integration | How it is used | Best for |
+|---|---|---|
+| Built-in scenarios | `get_agent("browser")`, `get_agent("email")`, … | Controlled baseline experiments |
+| LangChain | Python adapter | Existing LangChain tool-using agents |
+| OpenAI Agents SDK | Python adapter | Agents SDK function-tool workflows |
+| PydanticAI | Python adapter | Typed Python agent workflows |
+| OpenClaw | Terminal runtime integration | Runtime policies, plugins, and local Agent execution |
+| Hermes | Terminal runtime integration | Runtime policies, plugins, and local Agent execution |
+
+The framework adapters are demonstrated in `demos/framework_adapters/`.
+OpenClaw and Hermes use an isolated runtime profile and a bundled **pikit
+runtime test plugin**. The plugin returns controlled web, document, email,
+knowledge-base, or skill content; its simulated action tool records what the
+Agent attempted without sending data or changing external systems.
+
+## Runtime indirect-injection quickstart
+
+OpenClaw and Hermes can be tested from the terminal; Docker, Telegram, Slack,
+and other messaging channels are not required.
+
+```bash
+# Create an isolated profile and install the safe runtime test plugin.
+pikit runtime init openclaw ./runtime/openclaw
+pikit runtime install-fixture openclaw ./runtime/openclaw
+pikit runtime doctor openclaw ./runtime/openclaw --json
+```
+
+Configure a model provider in that isolated OpenClaw profile, then run an
+experiment matrix and render a report:
+
+```bash
+pikit matrix --config runtime.toml --output results.jsonl
+pikit report results.jsonl --format html --output report.html
+```
+
+For complete OpenClaw/Hermes setup, runtime options, and result interpretation,
+see the **Runtime Indirect Injection** tutorial in the documentation.
+
 ### 3 · File-mode injection (real carrier files)
 
 For higher fidelity, inject into real files instead of text simulations:
@@ -199,7 +255,7 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | **Channel** | hides a payload in a data artifact: `taint(data, payload) -> str` |
 | **Defense** | a prevention-style prompt transformer: `apply(prompt, instruction=None) -> str` |
 | **Target** | a model backend: `query(...)` and optional tool-calling `chat(...)` |
-| **Agent** | a tool-calling loop with a *taint point* (a compromised tool) and a *sink* (an observable action like `send_email`) |
+| **Agent** | a tool-calling loop that reads external content and can attempt actions such as `send_email` |
 
 ## Method catalog
 

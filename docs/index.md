@@ -1,8 +1,8 @@
 # 🧪 pikit — Prompt Injection Kit
 
-**A composable toolbox of classic prompt-injection *attacks*, *defenses*, and
-indirect-injection *channels* — plus a minimal agent testbed to watch them play
-out against a real model.**
+**A composable prompt-injection research toolkit: attacks, defenses,
+indirect-injection channels, built-in agent scenarios, and integrations for
+real Agent frameworks and runtimes.**
 
 Think [`foolbox`](https://github.com/bethgelab/foolbox) /
 [`cleverhans`](https://github.com/cleverhans-lab/cleverhans), but for prompt
@@ -37,7 +37,7 @@ criteria under the researcher's control.
 ## Key features
 
 - 🎯 **13 attacks × 9 defenses × 16 channels × 12 built-in agents**, plus
-  external Runtime Harnesses and framework adapters.
+  framework adapters and runtime integrations.
 - 🔀 **Direct and indirect injection** — word a payload (attack) *and* hide it
   in a carrier (channel: web page, document, Markdown, code comment, invisible
   Unicode, or an Agent Skill).
@@ -50,6 +50,14 @@ criteria under the researcher's control.
   optional extras, imported lazily.
 - 📊 **Standard benchmark datasets** — 40 test cases across direct and
   indirect injection, runnable in one command for reproducible evaluation.
+- 🔌 **Framework and runtime integrations** — LangChain, OpenAI Agents SDK,
+  PydanticAI, OpenClaw, and Hermes can produce the same structured traces and
+  experiment results as built-in scenarios.
+- 🖥️ **Safe runtime experiments** — OpenClaw/Hermes test plugins provide
+  controlled content-reading tools and a simulated action tool, so researchers
+  can test indirect injection without Docker, messaging channels, or real
+  external side effects.
+- 📈 **Reports** — save JSONL results and render a Markdown or HTML summary.
 
 ## How it fits together
 
@@ -59,10 +67,10 @@ prompt. They're orthogonal and compose freely:
 
 ```
                  ┌──────────── craft() ────────────┐
-   task  ──▶  attack (wording)  ──▶  channel (carrier, indirect only)
+   task  ──▶  attack (wording)  ──▶  channel (untrusted content)
                                           │
                                           ▼
-              defense (optional hook) ──▶ target / agent  ──▶  trace you read
+              defense (optional hook) ─▶ agent / runtime ─▶ trace / judge / report
 ```
 
 | Dimension | Question it answers | Examples |
@@ -70,7 +78,18 @@ prompt. They're orthogonal and compose freely:
 | **attack** | How is the payload *worded*? | `context_ignoring`, `combined`, `payload_splitting` |
 | **channel** | Where is it *hidden*? (indirect) | `webpage`, `skills`, `code_comment`, `unicode_hidden` |
 | **defense** | How do we *harden* the prompt? | `spotlighting`, `delimiters`, `sandwich` |
-| **target/agent** | What *receives* it? | `openai:…`, `email`, `browser`, `coding` |
+| **agent/integration** | What *receives* it? | `browser`, `LangChain`, `OpenClaw`, `Hermes` |
+
+## Supported integrations
+
+| Integration | Interface | Indirect-injection testing |
+|---|---|---|
+| Built-in scenarios | Python / CLI | Controlled tools and simulated actions |
+| LangChain | Python adapter | Override selected tool results and record tool calls |
+| OpenAI Agents SDK | Python adapter | Override function-tool results and record actions |
+| PydanticAI | Python adapter | Override typed tool results and record actions |
+| OpenClaw | CLI runtime integration | Isolated profile plus bundled runtime test plugin |
+| Hermes | CLI runtime integration | Isolated profile plus bundled runtime test plugin |
 
 ## Next steps
 
@@ -82,5 +101,7 @@ prompt. They're orthogonal and compose freely:
 - :material-database: **[Datasets](datasets.md)** — run standard benchmarks
 - :material-flask: **[Jupyter Notebooks](tutorials/notebooks.md)** — 7 interactive tutorials (no API key needed)
 - :material-console: **[Demos & CLI](demos.md)** — run prebuilt scenarios against a real model
+- :material-shield-search: **[Runtime Indirect Injection](tutorials/runtime_indirect_injection.md)** — run OpenClaw/Hermes safely
+- :material-connection: **[Framework Adapters](guide/framework-adapters.md)** — integrate LangChain, Agents SDK, and PydanticAI
 
 </div>
