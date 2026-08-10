@@ -76,7 +76,7 @@ def test_cli_report_jsonl(tmp_path):
     )
     code, stdout, stderr = _run_cli("report", str(results))
     assert code == 0, stderr
-    assert "Success rate" in stdout
+    assert "Full successes" in stdout
 
 
 def test_cli_runtime_rejects_python_only_harnesses():

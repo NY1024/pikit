@@ -47,7 +47,7 @@ def test_payload_splitting_hides_full_phrase():
     out = attacks.get("payload_splitting")(n_parts=3).inject(PROMPT, INJECTED)
     # The contiguous phrase should not appear; only fragments do.
     assert INJECTED not in out
-    assert "x1" in out and "x2" in out
+    assert "frag_1" in out and "frag_2" in out
 
 
 def test_attack_pipeline_reaches_mock_target():
