@@ -28,6 +28,7 @@ def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
     items = [r for r in normalized if "repeat_summary" not in r.get("signals", [])]
     total = len(items)
     successes = sum(bool(r.get("success")) for r in items)
+    partials = sum(bool(r.get("partial_success")) and not bool(r.get("success")) for r in items)
     signals = Counter(signal for r in items for signal in r.get("signals", []))
     outcomes = Counter(
         getattr(r.get("outcome", "not_reached"), "value", r.get("outcome", "not_reached"))
@@ -38,18 +39,25 @@ def summarize(rows: Iterable[Dict[str, Any]]) -> Dict[str, Any]:
     fixture_mappings = Counter(
         r.get("metadata", {}).get("fixture_mapping", "n/a") for r in items
     )
-    by_dimension = defaultdict(lambda: {"total": 0, "success": 0})
+    by_dimension = defaultdict(lambda: {"total": 0, "success": 0, "partial": 0})
     for row in items:
         key = " × ".join([
             row.get("agent", ""), row.get("attack", ""),
             row.get("channel", ""), row.get("defense", ""),
         ])
         by_dimension[key]["total"] += 1
-        by_dimension[key]["success"] += int(bool(row.get("success")))
+        if bool(row.get("success")):
+            by_dimension[key]["success"] += 1
+        elif bool(row.get("partial_success")):
+            by_dimension[key]["partial"] += 1
     return {
         "total": total,
         "successes": successes,
         "success_rate": successes / total if total else 0.0,
+        "partials": partials,
+        "partial_rate": partials / total if total else 0.0,
+        "any_influence": successes + partials,
+        "any_influence_rate": (successes + partials) / total if total else 0.0,
         "signals": dict(signals),
         "outcomes": dict(outcomes),
         "model_complied": model_complied,
@@ -65,8 +73,9 @@ def markdown(rows: Iterable[Dict[str, Any]]) -> str:
     lines = [
         "# pikit experiment report", "",
         f"- Runs: **{summary['total']}**",
-        f"- Successes: **{summary['successes']}**",
-        f"- Success rate: **{summary['success_rate']:.1%}**", "",
+        f"- Full successes: **{summary['successes']}** ({summary['success_rate']:.1%})",
+        f"- Partial influence: **{summary['partials']}** ({summary['partial_rate']:.1%})",
+        f"- Any influence (full + partial): **{summary['any_influence']}** ({summary['any_influence_rate']:.1%})", "",
         f"- Model complied: **{summary['model_complied']}**",
         f"- Runtime blocked: **{summary['runtime_blocked']}**", "",
         "## Signals", "",
@@ -77,9 +86,9 @@ def markdown(rows: Iterable[Dict[str, Any]]) -> str:
     lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["outcomes"].items()))
     lines.extend(["", "## Fixture fidelity", "", "| Mapping | Count |", "|---|---:|"])
     lines.extend(f"| `{name}` | {count} |" for name, count in sorted(summary["fixture_mappings"].items()))
-    lines.extend(["", "## Combinations", "", "| Runtime / Agent × Attack × Channel × Defense | Success |", "|---|---:|"])
+    lines.extend(["", "## Combinations", "", "| Runtime / Agent × Attack × Channel × Defense | Full | Partial | Total |", "|---|---:|---:|---:|"])
     for key, stats in sorted(summary["combinations"].items()):
-        lines.append(f"| {key} | {stats['success']}/{stats['total']} |")
+        lines.append(f"| {key} | {stats['success']} | {stats.get('partial', 0)} | {stats['total']} |")
     return "\n".join(lines) + "\n"
 
 

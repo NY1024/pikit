@@ -258,6 +258,8 @@ def _cmd_matrix(args):
         cfg.temperature = args.temperature
     if args.repeats is not None:
         cfg.repeats = args.repeats
+    if args.attacks:
+        cfg.attacks = [a.strip() for a in args.attacks.split(",") if a.strip()]
 
     print(f"Running {cfg.num_combinations()} combinations "
           f"(repeats={cfg.repeats}, temperature={cfg.temperature})...", file=sys.stderr)
@@ -312,12 +314,16 @@ def _cmd_dataset(args):
 
     if args.dataset_action == "run":
         name = args.name
+        attacks_override = None
+        if args.attacks:
+            attacks_override = [a.strip() for a in args.attacks.split(",") if a.strip()]
         results = ds_mod.run_dataset(
             name,
             target_spec=args.target,
             judge_type=args.judge,
             temperature=args.temperature,
             repeats=args.repeats,
+            attacks=attacks_override,
             verbose=True,
         )
         if args.output:
@@ -430,6 +436,8 @@ def build_parser() -> argparse.ArgumentParser:
                            help="Sampling temperature (0.0=deterministic, 0.7-1.0=stochastic).")
     p_matrix.add_argument("--repeats", type=int, default=None,
                            help="Number of times to run each combination (default 1).")
+    p_matrix.add_argument("--attacks",
+                           help="Override attack methods (comma-separated, e.g. 'naive,escape').")
 
     # runtime
     p_runtime = sub.add_parser("runtime", help="Initialize or diagnose external runtime fixtures.")
@@ -464,6 +472,9 @@ def build_parser() -> argparse.ArgumentParser:
                                help="Sampling temperature (0.0=deterministic).")
     p_dataset_run.add_argument("--repeats", type=int, default=None,
                                help="Number of times to run each case (default 1).")
+    p_dataset_run.add_argument("--attacks",
+                               help="Override attack methods for all cases (comma-separated, e.g. 'naive,escape'). "
+                                    "When omitted, each case uses its own attacks field or the default.")
 
     return p
 

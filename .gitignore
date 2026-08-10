@@ -38,3 +38,17 @@ live_api_results.json
 
 # Generated runtime-fixture output
 pikit/runtime_assets/*/dist/
+
+# Local secrets / temp configs
+2.py
+codebuddy_auth.info
+
+# Generated test results
+result/
+
+# Tainted carrier fixtures (generated, not source)
+pikit/carriers/*.tainted.*
+
+# Local eval scripts
+run_*_eval.py
+run_*_test.py

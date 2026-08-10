@@ -164,6 +164,7 @@ def run_dataset(
     judge_type: Optional[str] = None,
     temperature: Optional[float] = None,
     repeats: Optional[int] = None,
+    attacks: Optional[List[str]] = None,
     verbose: bool = False,
 ) -> List[ExperimentResult]:
     """Run all cases in a dataset and collect results.
@@ -186,6 +187,12 @@ def run_dataset(
         Override sampling temperature.
     repeats:
         Override number of repeats per case.
+    attacks:
+        Override the attack methods for all cases (e.g. ``["naive", "escape"]``).
+        When provided, every case will use these attacks regardless of what
+        the dataset TOML specifies (or omits).  When ``None``, each case falls
+        back to its own ``attacks`` field, or ``["important_instructions"]`` if
+        the dataset omits the field entirely.
     verbose:
         Print progress to stderr.
 
@@ -208,6 +215,8 @@ def run_dataset(
             cfg.temperature = temperature
         if repeats is not None:
             cfg.repeats = repeats
+        if attacks is not None:
+            cfg.attacks = list(attacks)
 
         if verbose:
             import sys
