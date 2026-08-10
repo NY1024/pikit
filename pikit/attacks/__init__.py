@@ -36,6 +36,7 @@ from . import (  # noqa: E402,F401
     context_flooding,
     cross_channel,
     important_instructions,
+    stealth_instruction,
 )
 
 __all__ = ["registry", "register", "get", "list", "Attack"]
