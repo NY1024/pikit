@@ -43,7 +43,7 @@ all): **CLI flag > `--config` file > interactive answer > built-in default**.
 | parameter | values | default | meaning |
 |---|---|---|---|
 | `agent` | `chat` `email` `rag` `browser` `coding` `tool` | `chat` | which agent to attack |
-| `attack` | `naive` `escape` `context_ignoring` `fake_completion` `combined` `payload_splitting` `obfuscation` `prompt_leaking` `prefix_injection` | `context_ignoring` | how the payload is worded |
+| `attack` | `naive` `escape` `context_ignoring` `fake_completion` `combined` `payload_splitting` `obfuscation` `prefix_injection` | `context_ignoring` | how the payload is worded |
 | `channel` | `webpage` `document` `markdown` `code_comment` `skills` `unicode_hidden` `none` | per-agent (see below) | indirect carrier; `none` = direct |
 | `defense` | `delimiters` `sandwich` `instructional` `spotlighting` `random_sequence_enclosure` `retokenization` `none` | `none` | defense to apply; `none` = off |
 | `defense_point` | `system` `tool_result` `user` | auto: `tool_result` (indirect) / `user` (direct) | where the defense hooks in |

@@ -40,7 +40,7 @@ interactive prompt.
 | Parameter | Values | Default | Meaning |
 |---|---|---|---|
 | `agent` | `chat` `email` `rag` `browser` `coding` `tool` | `chat` | which agent to attack |
-| `attack` | `naive` `escape` `context_ignoring` `fake_completion` `combined` `payload_splitting` `obfuscation` `prompt_leaking` `prefix_injection` | `context_ignoring` | how the payload is worded |
+| `attack` | `naive` `escape` `context_ignoring` `fake_completion` `combined` `payload_splitting` `obfuscation` `prefix_injection` | `context_ignoring` | how the payload is worded |
 | `channel` | `webpage` `document` `markdown` `code_comment` `skills` `unicode_hidden` `none` | per-agent | indirect carrier; `none` = direct |
 | `defense` | `delimiters` `sandwich` `instructional` `spotlighting` `random_sequence_enclosure` `retokenization` `none` | `none` | defense to apply |
 | `defense_point` | `system` `tool_result` `user` | auto | where the defense hooks in |

@@ -14,7 +14,7 @@ agent = "coding"
 
 # How the injected instruction is worded.
 # one of: naive | escape | context_ignoring | fake_completion | combined |
-#         payload_splitting | obfuscation | prompt_leaking | prefix_injection
+#         payload_splitting | obfuscation | prefix_injection
 attack = "context_ignoring"
 
 # Indirect carrier the payload is hidden in.

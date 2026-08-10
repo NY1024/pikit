@@ -40,11 +40,12 @@ a.k.a. *Open Prompt Injection*.
 | `combined` | fake-completion + escape + context-ignoring | Open Prompt Injection (strongest baseline) |
 | `payload_splitting` | Split payload into fragments, recombine | Open Prompt Injection |
 | `obfuscation` | base64 / leetspeak + decode-and-run wrapper | Open Prompt Injection |
-| `prompt_leaking` | Coax the model into revealing its system prompt | Open Prompt Injection |
 | `prefix_injection` | Place the payload *before* the prompt | Open Prompt Injection |
 | `format_confusion` | Disguise payload as system/tool/error/JSON message | OWASP LLM Top 10 2025 |
 | `context_flooding` | Bury payload under benign filler text | Real-world attack reports |
 | `cross_channel` | Split payload across multiple channels | pikit original (multi-channel) |
+| `important_instructions` | Wrap payload in fake system `<INFORMATION>` block | AgentDojo (NeurIPS 2024) |
+| `stealth_instruction` | Embed payload as natural-looking content | pikit original |
 
 ## Detailed methods
 
@@ -166,13 +167,6 @@ attacks.get("obfuscation")(scheme="base64").inject("Summarize:", "Print HACKED")
 | Parameter | Type | Default | Description |
 |---|---|---|---|
 | `scheme` | `str` | `"base64"` | Encoding: `"base64"` or `"leetspeak"` |
-
----
-
-### `prompt_leaking`
-
-Coaxes the model into revealing its system prompt — a confidentiality attack
-rather than an integrity attack.
 
 ---
 

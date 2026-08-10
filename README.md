@@ -271,11 +271,12 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | `combined` | fake-completion + escape + context-ignoring |
 | `payload_splitting` | split payload into fragments, recombine |
 | `obfuscation` | base64 / leetspeak + decode-and-run wrapper |
-| `prompt_leaking` | coax the model into revealing its system prompt |
 | `prefix_injection` | place the payload *before* the prompt |
 | `format_confusion` | disguise payload as system/tool/error/JSON message |
 | `context_flooding` | bury payload under benign filler text |
 | `cross_channel` | split payload across multiple channels |
+| `important_instructions` | wrap payload in fake system `<INFORMATION>` block (AgentDojo) |
+| `stealth_instruction` | embed payload as natural-looking content |
 
 </details>
 

@@ -60,11 +60,12 @@
 | `combined` | fake-completion + escape + context-ignoring |
 | `payload_splitting` | Split payload into fragments |
 | `obfuscation` | base64 / leetspeak encoding |
-| `prompt_leaking` | System prompt extraction |
 | `prefix_injection` | Payload before the prompt |
 | `format_confusion` | Disguise payload as system/tool/error/JSON message |
 | `context_flooding` | Bury payload under benign filler text |
 | `cross_channel` | Split payload across multiple channels |
+| `important_instructions` | Fake system INFORMATION block (AgentDojo) |
+| `stealth_instruction` | Natural-looking embedded instruction |
 
 > These techniques evolved across the AI security community (blog posts,
 > CVE reports, red-team disclosures, and academic papers). pikit follows the

@@ -18,7 +18,7 @@ def test_load_direct_dataset():
     """load_dataset should parse the direct injection TOML correctly."""
     ds = load_dataset("direct_injection")
     assert ds.name == "direct_injection"
-    assert len(ds.cases) >= 20
+    assert len(ds.cases) >= 19
     # Each case should have an id and a config.
     for case in ds.cases:
         assert case.id.startswith("di-")
@@ -33,7 +33,7 @@ def test_load_indirect_dataset():
     """load_dataset should parse the indirect injection TOML correctly."""
     ds = load_dataset("indirect_injection")
     assert ds.name == "indirect_injection"
-    assert len(ds.cases) >= 20
+    assert len(ds.cases) >= 19
     for case in ds.cases:
         assert case.id.startswith("ii-")
         assert case.description
@@ -62,7 +62,7 @@ def test_run_direct_dataset_mock():
     """run_dataset should produce results for every case (mock target)."""
     results = run_dataset("direct_injection", target_spec="mock")
     # Each case produces at least 1 result.
-    assert len(results) >= 20
+    assert len(results) >= 19
     for r in results:
         assert r.attack  # should be populated
         assert r.case_id.startswith("di-")
@@ -71,7 +71,7 @@ def test_run_direct_dataset_mock():
 def test_run_indirect_dataset_mock():
     """run_dataset should produce results for every case (mock target)."""
     results = run_dataset("indirect_injection", target_spec="mock")
-    assert len(results) >= 20
+    assert len(results) >= 19
     for r in results:
         assert r.case_id.startswith("ii-")
 

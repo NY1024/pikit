@@ -15,8 +15,12 @@ def test_expected_attacks_registered():
         "combined",
         "payload_splitting",
         "obfuscation",
-        "prompt_leaking",
         "prefix_injection",
+        "format_confusion",
+        "context_flooding",
+        "cross_channel",
+        "important_instructions",
+        "stealth_instruction",
     ]:
         assert key in attacks.list()
         assert attacks.get(key)().name == key

@@ -11,9 +11,10 @@ from pikit import attacks
 
 # List all available attacks
 print(attacks.list())
-# ['combined', 'context_ignoring', 'escape', 'fake_completion',
+# ['combined', 'context_ignoring', 'context_flooding', 'cross_channel',
+#  'escape', 'fake_completion', 'format_confusion', 'important_instructions',
 #  'naive', 'obfuscation', 'payload_splitting', 'prefix_injection',
-#  'prompt_leaking']
+#  'stealth_instruction']
 ```
 
 ## Step 2: Craft a payload

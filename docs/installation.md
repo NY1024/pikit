@@ -35,7 +35,10 @@ pip install -e ".[all,dev]"      # everything + pytest
 
 ```bash
 python -c "from pikit import attacks, defenses, channels; print(attacks.list())"
-# ['combined', 'context_ignoring', 'escape', 'fake_completion', 'naive', 'obfuscation', 'payload_splitting', 'prefix_injection', 'prompt_leaking']
+# ['combined', 'context_ignoring', 'context_flooding', 'cross_channel',
+#  'escape', 'fake_completion', 'format_confusion', 'important_instructions',
+#  'naive', 'obfuscation', 'payload_splitting', 'prefix_injection',
+#  'stealth_instruction']
 ```
 
 ## Run the test suite

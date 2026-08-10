@@ -132,8 +132,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 - Core architecture: `Attack`, `Defense`, `Channel` base classes with
   decorator-based registry system.
-- 9 attacks: naive, escape, context_ignoring, fake_completion, combined,
-  payload_splitting, obfuscation, prompt_leaking, prefix_injection.
+- 8 attacks: naive, escape, context_ignoring, fake_completion, combined,
+  payload_splitting, obfuscation, prefix_injection.
 - 6 prevention defenses: delimiters, sandwich, instructional, spotlighting,
   random_sequence_enclosure, retokenization.
 - 6 channels: webpage, document, markdown, code_comment, skills,

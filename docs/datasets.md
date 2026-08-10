@@ -215,16 +215,16 @@ Enables statements like: *"On email agent, webpage channel has a 65.0%
 injection success rate with context_ignoring attack, while log_file
 channel achieves 80.0%."*
 
-### Attack Suite Dataset (52 cases — Attack-method suite)
+### Attack Suite Dataset (48 cases — Attack-method suite)
 
 Self-generated dataset for comprehensive attack-method effectiveness
-evaluation.  Tests all 13 registered attack methods against 4 key
+evaluation.  Tests all 12 registered attack methods against 4 key
 agent × channel combinations.
 
-- **Browser/webpage** (as-001 → as-013): 13 attacks (indirect)
-- **Email/document** (as-014 → as-026): 13 attacks (indirect)
-- **RAG/markdown** (as-027 → as-039): 13 attacks (indirect)
-- **Chat/direct** (as-040 → as-052): 13 attacks (direct)
+- **Browser/webpage** (as-001 → as-012): 12 attacks (indirect)
+- **Email/document** (as-013 → as-024): 12 attacks (indirect)
+- **RAG/markdown** (as-025 → as-036): 12 attacks (indirect)
+- **Chat/direct** (as-037 → as-048): 12 attacks (direct)
 
 Enables statements like: *"Across all 4 agent environments, the combined
 attack achieves the highest average success rate (72.5%), while the naive

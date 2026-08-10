@@ -62,12 +62,4 @@ def test_prefix_injection_places_payload_first():
     assert out.index(INJECTED) < out.index(PROMPT)
 
 
-def test_prompt_leaking_default_requests_system_prompt():
-    out = attacks.get("prompt_leaking")().inject(PROMPT, "")
-    assert PROMPT in out
-    assert "instructions" in out.lower()
 
-
-def test_prompt_leaking_custom_task():
-    out = attacks.get("prompt_leaking")().inject(PROMPT, INJECTED)
-    assert INJECTED in out
