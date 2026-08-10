@@ -68,6 +68,16 @@ def get_target(spec: str, **kwargs) -> Target:
             raise ValueError("hf target requires a model id, e.g. 'hf:gpt2'")
         return HuggingFaceTarget(model=model, **kwargs)
 
+    if backend in ("codebuddy", "deepseek"):
+        from .codebuddy import CodeBuddyTarget
+
+        return CodeBuddyTarget(model=model or None, **kwargs)
+
+    if backend == "deepseek_api":
+        from .deepseek_api import DeepSeekAPITarget
+
+        return DeepSeekAPITarget(model=model or None, **kwargs)
+
     raise ValueError(
         f"unknown target backend {backend!r} in spec {spec!r}; "
         "expected one of: mock, openai, anthropic, hf"
