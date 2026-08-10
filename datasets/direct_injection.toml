@@ -10,7 +10,7 @@
 [meta]
 name = "direct_injection"
 description = "Direct prompt injection benchmark — attacker payload delivered via user message"
-reference = "Inspired by AdvBench (Zou et al., 2022) and InjecAgent (Zhan et al., 2024) direct-injection scenarios."
+reference = "Self-generated. Direct-injection scenarios inspired by InjecAgent (Zhan et al., ACL Findings 2024) and Open Prompt Injection (Liu et al., USENIX Security 2024)."
 
 # ---------------------------------------------------------------------------
 # Chat agent — pure direct injection (no tools, canary-based judgement)
