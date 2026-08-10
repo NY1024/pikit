@@ -191,8 +191,9 @@ def run_dataset(
         Override the attack methods for all cases (e.g. ``["naive", "escape"]``).
         When provided, every case will use these attacks regardless of what
         the dataset TOML specifies (or omits).  When ``None``, each case falls
-        back to its own ``attacks`` field, or ``["important_instructions"]`` if
-        the dataset omits the field entirely.
+        back to its own ``attacks`` field, or ``["naive"]`` if
+        the dataset omits the field entirely (naive = raw payload without
+        any attack-method wrapping).
     verbose:
         Print progress to stderr.
 
