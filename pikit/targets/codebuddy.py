@@ -154,6 +154,44 @@ def _chat_headers(info: dict) -> dict:
     return headers
 
 
+def _solve_eo_bot_challenge(raw_resp: str) -> dict:
+    """Parse the TencentEdgeOne EO Bot challenge JS and compute cookies.
+
+    The challenge sets two cookies via document.cookie:
+      1. __tst_status=<number>#
+      2. EO_Bot_Ssid=<number>
+
+    The JS is obfuscated but the logic is straightforward:
+      - t = WTKkN + bOYDu + wyeCN  (three numbers in the `e` object)
+      - ssid = the argument to iTyzs(t, NUMBER) in case 3 of function n()
+    """
+    import re as _re
+
+    # Extract t component numbers (WTKkN, bOYDu, wyeCN values)
+    t_nums = _re.findall(r'(?:WTKkN|bOYDu|wyeCN):(\d+)', raw_resp)
+    if len(t_nums) >= 3:
+        t_val = int(t_nums[0]) + int(t_nums[1]) + int(t_nums[2])
+    else:
+        t_val = 0
+
+    # Extract SSID number: the argument to iTyzs(t, NUMBER) in case 3
+    # Pattern in obfuscated JS: case"3":t=a[_0x649a("0x7")](t,NUMBER)
+    ssid_match = _re.search(r'case"3":t=a\[.*?\]\(t,\s*(\d+)\)', raw_resp)
+    if ssid_match:
+        ssid_val = ssid_match.group(1)
+    else:
+        # Fallback: find all large numbers not in t_nums
+        all_nums = _re.findall(r'(\d{8,})', raw_resp)
+        t_set = set(t_nums)
+        candidates = [n for n in all_nums if n not in t_set]
+        ssid_val = candidates[0] if candidates else "0"
+
+    return {
+        "__tst_status": f"{t_val}#",
+        "EO_Bot_Ssid": ssid_val,
+    }
+
+
 def _parse_sse_stream(resp) -> str:
     """Parse a streaming SSE response and concatenate content + tool_call deltas.
 
@@ -237,6 +275,7 @@ class CodeBuddyTarget(Target):
         self.name = f"codebuddy:{self.model}"
         self._stream = kwargs.get("stream", True)  # CodeBuddy requires streaming
         self._max_retries = kwargs.get("max_retries", 2)
+        self._waf_cookie: Optional[str] = None  # cached EO Bot cookie
 
     def _send(self, body: dict) -> tuple[str, list]:
         """Send a chat completion request, retrying on auth failure and rate limits."""
@@ -248,6 +287,9 @@ class CodeBuddyTarget(Target):
         for attempt in range(self._max_retries + 1):
             info = _ensure_valid_auth()
             headers = _chat_headers(info)
+            # Attach cached WAF cookie if available
+            if self._waf_cookie:
+                headers["Cookie"] = self._waf_cookie
             raw_body = json.dumps(body, ensure_ascii=False, separators=(",", ":")).encode()
             req = urllib.request.Request(
                 ENDPOINT + "/v2/chat/completions",
@@ -297,11 +339,40 @@ class CodeBuddyTarget(Target):
                     f"{exc.read().decode('utf-8', errors='replace')}"
                 ) from exc
 
+            # --- WAF (TencentEdgeOne EO Bot) challenge detection ---
+            # Peek at the response: if Content-Type is text/html, it's the
+            # JS challenge page, not an SSE stream. Solve it and retry.
+            content_type = resp.headers.get("Content-Type", "")
+            if "text/html" in content_type:
+                challenge_body = resp.read().decode("utf-8", errors="replace")
+                if "EO_Bot_Ssid" in challenge_body:
+                    cookies = _solve_eo_bot_challenge(challenge_body)
+                    _time.sleep(1.5)  # JS uses setTimeout 0x4b0 (1200ms)
+                    cookie_str = "; ".join(f"{k}={v}" for k, v in cookies.items())
+                    self._waf_cookie = cookie_str  # cache for reuse
+                    headers["Cookie"] = cookie_str
+                    req2 = urllib.request.Request(
+                        ENDPOINT + "/v2/chat/completions",
+                        data=raw_body,
+                        headers=headers,
+                        method="POST",
+                    )
+                    resp = urllib.request.urlopen(req2, timeout=180)
+                    content_type = resp.headers.get("Content-Type", "")
+                # If still html after challenge, fall through to normal parsing
+                # which will produce empty results
+
             with resp:
-                if body.get("stream"):
+                if body.get("stream") and "text/event-stream" in content_type:
                     return _parse_sse_stream(resp)
-                else:
+                elif not body.get("stream") and "application/json" in content_type:
                     return _parse_non_stream(resp)
+                else:
+                    # Fallback: try SSE parsing anyway, or non-stream
+                    if body.get("stream"):
+                        return _parse_sse_stream(resp)
+                    else:
+                        return _parse_non_stream(resp)
         raise SystemExit("max retries exceeded on auth failure")
 
     def query(
