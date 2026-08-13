@@ -37,6 +37,7 @@ Think [`foolbox`](https://github.com/bethgelab/foolbox) / [`cleverhans`](https:/
 - [Tutorials](#tutorials)
 - [Demos & CLI](#demos--cli)
 - [Configuring model access](#configuring-model-access)
+- [Reproducing experiments](#reproducing-experiments)
 - [Extending pikit](#extending-pikit)
 - [References](#references)
 - [License](#license)
@@ -496,6 +497,68 @@ target = get_target("hf:meta-llama/Llama-3-8B")
 > [!WARNING]
 > If a key was ever pasted on a command line or committed, **rotate it** — a
 > leaked secret can't be un-leaked.
+
+## Reproducing experiments
+
+The [`scripts/`](scripts/) directory contains ready-to-run experiment scripts
+that reproduce the paper's evaluation pipeline. All scripts read target and
+agent configuration from **environment variables** — no hardcoded endpoints
+or credentials.
+
+### Setup
+
+```bash
+pip install -e .
+
+# Set your target (any pikit target spec)
+export PIKIT_TARGET="openai:gpt-4o-mini"
+# Optional overrides:
+export PIKIT_AGENT="general_permissive"  # agent scenario
+export PIKIT_WORKERS="5"                  # concurrency
+```
+
+### Full-scale experiments (1120 cases)
+
+```bash
+# 1. Naive baseline (1120 cases, raw payload)
+python scripts/run_naive_full_test.py
+
+# 2. All attack methods (12 attacks x 1120 cases = 13,440 runs)
+python scripts/run_attacks_full_test.py
+
+# Run a single attack:
+python scripts/run_attacks_full_test.py --only combined
+```
+
+Results are saved to `result/naive_full_test/` and `result/attacks/{attack}/`
+with JSONL traces, CSV summaries, and per-attack `summary.json` containing
+full/partial/none success rates and per-channel breakdowns.
+
+### Sampled experiments (50 cases)
+
+```bash
+# 8 attacks x 50 sampled cases, LLM judge
+python scripts/run_deepseek_api_eval.py
+
+# Three-level judge validation (13 attacks x 15 cases)
+python scripts/run_improved_judge_test.py
+
+# Smoke test
+python scripts/run_general_attack_eval.py --limit 3 -v
+```
+
+### Diagnostic experiments
+
+```bash
+# Naive full run with crash recovery
+python scripts/run_deepseek_eval.py --resume
+
+# Hypothesis testing (permissive prompt / camouflaged payloads / lenient judge)
+python scripts/run_hypothesis_test.py
+```
+
+See **[`scripts/README.md`](scripts/README.md)** for the complete script
+reference, output format, and field descriptions.
 
 ## Extending pikit
 

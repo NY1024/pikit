@@ -52,3 +52,6 @@ pikit/carriers/*.tainted.*
 # Local eval scripts
 run_*_eval.py
 run_*_test.py
+# But allow desensitized scripts in scripts/ directory
+!scripts/run_*_eval.py
+!scripts/run_*_test.py
