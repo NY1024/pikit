@@ -257,6 +257,7 @@ trace — pikit renders no verdict. The friendliest way to run this is the CLI
 | **Defense** | a prevention-style prompt transformer: `apply(prompt, instruction=None) -> str` |
 | **Target** | a model backend: `query(...)` and optional tool-calling `chat(...)` |
 | **Agent** | a tool-calling loop that reads external content and can attempt actions such as `send_email` |
+| **Judge** | an optional automatic verdict on whether an injection succeeded: `RuleJudge` (pure-Python heuristics) or `LLMJudge` (a second model reads the trace). Both produce **three-state** outcomes: `full_success` / `partial_compliance` / failure |
 
 ## Method catalog
 
