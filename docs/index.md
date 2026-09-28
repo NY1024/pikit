@@ -1,5 +1,10 @@
 # 🧪 pikit — Prompt Injection Kit
 
+> [!WARNING]
+> **This project has moved.** 🚚
+> pikit is now maintained at **[Tencent/AI-Infra-Guard → Research/pikit](https://github.com/Tencent/AI-Infra-Guard/tree/main/Research/pikit)**.
+> This repository is no longer maintained — please use the new location for the latest code, issues, and documentation.
+
 **A composable prompt-injection research toolkit: attacks, defenses,
 indirect-injection channels, built-in agent scenarios, and integrations for
 real Agent frameworks and runtimes.**
